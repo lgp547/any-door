@@ -54,9 +54,7 @@ public class SpringUtil implements ApplicationContextAware {
 
             @Override
             public HttpHeaders getHeaders() {
-                HttpHeaders httpHeaders = new HttpHeaders();
-                httpHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
-                return httpHeaders;
+                return HttpHeaders.EMPTY;
             }
 
             @Override
@@ -89,6 +87,7 @@ public class SpringUtil implements ApplicationContextAware {
         SpringUtil.applicationContext = applicationContext;
         Map<String, HttpMessageConverter> beansOfType = applicationContext.getBeansOfType(HttpMessageConverter.class);
         SpringUtil.httpMessageConverters = new ArrayList(beansOfType.values());
+        log.info("mmmmmmmmmmmmmmmmmmm any-door springUtil init end mmmmmmmmmmmmmmmmmmm");
     }
 
     public void setObjectMapper(ObjectMapper objectMapper) {

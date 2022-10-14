@@ -24,9 +24,9 @@ public class AnyController {
      */
     @RequestMapping("/any_door/run")
     @ResponseBody
-    public Object run(@RequestBody AnyDoorDto anyDoorDto) {
+    public Object run(@RequestBody AnyDoorDto anyDoorDto) throws IllegalArgumentException {
         if (log.isDebugEnabled()) {
-            log.debug("/any_door/run dto {}", anyDoorDto);
+            log.debug("any-door run requestBody {}", anyDoorDto);
         }
 
         anyDoorDto.verify();

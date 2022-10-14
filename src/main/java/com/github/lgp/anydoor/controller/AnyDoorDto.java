@@ -1,6 +1,7 @@
 package com.github.lgp.anydoor.controller;
 
 import org.springframework.lang.NonNull;
+import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Objects;
@@ -66,8 +67,8 @@ public class AnyDoorDto {
     }
 
     public void verify() {
-        Objects.requireNonNull(className);
-        Objects.requireNonNull(methodName);
+        Assert.notNull(className, "className is required");
+        Assert.notNull(methodName, "methodName is required");
     }
 
 }

@@ -1,7 +1,7 @@
-package com.github.lgp.anydoor.autoconfig;
+package io.github.lgp.anydoor.autoconfig;
 
-import com.github.lgp.anydoor.controller.AnyController;
-import com.github.lgp.anydoor.core.SpringUtil;
+import io.github.lgp.anydoor.controller.AnyController;
+import io.github.lgp.anydoor.core.SpringUtil;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

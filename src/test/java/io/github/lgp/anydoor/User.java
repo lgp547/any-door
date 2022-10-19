@@ -1,4 +1,4 @@
-package com.github.lgp.anydoor;
+package io.github.lgp.anydoor;
 
 
 public class User {

@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.github.lgp.anydoor.autoconfig.AnyDoorAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.github.lgp.anydoor.autoconfig.AnyDoorAutoConfiguration

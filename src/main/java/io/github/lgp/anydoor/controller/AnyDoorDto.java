@@ -1,4 +1,4 @@
-package com.github.lgp.anydoor.controller;
+package io.github.lgp.anydoor.controller;
 
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;

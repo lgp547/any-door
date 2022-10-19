@@ -1,4 +1,4 @@
-package com.github.lgp.anydoor.core;
+package io.github.lgp.anydoor.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.BeanUtils;

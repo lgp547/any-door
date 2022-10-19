@@ -1,6 +1,6 @@
-package com.github.lgp.anydoor;
+package io.github.lgp.anydoor;
 
-import com.github.lgp.anydoor.autoconfig.AnyDoorAutoConfiguration;
+import io.github.lgp.anydoor.autoconfig.AnyDoorAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

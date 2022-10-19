@@ -1,4 +1,4 @@
-package io.github.lgp.anydoor;
+package io.github.lgp547.anydoor;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

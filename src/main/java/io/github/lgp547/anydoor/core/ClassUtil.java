@@ -1,4 +1,4 @@
-package io.github.lgp.anydoor.core;
+package io.github.lgp547.anydoor.core;
 
 
 import org.slf4j.Logger;

@@ -1,8 +1,8 @@
-package io.github.lgp.anydoor;
+package io.github.lgp547.anydoor;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.github.lgp.anydoor.core.AnyDoorHandlerMethod;
-import io.github.lgp.anydoor.core.SpringUtil;
+import io.github.lgp547.anydoor.core.AnyDoorHandlerMethod;
+import io.github.lgp547.anydoor.core.SpringUtil;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

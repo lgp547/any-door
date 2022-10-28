@@ -1,6 +1,7 @@
 package io.github.lgp547.anydoor.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -38,7 +39,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         for (int i = 0; i < parameters.length; i++) {
             MethodParameter parameter = parameters[i];
             parameter.initParameterNameDiscovery(new DefaultParameterNameDiscoverer());
-            String value = Optional.ofNullable(jsonNode.get(parameter.getParameterName())).map(JsonNode::toString).orElse(null);
+            String value = Optional.ofNullable(jsonNode.get(parameter.getParameterName())).map(curJson -> curJson instanceof TextNode ? curJson.asText() : curJson.toString()).orElse(null);
             if (null == value) {
                 args[i] = null;
                 break;

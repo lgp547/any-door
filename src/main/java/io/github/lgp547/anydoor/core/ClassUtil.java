@@ -26,7 +26,7 @@ public class ClassUtil {
     public static Method getMethod(Class<?> clazz, String methodName, @Nullable List<String> parameterTypes) {
         Method method;
         List<Method> methods = new ArrayList<>();
-        for (Method clazzMethod : clazz.getMethods()) {
+        for (Method clazzMethod : clazz.getDeclaredMethods()) {
             if (clazzMethod.getName().equals(methodName)) {
                 methods.add(clazzMethod);
             }

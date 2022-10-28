@@ -15,13 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.lang.reflect.Method;
 import java.util.List;
 
-/**
- * 支持null参数
- * 支持私有方法
- * 修复String类型
- * 修复List类型的泛型检查
- * 支持静态方法
- */
 @Controller
 public class AnyController {
 

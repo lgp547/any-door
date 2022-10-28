@@ -61,6 +61,9 @@ public class Bean {
         return jsonNode;
     }
 
+    private void noParamPrivate() {
+        System.out.println("noParamPrivate");
+    }
 
     public void noParam() {
         System.out.println("noParam");
@@ -76,16 +79,16 @@ public class Bean {
         return nullParam;
     }
 
-//    public User oneParam(User user) {
-//        Assert.isTrue(Bean.user.equals(user));
-//        return user;
-//    }
-//
-//    public List<String> oneParam1(List<String> strings) {
-//        Assert.isTrue(Bean.strings.equals(strings));
-//        return strings;
-//    }
-//
+    public User oneParam(User user) {
+        Assert.isTrue(Bean.user.equals(user));
+        return user;
+    }
+
+    public List<String> oneParam1(List<String> strings) {
+        Assert.isTrue(Bean.strings.equals(strings));
+        return strings;
+    }
+
 //    public List<User> oneParam2(List<User> users) {
 //        Objects.requireNonNull(users);
 //        for (int i = 0; i < Bean.users.size(); i++) {
@@ -94,21 +97,21 @@ public class Bean {
 //        return users;
 //    }
 
-//    public JsonNode multipleParam(String name, Integer id) {
-//        Assert.isTrue(Bean.name.equals(name));
-//        Assert.isTrue(Bean.id.equals(id));
-//        ObjectNode jsonNode = new ObjectNode(JsonNodeFactory.instance);
-//        jsonNode.put("name", name);
-//        jsonNode.put("id", id);
-//        return jsonNode;
-//    }
-//
-//    public JsonNode multipleParam(Integer id, String name) {
-//        Assert.isTrue(Bean.name.equals(name));
-//        Assert.isTrue(Bean.id.equals(id));
-//        ObjectNode jsonNode = new ObjectNode(JsonNodeFactory.instance);
-//        jsonNode.put("name", name);
-//        jsonNode.put("id", id);
-//        return jsonNode;
-//    }
+    public JsonNode multipleParam(String name, Integer id) {
+        Assert.isTrue(Bean.name.equals(name));
+        Assert.isTrue(Bean.id.equals(id));
+        ObjectNode jsonNode = new ObjectNode(JsonNodeFactory.instance);
+        jsonNode.put("name", name);
+        jsonNode.put("id", id);
+        return jsonNode;
+    }
+
+    public JsonNode multipleParam(Integer id, String name) {
+        Assert.isTrue(Bean.name.equals(name));
+        Assert.isTrue(Bean.id.equals(id));
+        ObjectNode jsonNode = new ObjectNode(JsonNodeFactory.instance);
+        jsonNode.put("name", name);
+        jsonNode.put("id", id);
+        return jsonNode;
+    }
 }

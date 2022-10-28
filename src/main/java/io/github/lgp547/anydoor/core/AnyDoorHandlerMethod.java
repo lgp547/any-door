@@ -10,6 +10,7 @@ import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 public class AnyDoorHandlerMethod extends HandlerMethod {
 
@@ -37,7 +38,11 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         for (int i = 0; i < parameters.length; i++) {
             MethodParameter parameter = parameters[i];
             parameter.initParameterNameDiscovery(new DefaultParameterNameDiscoverer());
-            String value = jsonNode.get(parameter.getParameterName()).toString();
+            String value = Optional.ofNullable(jsonNode.get(parameter.getParameterName())).map(JsonNode::toString).orElse(null);
+            if (null == value) {
+                args[i] = null;
+                break;
+            }
             if (BeanUtils.isSimpleProperty(parameter.getParameterType())) { // todo: 这个判断可能得修改一下
                 SimpleTypeConverter simpleTypeConverter = new SimpleTypeConverter();
                 args[i] = simpleTypeConverter.convertIfNecessary(value, parameter.getParameterType(), parameter);

@@ -17,6 +17,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.lang.Nullable;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class SpringUtil implements ApplicationContextAware {
 
     private static List<HttpMessageConverter<?>> httpMessageConverters = new ArrayList<>();
 
-    public static Object readObject(Class<?> targetType, @Nullable Class<?> contextClass, String value, MethodParameter parameter) {
+    public static Object readObject(Type targetType, @Nullable Class<?> contextClass, String value, MethodParameter parameter) {
         HttpInputMessage httpInputMessage = getHttpInputMessage(value);
         for (HttpMessageConverter<?> converter : httpMessageConverters) {
             GenericHttpMessageConverter<?> genericConverter;

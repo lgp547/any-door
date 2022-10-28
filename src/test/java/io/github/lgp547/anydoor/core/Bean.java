@@ -1,44 +1,17 @@
 package io.github.lgp547.anydoor.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.lgp547.anydoor.dto.User;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Objects;
 
 @Component
 public class Bean {
-
-    /**
-     * {
-     * "user": {
-     * "name": "AnyDoorUserName1",
-     * "id": 1
-     * },
-     * "name": "AnyDoorUserName",
-     * "id": 0,
-     * "strings": ["AnyDoorStr1", "AnyDoorStr2"],
-     * "users": [{
-     * "user": {
-     * "name": "AnyDoorUserName2",
-     * "id": 2
-     * }
-     * }, {
-     * "user": {
-     * "name": "AnyDoorUserName3",
-     * "id": 3
-     * }
-     * }]
-     * }
-     */
 
     public static final Integer id = 1;
 
@@ -89,13 +62,13 @@ public class Bean {
         return strings;
     }
 
-//    public List<User> oneParam2(List<User> users) {
-//        Objects.requireNonNull(users);
-//        for (int i = 0; i < Bean.users.size(); i++) {
-//            Assert.isTrue(Bean.users.get(i).equals(users.get(i)));
-//        }
-//        return users;
-//    }
+    public List<User> oneParam2(List<User> users) {
+        Objects.requireNonNull(users);
+        for (int i = 0; i < Bean.users.size(); i++) {
+            Assert.isTrue(Bean.users.get(i).equals(users.get(i)));
+        }
+        return users;
+    }
 
     public JsonNode multipleParam(String name, Integer id) {
         Assert.isTrue(Bean.name.equals(name));

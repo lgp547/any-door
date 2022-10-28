@@ -11,6 +11,7 @@ import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Optional;
 
 public class AnyDoorHandlerMethod extends HandlerMethod {
@@ -49,7 +50,9 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
                 args[i] = simpleTypeConverter.convertIfNecessary(value, parameter.getParameterType(), parameter);
             } else {
                 // 用spring的mvc的转换
-                Class<?> targetType = parameter.getParameterType();
+                parameter = parameter.nestedIfOptional();
+                Type targetType = parameter.getNestedGenericParameterType();
+//                Class<?> targetType = parameter.getParameterType();
                 Class<?> contextClass = parameter.getContainingClass();
                 args[i] = SpringUtil.readObject(targetType, contextClass, value, parameter);
             }

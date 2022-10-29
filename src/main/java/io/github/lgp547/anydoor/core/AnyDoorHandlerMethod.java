@@ -47,7 +47,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
                 args[i] = null;
                 break;
             }
-            if (BeanUtils.isSimpleProperty(parameter.getParameterType())) { // todo: 这个判断可能得修改一下
+            if (BeanUtils.isSimpleProperty(parameter.getParameterType())) {
                 SimpleTypeConverter simpleTypeConverter = new SimpleTypeConverter();
                 args[i] = simpleTypeConverter.convertIfNecessary(value, parameter.getParameterType(), parameter);
             } else {

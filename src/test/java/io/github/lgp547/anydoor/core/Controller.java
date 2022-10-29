@@ -25,7 +25,15 @@ public class Controller implements ApplicationRunner {
     public void run(ApplicationArguments args) {
 
         Class<?> clazz = Bean.class;
+        Class<?> clazz2 = Bean2.class;
         JsonNode jsonNode = Bean.getContent();
+        doRun(clazz, jsonNode);
+        doRun(clazz2, jsonNode);
+
+        System.out.println("###################结束###################");
+    }
+
+    private void doRun(Class<?> clazz, JsonNode jsonNode) {
         for (Method method : clazz.getDeclaredMethods()) {
             System.out.println("调用方法 " + method.getName());
 
@@ -39,6 +47,5 @@ public class Controller implements ApplicationRunner {
             Object result = anyController.run(anyDoorDto);
             System.out.println();
         }
-        System.out.println("###################结束###################");
     }
 }

@@ -7,6 +7,7 @@ import io.github.lgp547.anydoor.core.SpringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,8 +40,17 @@ public class AnyController {
 
         JsonNode jsonNode = SpringUtil.toJsonNode(content);
         Class<?> clazz = ClassUtil.forName(className);
-        Object bean = SpringUtil.getBean(clazz);
-        Method method = ClassUtil.getMethod(AopUtils.getTargetClass(bean), methodName, parameterTypes);
+        boolean containsBean = SpringUtil.containsBean(clazz);
+        Object bean;
+        Method method;
+        if (!containsBean) {
+            bean = BeanUtils.instantiateClass(clazz);
+            method = ClassUtil.getMethod(clazz, methodName, parameterTypes);
+        } else {
+            bean = SpringUtil.getBean(clazz);
+            method = ClassUtil.getMethod(AopUtils.getTargetClass(bean), methodName, parameterTypes);
+        }
+
 
         AnyDoorHandlerMethod handlerMethod = new AnyDoorHandlerMethod(bean, method);
         Object invoke = handlerMethod.invoke(jsonNode);

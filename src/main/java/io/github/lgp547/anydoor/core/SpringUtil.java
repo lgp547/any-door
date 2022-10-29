@@ -74,6 +74,15 @@ public class SpringUtil implements ApplicationContextAware {
         return Objects.requireNonNull(applicationContext).getBean(requiredType);
     }
 
+    public static boolean containsBean(Class<?> requiredType) {
+        try {
+            getBean(requiredType);
+            return true;
+        } catch (BeansException e) {
+            return false;
+        }
+    }
+
     public static JsonNode toJsonNode(String content) {
         try {
             return objectMapper.readTree(content);

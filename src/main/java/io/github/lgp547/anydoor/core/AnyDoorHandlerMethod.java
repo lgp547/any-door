@@ -40,7 +40,9 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         for (int i = 0; i < parameters.length; i++) {
             MethodParameter parameter = parameters[i];
             parameter.initParameterNameDiscovery(new DefaultParameterNameDiscoverer());
-            String value = Optional.ofNullable(jsonNode.get(parameter.getParameterName())).map(curJson -> curJson instanceof TextNode ? curJson.asText() : curJson.toString()).orElse(null);
+            String value = Optional.ofNullable(jsonNode.get(parameter.getParameterName()))
+                    .map(curJson -> curJson instanceof TextNode ? curJson.asText() : curJson.toString())
+                    .orElse(null);
             if (null == value) {
                 args[i] = null;
                 break;
@@ -52,9 +54,13 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
                 // 用spring的mvc的转换
                 parameter = parameter.nestedIfOptional();
                 Type targetType = parameter.getNestedGenericParameterType();
-//                Class<?> targetType = parameter.getParameterType();
                 Class<?> contextClass = parameter.getContainingClass();
-                args[i] = SpringUtil.readObject(targetType, contextClass, value, parameter);
+                Object paramObj = SpringUtil.readObject(targetType, contextClass, value);
+                if (null == paramObj) {
+                    paramObj = BeanUtils.instantiateClass(parameter.getParameterType());
+
+                }
+                args[i] = paramObj;
             }
 
         }

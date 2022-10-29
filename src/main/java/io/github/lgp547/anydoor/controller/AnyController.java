@@ -37,13 +37,15 @@ public class AnyController {
         String content = anyDoorDto.getContent();
         List<String> parameterTypes = anyDoorDto.getParameterTypes();
 
-        JsonNode jsonNode = SpringUtil.readTree(content);
+        JsonNode jsonNode = SpringUtil.toJsonNode(content);
         Class<?> clazz = ClassUtil.forName(className);
         Object bean = SpringUtil.getBean(clazz);
         Method method = ClassUtil.getMethod(AopUtils.getTargetClass(bean), methodName, parameterTypes);
 
         AnyDoorHandlerMethod handlerMethod = new AnyDoorHandlerMethod(bean, method);
-        return handlerMethod.invoke(jsonNode);
+        Object invoke = handlerMethod.invoke(jsonNode);
+        log.info(method.getName() + " return: {}", SpringUtil.toJsonString(invoke));
+        return invoke;
     }
 
 }

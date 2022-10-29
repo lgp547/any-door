@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.lgp547.anydoor.dto.User;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Objects;
 
-@Component
+@RestController
 public class Bean {
 
     public static final Integer id = 1;
@@ -23,6 +23,10 @@ public class Bean {
 
     public static final List<User> users = List.of(new User(2, "2"), new User(3, "3"));
 
+    public static final String emptyUser = "";
+
+    public static final String emptyNum = "0";
+
 
     public static JsonNode getContent() {
         ObjectNode jsonNode = new ObjectNode(JsonNodeFactory.instance);
@@ -31,11 +35,17 @@ public class Bean {
         jsonNode.putPOJO("user", user);
         jsonNode.putPOJO("strings", strings);
         jsonNode.putPOJO("users", users);
+        jsonNode.put("emptyUser", emptyUser);
+        jsonNode.put("emptyNum", emptyNum);
         return jsonNode;
     }
 
     private void noParamPrivate() {
         System.out.println("noParamPrivate");
+    }
+
+    public static void noParamStatic() {
+        System.out.println("noParamStatic");
     }
 
     public void noParam() {
@@ -50,6 +60,18 @@ public class Bean {
     public Long oneParam(Long nullParam) {
         Assert.isNull(nullParam);
         return nullParam;
+    }
+
+    public Integer oneParamEmpty(Integer emptyNum) {
+        Assert.notNull(emptyNum);
+        return emptyNum;
+    }
+
+    public User oneParamEmpty(User emptyUser) {
+        Assert.notNull(emptyUser);
+        Assert.isNull(emptyUser.getId());
+        Assert.isNull(emptyUser.getName());
+        return emptyUser;
     }
 
     public User oneParam(User user) {

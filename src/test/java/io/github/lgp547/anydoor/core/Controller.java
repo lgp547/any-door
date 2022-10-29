@@ -37,8 +37,6 @@ public class Controller implements ApplicationRunner {
             anyDoorDto.setParameterTypes(parameterTypes);
 
             Object result = anyController.run(anyDoorDto);
-
-            System.out.println("调用方法 " + method.getName() + " result:" + result);
             System.out.println();
         }
         System.out.println("###################结束###################");

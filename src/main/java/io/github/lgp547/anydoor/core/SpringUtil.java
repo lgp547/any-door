@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.MediaType;
@@ -33,15 +32,16 @@ public class SpringUtil implements ApplicationContextAware {
 
     private static List<HttpMessageConverter<?>> httpMessageConverters = new ArrayList<>();
 
-    public static Object readObject(Type targetType, @Nullable Class<?> contextClass, String value, MethodParameter parameter) {
+    public static Object readObject(Type targetType, @Nullable Class<?> contextClass, String value) {
         HttpInputMessage httpInputMessage = getHttpInputMessage(value);
         for (HttpMessageConverter<?> converter : httpMessageConverters) {
             GenericHttpMessageConverter<?> genericConverter;
-            if (converter instanceof GenericHttpMessageConverter && (genericConverter = ((GenericHttpMessageConverter<?>) converter)).canRead(targetType, contextClass, MediaType.APPLICATION_JSON)) {
+            if (converter instanceof GenericHttpMessageConverter &&
+                    (genericConverter = ((GenericHttpMessageConverter<?>) converter)).canRead(targetType, contextClass, MediaType.APPLICATION_JSON)) {
                 try {
                     return genericConverter.read(targetType, contextClass, httpInputMessage);
                 } catch (Exception e) {
-                    log.error("readObject IOException ", e);
+                    log.error("readObject IOException {}", e.getMessage());
                     return null;
                 }
             }
@@ -74,11 +74,19 @@ public class SpringUtil implements ApplicationContextAware {
         return Objects.requireNonNull(applicationContext).getBean(requiredType);
     }
 
-    public static JsonNode readTree(String content) {
+    public static JsonNode toJsonNode(String content) {
         try {
             return objectMapper.readTree(content);
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("入参 content 不支持");
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static String toJsonString(Object value) {
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException(e);
         }
     }
 

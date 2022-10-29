@@ -52,6 +52,11 @@ public class Bean {
         System.out.println("noParam");
     }
 
+    public String only(String name) {
+        System.out.println(name);
+        return name;
+    }
+
     public String oneParam(String name) {
         Assert.isTrue(Bean.name.equals(name));
         return name;

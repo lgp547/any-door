@@ -68,7 +68,6 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
     }
 
     protected Object doInvoke(Object... args) throws InvocationTargetException, IllegalAccessException {
-        // todo:这里会走aop的吗
         return getBridgedMethod().invoke(getBean(), args);
     }
 

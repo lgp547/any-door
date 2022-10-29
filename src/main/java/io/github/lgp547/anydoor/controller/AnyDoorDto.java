@@ -1,5 +1,6 @@
 package io.github.lgp547.anydoor.controller;
 
+import io.github.lgp547.anydoor.core.SpringUtil;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
@@ -10,7 +11,7 @@ import java.util.Objects;
  * className      全链路名
  * methodName     方法名
  * content        入参，要求是json类型，允许为null
- * parameterTypes 参数类型
+ * parameterTypes 参数类型 （若是方法名是唯一的，这个parameterTypes是可选填）
  */
 public class AnyDoorDto {
 
@@ -20,7 +21,7 @@ public class AnyDoorDto {
     @NonNull
     private String methodName;
 
-    private String content;
+    private Object content;
 
     private List<String> parameterTypes;
 
@@ -40,11 +41,19 @@ public class AnyDoorDto {
         this.methodName = methodName;
     }
 
-    public String getContent() {
+    public Object getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public String getContentStr() {
+        if (content instanceof String) {
+            return (String) content;
+        } else {
+            return SpringUtil.toJsonString(content);
+        }
+    }
+
+    public void setContent(Object content) {
         this.content = content;
     }
 

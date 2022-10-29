@@ -35,7 +35,7 @@ public class AnyController {
 
         String className = anyDoorDto.getClassName();
         String methodName = anyDoorDto.getMethodName();
-        String content = anyDoorDto.getContent();
+        String content = anyDoorDto.getContentStr();
         List<String> parameterTypes = anyDoorDto.getParameterTypes();
 
         JsonNode jsonNode = SpringUtil.toJsonNode(content);

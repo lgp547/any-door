@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.idea.maven.project.MavenProjectsManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,8 +27,14 @@ public class ImportUtil {
     public static UnaryOperator<String> anyDoorJarPath = version -> "/io/github/lgp547/any-door/" + version + "/any-door-" + version + ".jar";
 
     public static void fillAnyDoorJar(Project project, String runModuleName, String version) {
-        Module module = getMainModule(project, runModuleName);
-        fillJar(project, module, "any-door", version, anyDoorJarPath.apply(version));
+        try {
+            Module module = getMainModule(project, runModuleName);
+            File file = fillJar(project, module, "any-door", version, anyDoorJarPath.apply(version));
+            NotifierUtil.notifyInfo(project, module.getName() + " fill ModuleLibrary success " + file.getPath());
+        } catch (Exception e) {
+            NotifierUtil.notifyError(project, "fill ModuleLibrary fail: " + e.getMessage());
+        }
+
     }
 
     /**
@@ -37,28 +44,23 @@ public class ImportUtil {
      * @param jarVersion 导入版本
      * @param jarPath    完整路径
      */
-    public static void fillJar(Project project, Module module, String jarName, String jarVersion, String jarPath) {
-        try {
-            // 若本地已经导入了jar包就直接去掉
-            removeModuleLibrary(module, jarName);
+    public static File fillJar(Project project, Module module, String jarName, String jarVersion, String jarPath) throws IOException {
+        // 若本地已经导入了jar包就直接去掉
+        removeModuleLibrary(module, jarName);
 
-            // 进行导入
-            File localRepository = MavenProjectsManager.getInstance(project).getLocalRepository();
-            String localPath = localRepository.getPath() + jarPath;
-            File file = new File(localPath);
+        // 进行导入
+        File localRepository = MavenProjectsManager.getInstance(project).getLocalRepository();
+        String localPath = localRepository.getPath() + jarPath;
+        File file = new File(localPath);
+        if (!file.isFile()) {
+            String httpPath = "https://s01.oss.sonatype.org/content/repositories/releases" + jarPath;
+            FileUtils.copyURLToFile(new URL(httpPath), file);
             if (!file.isFile()) {
-                String httpPath = "https://s01.oss.sonatype.org/content/repositories/releases" + jarPath;
-                FileUtils.copyURLToFile(new URL(httpPath), file);
-                if (!file.isFile()) {
-                    throw new RuntimeException("get jar file fail");
-                }
+                throw new RuntimeException("get jar file fail");
             }
-            ModuleRootModificationUtil.addModuleLibrary(module, jarName + "-" + jarVersion, List.of("file://" + file.getPath()), List.of());
-            NotifierUtil.notifyInfo(project, module.getName() + " fill ModuleLibrary success " + file.getPath());
-        } catch (Exception e) {
-            NotifierUtil.notifyError(project, "fill ModuleLibrary fail: " + e.getMessage());
         }
-
+        ModuleRootModificationUtil.addModuleLibrary(module, jarName + "-" + jarVersion, List.of("file://" + file.getPath()), List.of());
+        return file;
     }
 
     @SuppressWarnings("rawtypes")

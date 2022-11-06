@@ -26,7 +26,6 @@ public class AnyDoorSettingsComponent {
     JButton button = new JButton("Try import jar to RunModule");
     button.addActionListener(e -> {
       String version = versionText.getText();
-//      String version = project.getService(AnyDoorSettingsState.class).version;
       String runModuleName = mainClassModuleText.getText();
       if (StringUtils.isAnyBlank(version, runModuleName)) {
         NotifierUtil.notifyError(project, "Please fill RunModule and version");

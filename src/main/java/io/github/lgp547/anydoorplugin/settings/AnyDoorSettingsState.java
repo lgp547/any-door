@@ -3,16 +3,18 @@
 package io.github.lgp547.anydoorplugin.settings;
 
 import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.State;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@State(name = "AnyDoorSettingsState")
 public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSettingsState> {
 
   public Integer port = 8080;
   public Boolean enable = true;
   public String version = "0.0.2";
-  public String runModule = "";
+  public String runModule = "start";
 
   @Nullable
   @Override

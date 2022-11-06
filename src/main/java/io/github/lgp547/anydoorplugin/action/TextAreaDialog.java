@@ -28,7 +28,7 @@ public class TextAreaDialog extends DialogWrapper {
     private final ContentPanel contentPanel;
     private Runnable okAction;
 
-    private Project project;
+    private final Project project;
 
     public TextAreaDialog(Project project, String title, String text) {
         super(project);

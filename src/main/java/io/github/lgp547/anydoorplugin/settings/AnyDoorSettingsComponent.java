@@ -8,6 +8,8 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import io.github.lgp547.anydoorplugin.util.ImportUtil;
+import io.github.lgp547.anydoorplugin.util.NotifierUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -22,7 +24,17 @@ public class AnyDoorSettingsComponent {
 
   public AnyDoorSettingsComponent(Project project) {
     JButton button = new JButton("Try import jar to RunModule");
-    button.addActionListener(e -> ImportUtil.fillJar(project, mainClassModuleText.getText()));
+    button.addActionListener(e -> {
+      String version = versionText.getText();
+//      String version = project.getService(AnyDoorSettingsState.class).version;
+      String runModuleName = mainClassModuleText.getText();
+      if (StringUtils.isAnyBlank(version, runModuleName)) {
+        NotifierUtil.notifyError(project, "Please fill RunModule and version");
+        return;
+      }
+      ImportUtil.fillAnyDoorJar(project, runModuleName, version);
+    });
+
     JBLabel label = new JBLabel("Main class RunModule name:");
 //    label.setToolTipText("Not required");
     myMainPanel = FormBuilder.createFormBuilder()

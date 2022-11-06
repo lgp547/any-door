@@ -9,38 +9,8 @@
 
 ### IDEA插件使用
 本插件只需每个项目配置一次即可
-#### 添加插件
-暂未对外发布，并只支持Maven项目
 
-#### 配置插件属性并进行导入
-- 配置插件属性
-
-![img.png](dosc/image/插件配置说明.jpg)
-
-- 插件属性配置完毕后点击尝试导入按钮，导入成功会有消息提示
-
----
-> 额外说明：插件的原理
-
-导入jar包，实际就是优先本地的AnyDoor的jar包导入到当前项目模块（若本地Maven配置目录没有，将会从中央仓库下载并放到本地仓库），
-导入成功后可以在设置页面查看，当然删除也是在这里
-
-![img.png](dosc/image/jar包导入.jpg)
-
-![img.png](dosc/image/插入的maven路径.png)
-
-#### 执行调用
-- 找到想要执行的方法，右键弹出选择（有对应的快捷键）
-
-![img.png](dosc/image/打开方法选择.png)
-
-- 选择打开任意门
-
-![img.png](dosc/image/打开任意门.png)
-
-- 填写要调用的参数，并执行启动！
-
-![img.png](dosc/image/启动.png)
+详情见 https://github.com/lgp547/any-door-plugin
 
 ### 常规使用
 #### 添加依赖
@@ -89,3 +59,16 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 - 修复String类型
 - 修复List类型的泛型映射
 
+## 适合场景
+- xxlJob
+- rpc
+- mq入口
+- 小改动的测试
+
+
+## 后续支持
+- 对于没有注册到Spring类，并且没有无参构造函数的类进行支持
+- 对于Dao层进行支持，目前会有丢失参数的情况、增加测试方法
+- 对LocalDateTime(OffsetDateTime)的支持、增加测试方法
+- 对于不支持的类型，那就直接null进去
+- 返回值的打印并不必要，错误的话直接忽略

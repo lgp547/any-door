@@ -6,6 +6,9 @@
     <description>执行Spring web项目的任意方法，不管是App层还是Dao层都可以直接触发执行。具体执行原理见https://github.com/lgp547/any-door</description>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
+    <depends>org.jetbrains.idea.maven</depends>
+
     <extensions defaultExtensionNs="com.intellij">
         <!-- action -->
         <intentionAction>

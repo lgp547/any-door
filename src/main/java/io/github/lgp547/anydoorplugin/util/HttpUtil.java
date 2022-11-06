@@ -15,7 +15,7 @@ public class HttpUtil {
     /**
      * POST请求
      */
-    public static void postAsy(String url, String reqBody, Consumer<IOException> errHandle) {
+    public static void postAsy(String url, String reqBody, Consumer<Exception> errHandle) {
         Request request = new Request.Builder().url(url).post(RequestBody.create(reqBody, json)).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override

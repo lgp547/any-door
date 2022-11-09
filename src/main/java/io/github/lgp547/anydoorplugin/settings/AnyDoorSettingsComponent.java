@@ -27,8 +27,8 @@ public class AnyDoorSettingsComponent {
     button.addActionListener(e -> {
       String version = versionText.getText();
       String runModuleName = mainClassModuleText.getText();
-      if (StringUtils.isAnyBlank(version, runModuleName)) {
-        NotifierUtil.notifyError(project, "Please fill RunModule and version");
+      if (StringUtils.isBlank(version)) {
+        NotifierUtil.notifyError(project, "Please fill version");
         return;
       }
       ImportUtil.fillAnyDoorJar(project, runModuleName, version);

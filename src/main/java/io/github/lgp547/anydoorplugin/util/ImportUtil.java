@@ -12,6 +12,7 @@ import com.intellij.util.keyFMap.KeyFMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.idea.maven.project.MavenProjectsManager;
 
 import java.io.File;
@@ -20,15 +21,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.UnaryOperator;
 
 public class ImportUtil {
 
     public static UnaryOperator<String> anyDoorJarPath = version -> "/io/github/lgp547/any-door/" + version + "/any-door-" + version + ".jar";
 
-    public static void fillAnyDoorJar(Project project, String runModuleName, String version) {
+    public static void fillAnyDoorJar(Project project, @Nullable String runModuleName, String version) {
         try {
-            Module module = getMainModule(project, runModuleName);
+            Module module = getMainModule(project, Optional.ofNullable(runModuleName));
             File file = fillJar(project, module, "any-door", version, anyDoorJarPath.apply(version));
             NotifierUtil.notifyInfo(project, module.getName() + " fill ModuleLibrary success " + file.getPath());
         } catch (Exception e) {
@@ -64,11 +66,14 @@ public class ImportUtil {
     }
 
     @SuppressWarnings("rawtypes")
-    public static Module getMainModule(Project project, String runModuleName) {
+    public static Module getMainModule(Project project, Optional<String> runModuleNameOp) {
         Module[] modules = ModuleManager.getInstance(project).getModules();
-        if (StringUtils.isNotBlank(runModuleName)) {
+        if (modules.length == 1) {
+            return modules[0];
+        }
+        if (runModuleNameOp.isPresent()) {
             for (Module module : modules) {
-                if (module.getName().equals(runModuleName)) {
+                if (module.getName().equals(runModuleNameOp.get())) {
                     return module;
                 }
             }
@@ -81,7 +86,7 @@ public class ImportUtil {
                 if (null != keyFMap) {
                     Key[] keys = keyFMap.getKeys();
                     for (Key key : keys) {
-                        if (key.toString().contains("org.jetbrains.android.AndroidResolveScopeEnlarger.resolveScopeWithTests")) {
+                        if (key.toString().contains("org.jetbrains.idea.maven.project.MavenProjectsManager")) {
                             modulesList.add(module);
                             break;
                         }

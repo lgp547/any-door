@@ -10,10 +10,6 @@
     <depends>org.jetbrains.idea.maven</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- action -->
-        <intentionAction>
-            <className>io.github.lgp547.anydoorplugin.action.AnyDoorIntention</className>
-        </intentionAction>
 
         <!-- setting -->
         <projectConfigurable parentId="tools" instance="io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsConfigurable"
@@ -24,5 +20,10 @@
         <!-- notice -->
         <applicationService serviceImplementation="io.github.lgp547.anydoorplugin.util.NotifierUtil"/>
         <notificationGroup id="AnyDoor" displayType="BALLOON" /><!--key="tenx.error"-->
+
+        <!-- action -->
+        <intentionAction>
+            <className>io.github.lgp547.anydoorplugin.action.AnyDoorIntention</className>
+        </intentionAction>
     </extensions>
 </idea-plugin>

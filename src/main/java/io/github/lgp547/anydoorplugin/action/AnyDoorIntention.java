@@ -16,10 +16,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -60,8 +57,13 @@ public class AnyDoorIntention extends PsiElementBaseIntentionAction implements I
         String methodName = method.getName();
         List<String> paramTypeNameList = toParamTypeNameList(method.getParameterList());
 
-        AnyDoorSettingsState service = project.getService(AnyDoorSettingsState.class);
-        Integer port = project.getService(AnyDoorSettingsState.class).port;
+        Optional<AnyDoorSettingsState> anyDoorSettingsStateOp = getAnyDoorSettingsState(project);
+        if (anyDoorSettingsStateOp.isEmpty()) {
+            return;
+        }
+
+        AnyDoorSettingsState service = anyDoorSettingsStateOp.get();
+        Integer port = service.port;
         Consumer<Exception> openExcConsumer = e -> NotifierUtil.notifyError(project, "call any_door error " + e.getMessage());
 
 
@@ -89,6 +91,18 @@ public class AnyDoorIntention extends PsiElementBaseIntentionAction implements I
                 openAnyDoor(className, methodName, paramTypeNameList, dialog.getText(), port, openExcConsumer);
             });
             dialog.show();
+        }
+    }
+
+    /**
+     * 出现过get的时候报错，包装一下先
+     */
+    private Optional<AnyDoorSettingsState> getAnyDoorSettingsState(@NotNull Project project) {
+        try {
+            return Optional.ofNullable(project.getService(AnyDoorSettingsState.class));
+        } catch (Exception e) {
+            NotifierUtil.notifyError(project, "get AnyDoorSettings Service error. errMsg:" + e.getMessage());
+            return Optional.empty();
         }
     }
 

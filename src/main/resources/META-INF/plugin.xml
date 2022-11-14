@@ -3,7 +3,7 @@
     <id>io.github.lgp547.any-door-plugin</id>
     <name>AnyDoor</name>
     <vendor email="lgp547279@163.com" url="https://github.com/lgp547">lgp</vendor>
-    <description>执行Spring web项目的任意方法，不管是App层还是Dao层都可以直接触发执行。具体执行原理见https://github.com/lgp547/any-door</description>
+    <description>Any method to execute a Spring web project,Either the 'App' layer or the 'Dao' layer can execution directly.'https://github.com/lgp547/any-door'</description>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
@@ -19,7 +19,7 @@
 
         <!-- notice -->
         <applicationService serviceImplementation="io.github.lgp547.anydoorplugin.util.NotifierUtil"/>
-        <notificationGroup id="AnyDoor" displayType="BALLOON" /><!--key="tenx.error"-->
+        <notificationGroup id="AnyDoor" displayType="BALLOON"/><!--key="tenx.error"-->
 
         <!-- action -->
         <intentionAction>

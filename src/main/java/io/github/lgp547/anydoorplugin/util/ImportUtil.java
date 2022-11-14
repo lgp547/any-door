@@ -40,17 +40,16 @@ public class ImportUtil {
     }
 
     /**
-     * @param project    当前运行的项目
-     * @param module     main函数所在的模块
-     * @param jarName    导入名
-     * @param jarVersion 导入版本
-     * @param jarPath    完整路径
+     * @param project    current run project
+     * @param module     main function module
+     * @param jarName    import jar name
+     * @param jarVersion import jar version
+     * @param jarPath    import jar path
      */
     public static File fillJar(Project project, Module module, String jarName, String jarVersion, String jarPath) throws IOException {
-        // 若本地已经导入了jar包就直接去掉
-        removeModuleLibrary(module, jarName);
+        removeModuleLibraryIfExist(module, jarName);
 
-        // 进行导入
+        // do import
         File localRepository = MavenProjectsManager.getInstance(project).getLocalRepository();
         String localPath = localRepository.getPath() + jarPath;
         File file = new File(localPath);
@@ -78,7 +77,7 @@ public class ImportUtil {
                 }
             }
         }
-        // todo: 目前这里的搜索效果不好，需要进行优化
+        // todo: need to optimize
         List<Module> modulesList = new ArrayList<>();
         for (Module module : modules) {
             if (module instanceof ModuleImpl) {
@@ -100,7 +99,7 @@ public class ImportUtil {
         throw new RuntimeException("MainModule could not find. size " + modulesList.size());
     }
 
-    public static void removeModuleLibrary(@NotNull Module module, String jarName) {
+    public static void removeModuleLibraryIfExist(@NotNull Module module, String jarName) {
         ModuleRootModificationUtil.updateModel(module, modifiableRootModel -> {
             LibraryTable moduleLibraryTable = modifiableRootModel.getModuleLibraryTable();
             Iterator<Library> libraryIterator = moduleLibraryTable.getLibraryIterator();

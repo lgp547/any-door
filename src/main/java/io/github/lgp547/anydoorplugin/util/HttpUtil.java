@@ -12,9 +12,6 @@ public class HttpUtil {
 
     public static MediaType json = MediaType.parse("application/json; charset=utf-8");
 
-    /**
-     * POST请求
-     */
     public static void postAsy(String url, String reqBody, Consumer<Exception> errHandle) {
         Request request = new Request.Builder().url(url).post(RequestBody.create(reqBody, json)).build();
         okHttpClient.newCall(request).enqueue(new Callback() {

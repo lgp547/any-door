@@ -77,7 +77,7 @@ public class AnyDoorIntention extends PsiElementBaseIntentionAction implements I
             if (cache != null) {
                 initContent = cache;
             } else {
-                // 生成默认的 json
+                // generate default json
                 List<String> parameterNames = Arrays.stream(method.getParameters()).map(JvmNamedElement::getName).collect(Collectors.toList());
                 JsonObject jsonObject = new JsonObject();
                 parameterNames.forEach(name -> jsonObject.add(name, JsonNull.INSTANCE));
@@ -95,7 +95,7 @@ public class AnyDoorIntention extends PsiElementBaseIntentionAction implements I
     }
 
     /**
-     * 出现过get的时候报错，包装一下先
+     * prevention error
      */
     private Optional<AnyDoorSettingsState> getAnyDoorSettingsState(@NotNull Project project) {
         try {

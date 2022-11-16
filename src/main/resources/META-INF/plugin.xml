@@ -3,7 +3,16 @@
     <id>io.github.lgp547.any-door-plugin</id>
     <name>AnyDoor</name>
     <vendor email="lgp547279@163.com" url="https://github.com/lgp547">lgp</vendor>
-    <description>Any method to execute a Spring web project,Either the 'App' layer or the 'Dao' layer can execution directly.'https://github.com/lgp547/any-door'</description>
+    <description><![CDATA[
+        Any method to execute a Spring web project,Either the 'App' layer or the 'Dao' layer can execution directly.
+        Getting Started:
+            - fill 'Preferences.Tools.Setting Any Door' text box (command+,)
+            - select method and 'show Context Actions' (Alt+Enter)
+            - select 'Open any door'
+            - fill json param before run
+        <a href="https://github.com/lgp547/any-door">any-door</a>
+        <a href="https://github.com/lgp547/any-door-plugin.git">any-door-plugin</a>
+    ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
@@ -19,7 +28,7 @@
 
         <!-- notice -->
         <applicationService serviceImplementation="io.github.lgp547.anydoorplugin.util.NotifierUtil"/>
-        <notificationGroup id="AnyDoor" displayType="BALLOON"/><!--key="tenx.error"-->
+        <notificationGroup id="AnyDoor" displayType="BALLOON"/>
 
         <!-- action -->
         <intentionAction>

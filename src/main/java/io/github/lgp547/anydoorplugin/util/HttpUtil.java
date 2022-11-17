@@ -16,10 +16,10 @@ public class HttpUtil {
 
     public static OkHttpClient okHttpClient = new OkHttpClient();
 
-    public static MediaType json = MediaType.parse("application/json; charset=utf-8");
+    public static MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
     public static void postAsy(String url, String reqBody, Consumer<Exception> errHandle) {
-        Request request = new Request.Builder().url(url).post(RequestBody.create(reqBody, json)).build();
+        Request request = new Request.Builder().url(url).post(RequestBody.create(reqBody, JSON)).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {

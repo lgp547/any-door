@@ -90,7 +90,7 @@ public class AnyDoorIntention extends PsiElementBaseIntentionAction implements I
                 initContent = cache;
             } else {
                 // generate default json
-                List<String> parameterNames = Arrays.stream(method.getParameters()).map(JvmNamedElement::getName).collect(Collectors.toList());
+                List<String> parameterNames = toParamNameList(method.getParameterList());
                 JsonObject jsonObject = new JsonObject();
                 parameterNames.forEach(name -> jsonObject.add(name, JsonNull.INSTANCE));
                 Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
@@ -139,6 +139,15 @@ public class AnyDoorIntention extends PsiElementBaseIntentionAction implements I
             PsiParameter parameter = Objects.requireNonNull(parameterList.getParameter(i));
             String canonicalText = parameter.getType().getCanonicalText();
             list.add(canonicalText);
+        }
+        return list;
+    }
+
+    private static List<String> toParamNameList(PsiParameterList parameterList) {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < parameterList.getParametersCount(); i++) {
+            PsiParameter parameter = Objects.requireNonNull(parameterList.getParameter(i));
+            list.add(parameter.getName());
         }
         return list;
     }

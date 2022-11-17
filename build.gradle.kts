@@ -10,6 +10,11 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
+}
+
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
     version.set("2021.2")

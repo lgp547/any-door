@@ -1,33 +1,35 @@
 package io.github.lgp547.anydoorplugin.util;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import org.jetbrains.annotations.NotNull;
+import cn.hutool.core.thread.ThreadUtil;
 
-import java.io.IOException;
 import java.util.function.Consumer;
 
 public class HttpUtil {
 
-    public static OkHttpClient okHttpClient = new OkHttpClient();
-
-    public static MediaType JSON = MediaType.get("application/json; charset=utf-8");
+//    public static OkHttpClient okHttpClient = new OkHttpClient();
+//
+//    public static MediaType JSON = MediaType.get("application/json; charset=utf-8");
+//
+//    public static void postAsy(String url, String reqBody, Consumer<Exception> errHandle) {
+//        Request request = new Request.Builder().url(url).post(RequestBody.create(reqBody, JSON)).build();
+//        okHttpClient.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+//                errHandle.accept(e);
+//            }
+//
+//            @Override
+//            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+//            }
+//        });
+//    }
 
     public static void postAsy(String url, String reqBody, Consumer<Exception> errHandle) {
-        Request request = new Request.Builder().url(url).post(RequestBody.create(reqBody, JSON)).build();
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+        ThreadUtil.execAsync(() -> {
+            try {
+                cn.hutool.http.HttpUtil.post(url, reqBody);
+            } catch (Exception e) {
                 errHandle.accept(e);
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
             }
         });
     }

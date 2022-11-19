@@ -1,6 +1,8 @@
 plugins {
     id("java")
     id("org.jetbrains.intellij") version "1.5.2"
+    id("com.github.johnrengelman.shadow") version "7.0.0" // Include dependency packaging
+
 }
 
 group = "io.github.lgp547"
@@ -11,7 +13,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("cn.hutool:hutool-http:5.8.9")
+    implementation("javax.xml.soap:javax.xml.soap-api:1.4.0") // hutool depend
 
 }
 

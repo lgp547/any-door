@@ -7,8 +7,8 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @State(name = "AnyDoorSettingsState", storages = @Storage("AnyDoorSettingsState.xml"))
 public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSettingsState> {
@@ -32,7 +32,7 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
 
   @Override
   public void noStateLoaded() {
-    cache = new HashMap<>();
+    cache = new ConcurrentHashMap<>();
   }
 
   public void putCache(String key, String value) {

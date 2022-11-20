@@ -17,7 +17,7 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
   public Boolean enable = true;
   public String version = "0.0.2";
   public String runModule = "start";
-  public Map<String, String> cache;
+  public Map<String, String> cache = new ConcurrentHashMap<>();
 
   @Nullable
   @Override
@@ -28,11 +28,6 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
   @Override
   public void loadState(@NotNull AnyDoorSettingsState state) {
     XmlSerializerUtil.copyBean(state, this);
-  }
-
-  @Override
-  public void noStateLoaded() {
-    cache = new ConcurrentHashMap<>();
   }
 
   public void putCache(String key, String value) {

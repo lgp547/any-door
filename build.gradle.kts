@@ -14,7 +14,6 @@ repositories {
 
 dependencies {
     implementation("cn.hutool:hutool-http:5.8.9")
-    implementation("javax.xml.soap:javax.xml.soap-api:1.4.0") // hutool depend
 
 }
 

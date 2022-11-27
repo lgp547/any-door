@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Controller
 public class AnyController {
@@ -22,11 +25,11 @@ public class AnyController {
     private static final Logger log = LoggerFactory.getLogger(AnyController.class);
 
     /**
-     * @return 执行方法结果
+     * @return 执行方法结果, 异步的话直接null
      */
     @RequestMapping("/any_door/run")
     @ResponseBody
-    public Object run(@RequestBody AnyDoorDto anyDoorDto) throws IllegalArgumentException {
+    public Object run(@RequestBody AnyDoorDto anyDoorDto) throws IllegalArgumentException, ExecutionException, InterruptedException {
         if (log.isDebugEnabled()) {
             log.debug("any-door run requestBody {}", anyDoorDto);
         }
@@ -53,9 +56,21 @@ public class AnyController {
 
 
         AnyDoorHandlerMethod handlerMethod = new AnyDoorHandlerMethod(bean, method);
-        Object invoke = handlerMethod.invoke(jsonNode);
-        log.info(method.getName() + " return: {}", SpringUtil.toJsonString(invoke));
-        return invoke;
+        CompletableFuture<Object> future = handlerMethod.invokeAsync(jsonNode);
+        if (Objects.equals(anyDoorDto.getSync(), true)) {
+            return future.get();
+        } else {
+            future.whenComplete((result, e) -> {
+                String callMethodStr = "/any_door/run " + method.getName();
+                if (e != null) {
+                    log.info(callMethodStr + " exception: ", e);
+                } else {
+                    log.info(callMethodStr + " return: {}", SpringUtil.toJsonStringNotExc(result));
+                }
+            });
+            return null;
+        }
+
     }
 
 }

@@ -114,4 +114,9 @@ public class Bean {
         jsonNode.put("id", id);
         return jsonNode;
     }
+
+    public void exception() {
+        System.out.println("exception");
+        throw new RuntimeException("test exception");
+    }
 }

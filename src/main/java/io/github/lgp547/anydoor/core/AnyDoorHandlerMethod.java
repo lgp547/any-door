@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class AnyDoorHandlerMethod extends HandlerMethod {
 
@@ -21,13 +22,8 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         super(bean, method);
     }
 
-    public Object invoke(JsonNode jsonNode) {
-        try {
-            Object[] args = getArgs(jsonNode);
-            return doInvoke(args);
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    public CompletableFuture<Object> invokeAsync(JsonNode jsonNode) {
+        return doInvokeAsync(getArgs(jsonNode));
     }
 
     protected Object[] getArgs(JsonNode jsonNode) {
@@ -67,8 +63,14 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         return args;
     }
 
-    protected Object doInvoke(Object... args) throws InvocationTargetException, IllegalAccessException {
-        return getBridgedMethod().invoke(getBean(), args);
+    protected CompletableFuture<Object> doInvokeAsync(Object... args) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return getBridgedMethod().invoke(getBean(), args);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
 

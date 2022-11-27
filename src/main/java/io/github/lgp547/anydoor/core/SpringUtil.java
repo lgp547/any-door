@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -32,7 +33,11 @@ public class SpringUtil implements ApplicationContextAware {
 
     private static List<HttpMessageConverter<?>> httpMessageConverters = new ArrayList<>();
 
+    @Nullable
     public static Object readObject(Type targetType, @Nullable Class<?> contextClass, String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
         HttpInputMessage httpInputMessage = getHttpInputMessage(value);
         for (HttpMessageConverter<?> converter : httpMessageConverters) {
             GenericHttpMessageConverter<?> genericConverter;
@@ -96,6 +101,14 @@ public class SpringUtil implements ApplicationContextAware {
             return objectMapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static String toJsonStringNotExc(Object value) {
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            return value.toString();
         }
     }
 

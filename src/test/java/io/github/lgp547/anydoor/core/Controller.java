@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -43,8 +44,17 @@ public class Controller implements ApplicationRunner {
             anyDoorDto.setContent(jsonNode.toString());
             List<String> parameterTypes = Arrays.stream(method.getParameterTypes()).map(Class::getName).collect(Collectors.toList());
             anyDoorDto.setParameterTypes(parameterTypes);
+            anyDoorDto.setSync(true);
 
-            Object result = anyController.run(anyDoorDto);
+            try {
+                Object result = anyController.run(anyDoorDto);
+            } catch (Exception e) {
+                if (method.getName().equals("exception")) {
+                    continue;
+                } else {
+                    throw new RuntimeException(e);
+                }
+            }
             System.out.println();
         }
     }

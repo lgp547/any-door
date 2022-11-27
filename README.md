@@ -18,7 +18,7 @@
 <dependency>
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 </dependency>
 ```
 
@@ -58,6 +58,9 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 - 修复null参数
 - 修复String类型
 - 修复List类型的泛型映射
+
+### 0.0.3
+- 支持同步或异步执行，默认异步
 
 ## 适合场景
 - xxlJob

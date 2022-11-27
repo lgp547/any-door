@@ -7,11 +7,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class NotifierUtil {
 
+  private final static String msgPre = "AnyDoorPlugin: ";
+
   public static void notifyError(@Nullable Project project,
                                  String content) {
     NotificationGroupManager.getInstance()
             .getNotificationGroup("AnyDoor")
-            .createNotification(content, NotificationType.ERROR)
+            .createNotification(msgPre + content, NotificationType.ERROR)
             .notify(project);
   }
 
@@ -19,7 +21,7 @@ public class NotifierUtil {
                                  String content) {
     NotificationGroupManager.getInstance()
             .getNotificationGroup("AnyDoor")
-            .createNotification(content, NotificationType.INFORMATION)
+            .createNotification(msgPre + content, NotificationType.INFORMATION)
             .notify(project);
   }
 

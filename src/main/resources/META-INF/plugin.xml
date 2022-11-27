@@ -4,13 +4,14 @@
     <name>AnyDoor</name>
     <vendor email="lgp547279@163.com" url="https://github.com/lgp547">lgp</vendor>
     <description><![CDATA[
-        Any method to execute a Spring web project,Either the 'App' layer or the 'Dao' layer can execution directly.
-        Getting Started:
-            - fill 'Preferences.Tools.Setting Any Door' text box (command+,)
-            - select method and 'show Context Actions' (Alt+Enter)
-            - select 'Open any door'
-            - fill json param before run
-        <a href="https://github.com/lgp547/any-door">any-door</a>
+        Any method to execute a Spring web project,Either the 'App' layer or the 'Dao' layer can execution directly.<br>
+        Getting Started:<br>
+        <ul>
+            <li>fill 'Preferences.Tools.Setting Any Door' text box (command+,)</li>
+            <li>select method and 'Open AnyDoor' (control/command+shift+Enter)</li>
+            <li>fill json param before run</li>
+        </ul>
+        <a href="https://github.com/lgp547/any-door">any-door</a><br>
         <a href="https://github.com/lgp547/any-door-plugin.git">any-door-plugin</a>
     ]]></description>
 
@@ -30,9 +31,17 @@
         <applicationService serviceImplementation="io.github.lgp547.anydoorplugin.util.NotifierUtil"/>
         <notificationGroup id="AnyDoor" displayType="BALLOON"/>
 
-        <!-- action -->
-        <intentionAction>
-            <className>io.github.lgp547.anydoorplugin.action.AnyDoorIntention</className>
-        </intentionAction>
     </extensions>
+
+    <actions>
+        <action id="AnyDoorPlugin.AnyDoorAnAction"
+                class="io.github.lgp547.anydoorplugin.action.AnyDoorAnAction"
+                text="Open AnyDoor"
+                description="The specified port '/any_door/run' will be called"
+                icon="io.github.lgp547.anydoorplugin.util.AnyDoorIcons.default_icon">
+            <keyboard-shortcut keymap="$default" first-keystroke="control shift D"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+    </actions>
+
 </idea-plugin>

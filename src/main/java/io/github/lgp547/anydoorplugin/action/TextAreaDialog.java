@@ -31,7 +31,7 @@ public class TextAreaDialog extends DialogWrapper {
     private final Project project;
 
     public TextAreaDialog(Project project, String title, String text) {
-        super(project);
+        super(project, true, IdeModalityType.MODELESS);
         this.project = project;
         setTitle(title);
         contentPanel = new ContentPanel(text, project);

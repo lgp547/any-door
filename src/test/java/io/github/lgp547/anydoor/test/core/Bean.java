@@ -1,9 +1,9 @@
-package io.github.lgp547.anydoor.core;
+package io.github.lgp547.anydoor.test.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.lgp547.anydoor.dto.User;
+import io.github.lgp547.anydoor.test.dto.User;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -58,6 +58,11 @@ public class Bean {
     }
 
     public String oneParam(String name) {
+        Assert.isTrue(Bean.name.equals(name));
+        return name;
+    }
+
+    private String oneParamPrivate(String name) {
         Assert.isTrue(Bean.name.equals(name));
         return name;
     }

@@ -1,4 +1,4 @@
-package io.github.lgp547.anydoor.dto;
+package io.github.lgp547.anydoor.test.dto;
 
 
 import java.util.Objects;

@@ -44,7 +44,7 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 --data-raw '{
     "content": {"name":"any_door"},
     "methodName": "oneParam",
-    "className": "io.github.lgp547.anydoor.core.Bean",
+    "className": "io.github.lgp547.anydoor.core.test.Bean",
     "parameterTypes": []
 }'
 ```

@@ -1,5 +1,8 @@
-package io.github.lgp547.anydoor.core;
+package io.github.lgp547.anydoor.test.core;
 
+/**
+ * 无注册Bean
+ */
 public class Bean2 {
 
     public void noParam() {

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -52,6 +53,9 @@ public class AnyController {
         } else {
             bean = SpringUtil.getBean(clazz);
             method = ClassUtil.getMethod(AopUtils.getTargetClass(bean), methodName, parameterTypes);
+            if (!Modifier.isPublic(method.getModifiers())) {
+                bean = ClassUtil.getTargetObject(bean);
+            }
         }
 
 

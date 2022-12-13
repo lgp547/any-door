@@ -1,4 +1,4 @@
-package io.github.lgp547.anydoor.core;
+package io.github.lgp547.anydoor.test.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.lgp547.anydoor.controller.AnyController;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,16 +26,18 @@ public class Controller implements ApplicationRunner {
 
         Class<?> clazz = Bean.class;
         Class<?> clazz2 = Bean2.class;
+        Class<?> clazz3 = Bean3.class;
         JsonNode jsonNode = Bean.getContent();
         doRun(clazz, jsonNode);
         doRun(clazz2, jsonNode);
+        doRun(clazz3, jsonNode);
 
         System.out.println("###################结束###################");
     }
 
     private void doRun(Class<?> clazz, JsonNode jsonNode) {
         for (Method method : clazz.getDeclaredMethods()) {
-            System.out.println("调用方法 " + method.getName());
+            System.out.println("调用方法 " + clazz.getSimpleName() + " " + method.getName());
 
             AnyDoorDto anyDoorDto = new AnyDoorDto();
             anyDoorDto.setClassName(clazz.getName());

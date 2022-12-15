@@ -4,11 +4,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class HttpUtil {
 
-    public static void postAsyncByJdk(String urlStr, String reqBody, Consumer<Exception> errHandle) {
+    public static void postAsyncByJdk(String urlStr, String reqBody, BiConsumer<String, Exception> errHandle) {
         CompletableFuture.runAsync(() -> {
             try {
                 URL url = new URL(urlStr);
@@ -22,7 +22,7 @@ public class HttpUtil {
                 os.write(reqBody.getBytes());
                 con.getResponseCode();
             } catch (Exception e) {
-                errHandle.accept(e);
+                errHandle.accept(urlStr, e);
             }
         });
     }

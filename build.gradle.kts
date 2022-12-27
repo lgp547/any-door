@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "io.github.lgp547"
-version = "1.0.2"
+version = "1.0.3"
 
 repositories {
     mavenCentral()
@@ -31,18 +31,18 @@ tasks {
         targetCompatibility = "11"
     }
 
-    patchPluginXml {
-        sinceBuild.set("212")
-        untilBuild.set("222.*")
-    }
+//    patchPluginXml {
+//        sinceBuild.set("201")
+//        untilBuild.set("223.*")
+//    }
 
-    signPlugin {
-        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
-        privateKey.set(System.getenv("PRIVATE_KEY"))
-        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
-    }
-
-    publishPlugin {
-        token.set(System.getenv("PUBLISH_TOKEN"))
-    }
+//    signPlugin {
+//        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
+//        privateKey.set(System.getenv("PRIVATE_KEY"))
+//        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+//    }
+//
+//    publishPlugin {
+//        token.set(System.getenv("PUBLISH_TOKEN"))
+//    }
 }

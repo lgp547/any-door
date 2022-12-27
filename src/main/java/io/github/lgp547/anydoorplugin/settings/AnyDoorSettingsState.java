@@ -15,7 +15,7 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
 
   public Integer port = 8080;
   public Boolean enable = true;
-  public String version = "0.0.3";
+  public String version = "0.0.4";
   public String runModule = "start";
   public Map<String, String> cache = new ConcurrentHashMap<>();
 

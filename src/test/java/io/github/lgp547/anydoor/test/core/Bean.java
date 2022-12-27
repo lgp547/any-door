@@ -37,6 +37,8 @@ public class Bean {
         jsonNode.putPOJO("users", users);
         jsonNode.put("emptyUser", emptyUser);
         jsonNode.put("emptyNum", emptyNum);
+        String s = null;
+        jsonNode.put("nameNull", s);
         return jsonNode;
     }
 
@@ -60,6 +62,10 @@ public class Bean {
     public String oneParam(String name) {
         Assert.isTrue(Bean.name.equals(name));
         return name;
+    }
+
+    public void oneParamNull(String nameNull) {
+        Assert.isNull(nameNull);
     }
 
     private String oneParamPrivate(String name) {

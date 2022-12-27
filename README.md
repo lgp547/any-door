@@ -62,6 +62,10 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 ### 0.0.3
 - 支持同步或异步执行，默认异步
 
+### 0.0.4
+- 修复代理Bean的私有方法调用
+- 字符串类型传入null存在null字符串
+
 ## 适合场景
 - xxlJob
 - rpc

@@ -7,18 +7,22 @@
 ## 快速使用
 推荐结合IDEA插件使用！插件帮做了导入jar包以及封装了调用接口，做到快速使用
 
-### IDEA插件使用
+### 快速使用(IDEA插件)
 本插件只需每个项目配置一次即可
 
-详情见 https://github.com/lgp547/any-door-plugin
+[任意门插件](https://plugins.jetbrains.com/plugin/20385-anydoor)
+
+[任意门插件github地址](https://github.com/lgp547/any-door-plugin)
 
 ### 常规使用
+推荐使用插件方式：[任意门插件](https://plugins.jetbrains.com/plugin/20385-anydoor)
+
 #### 添加依赖
 ```xml
 <dependency>
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
 </dependency>
 ```
 

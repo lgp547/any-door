@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class AnyDoorPerformed {
 
@@ -35,7 +35,7 @@ public class AnyDoorPerformed {
 
         AnyDoorSettingsState service = anyDoorSettingsStateOp.get();
         Integer port = service.port;
-        Consumer<Exception> openExcConsumer = e -> NotifierUtil.notifyError(project, "call any_door error [ " + e.getMessage() + " ]");
+        BiConsumer<String, Exception> openExcConsumer = (url, e) -> NotifierUtil.notifyError(project, "call " + url + " error [ " + e.getMessage() + " ]");
 
 
         if (paramTypeNameList.isEmpty()) {
@@ -78,7 +78,7 @@ public class AnyDoorPerformed {
     }
 
     private static void openAnyDoor(String className, String methodName,
-                                    List<String> paramTypeNameList, String content, Integer port, Consumer<Exception> errHandle) {
+                                    List<String> paramTypeNameList, String content, Integer port, BiConsumer<String, Exception> errHandle) {
         JsonObject jsonObjectReq = new JsonObject();
         jsonObjectReq.addProperty("content", content);
         jsonObjectReq.addProperty("methodName", methodName);

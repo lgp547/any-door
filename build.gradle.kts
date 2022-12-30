@@ -31,10 +31,10 @@ tasks {
         targetCompatibility = "11"
     }
 
-//    patchPluginXml {
-//        sinceBuild.set("201")
-//        untilBuild.set("223.*")
-//    }
+    patchPluginXml {
+        sinceBuild.set("211")
+        untilBuild.set("223.*")
+    }
 
 //    signPlugin {
 //        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))

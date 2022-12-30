@@ -14,15 +14,19 @@
 ## 快速开始
 每个项目只需要初始化一次即可
 ### 安装插件
-插件市场直接搜索 anydoor
+插件市场直接搜索 anydoor 支持IDEA版本：2021.*~2022.3
 
-支持IDEA版本：21年~23年
+![img.png](dosc/image/安装插件.png)
 
 ### 配置插件属性并进行导入
 1. 配置项目属性
 2. 点击Try按钮（成功or失败会有消息提示）
 
 ![img.png](dosc/image/插件配置说明.jpg)
+
+导入成功
+
+![img.png](dosc/image/导入成功.png)
 
 ### 启动项目
 Run or Debug

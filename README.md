@@ -83,3 +83,5 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 - 对LocalDateTime(OffsetDateTime)的支持、增加测试方法
 - 对于不支持的类型，那就直接null进去
 - 返回值的打印并不必要，错误的话直接忽略
+- 是否能做到调度到任意的测试方法
+- 匿名内部类以及懒加载的时候调用方法

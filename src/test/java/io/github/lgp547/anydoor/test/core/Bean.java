@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
+import static io.github.lgp547.anydoor.test.util.AssertUtil.assertIsNull;
+import static io.github.lgp547.anydoor.test.util.AssertUtil.assertIsTrue;
+import static io.github.lgp547.anydoor.test.util.AssertUtil.assertNotNull;
 
 @RestController
 public class Bean {
@@ -19,7 +24,7 @@ public class Bean {
 
     public static final User user = new User(1, "AnyDoorUserName1");
 
-    public static final List<String> strings = List.of("AnyDoorStr1", "AnyDoorStr2");
+    public static final List<String> strings = List.of("AnyDoorStr1", "AnyDoorStr2", "AnyDoorStr1");
 
     public static final List<User> users = List.of(new User(2, "2"), new User(3, "3"));
 
@@ -59,8 +64,13 @@ public class Bean {
         return name;
     }
 
+    public void test(Integer num, String name) {
+        System.out.println("num:" + num);
+        System.out.println("name:" + name);
+    }
+
     public String oneParam(String name) {
-        Assert.isTrue(Bean.name.equals(name));
+        assertIsTrue(Bean.name.equals(name));
         return name;
     }
 
@@ -69,48 +79,53 @@ public class Bean {
     }
 
     private String oneParamPrivate(String name) {
-        Assert.isTrue(Bean.name.equals(name));
+        assertIsTrue(Bean.name.equals(name));
         return name;
     }
 
     public Long oneParam(Long nullParam) {
-        Assert.isNull(nullParam);
+        assertIsNull(nullParam);
         return nullParam;
     }
 
     public Integer oneParamEmpty(Integer emptyNum) {
-        Assert.notNull(emptyNum);
+        assertNotNull(emptyNum);
         return emptyNum;
     }
 
     public User oneParamEmpty(User emptyUser) {
-        Assert.notNull(emptyUser);
-        Assert.isNull(emptyUser.getId());
-        Assert.isNull(emptyUser.getName());
+        assertNotNull(emptyUser);
+        assertIsNull(emptyUser.getId());
+        assertIsNull(emptyUser.getName());
         return emptyUser;
     }
 
     public User oneParam(User user) {
-        Assert.isTrue(Bean.user.equals(user));
+        assertIsTrue(Bean.user.equals(user));
         return user;
     }
 
     public List<String> oneParam1(List<String> strings) {
-        Assert.isTrue(Bean.strings.equals(strings));
+        assertIsTrue(Bean.strings.equals(strings));
+        return strings;
+    }
+
+    public Set<String> oneParam1(Set<String> strings) {
+        assertIsTrue(Bean.strings.equals(strings));
         return strings;
     }
 
     public List<User> oneParam2(List<User> users) {
         Objects.requireNonNull(users);
         for (int i = 0; i < Bean.users.size(); i++) {
-            Assert.isTrue(Bean.users.get(i).equals(users.get(i)));
+            assertIsTrue(Bean.users.get(i).equals(users.get(i)));
         }
         return users;
     }
 
     public JsonNode multipleParam(String name, Integer id) {
-        Assert.isTrue(Bean.name.equals(name));
-        Assert.isTrue(Bean.id.equals(id));
+        assertIsTrue(Bean.name.equals(name));
+        assertIsTrue(Bean.id.equals(id));
         ObjectNode jsonNode = new ObjectNode(JsonNodeFactory.instance);
         jsonNode.put("name", name);
         jsonNode.put("id", id);
@@ -118,8 +133,8 @@ public class Bean {
     }
 
     public JsonNode multipleParam(Integer id, String name) {
-        Assert.isTrue(Bean.name.equals(name));
-        Assert.isTrue(Bean.id.equals(id));
+        assertIsTrue(Bean.name.equals(name));
+        assertIsTrue(Bean.id.equals(id));
         ObjectNode jsonNode = new ObjectNode(JsonNodeFactory.instance);
         jsonNode.put("name", name);
         jsonNode.put("id", id);

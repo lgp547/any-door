@@ -46,4 +46,9 @@
         </action>
     </actions>
 
+    <applicationListeners>
+        <listener topic="com.intellij.execution.ExecutionListener"
+                  class="io.github.lgp547.anydoorplugin.listener.ExecutionListenerImpl"/>
+    </applicationListeners>
+
 </idea-plugin>

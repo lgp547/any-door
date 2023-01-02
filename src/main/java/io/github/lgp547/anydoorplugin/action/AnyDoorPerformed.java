@@ -13,7 +13,6 @@ import com.intellij.psi.PsiParameterList;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 import io.github.lgp547.anydoorplugin.util.HttpUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +20,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
+/**
+ * 打开任意门，核心执行
+ */
 public class AnyDoorPerformed {
 
     public void invoke(Project project, PsiMethod method) {
@@ -28,12 +30,12 @@ public class AnyDoorPerformed {
         String methodName = method.getName();
         List<String> paramTypeNameList = toParamTypeNameList(method.getParameterList());
 
-        Optional<AnyDoorSettingsState> anyDoorSettingsStateOp = getAnyDoorSettingsState(project);
-        if (anyDoorSettingsStateOp.isEmpty()) {
+        Optional<AnyDoorSettingsState> anyDoorSettingsStateOpt = AnyDoorSettingsState.getAnyDoorSettingsStateNotExc(project);
+        if (anyDoorSettingsStateOpt.isEmpty()) {
             return;
         }
 
-        AnyDoorSettingsState service = anyDoorSettingsStateOp.get();
+        AnyDoorSettingsState service = anyDoorSettingsStateOpt.get();
         Integer port = service.port;
         BiConsumer<String, Exception> openExcConsumer = (url, e) -> NotifierUtil.notifyError(project, "call " + url + " error [ " + e.getMessage() + " ]");
 
@@ -62,18 +64,6 @@ public class AnyDoorPerformed {
                 openAnyDoor(className, methodName, paramTypeNameList, dialog.getText(), port, openExcConsumer);
             });
             dialog.show();
-        }
-    }
-
-    /**
-     * prevention error
-     */
-    private Optional<AnyDoorSettingsState> getAnyDoorSettingsState(@NotNull Project project) {
-        try {
-            return Optional.ofNullable(project.getService(AnyDoorSettingsState.class));
-        } catch (Exception e) {
-            NotifierUtil.notifyError(project, "get AnyDoorSettings Service error. errMsg:" + e.getMessage());
-            return Optional.empty();
         }
     }
 

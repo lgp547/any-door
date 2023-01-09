@@ -70,6 +70,9 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 - 修复代理Bean的私有方法调用
 - 字符串类型传入null存在null字符串
 
+### 0.05
+- 修改支持jdk8
+
 ## 适合场景
 - xxlJob
 - rpc
@@ -85,3 +88,5 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 - 返回值的打印并不必要，错误的话直接忽略
 - 是否能做到调度到任意的测试方法
 - 匿名内部类以及懒加载的时候调用方法
+
+- 修改成jdk8、有指定前缀的无法使用

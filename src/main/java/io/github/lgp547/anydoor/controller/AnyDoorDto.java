@@ -1,5 +1,6 @@
 package io.github.lgp547.anydoor.controller;
 
+import io.github.lgp547.anydoor.core.JsonUtil;
 import io.github.lgp547.anydoor.core.SpringUtil;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
@@ -51,7 +52,7 @@ public class AnyDoorDto {
         if (content instanceof String) {
             return (String) content;
         } else {
-            return SpringUtil.toJsonString(content);
+            return JsonUtil.toJsonString(content);
         }
     }
 

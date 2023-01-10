@@ -3,6 +3,7 @@ package io.github.lgp547.anydoor.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.lgp547.anydoor.core.AnyDoorHandlerMethod;
 import io.github.lgp547.anydoor.core.ClassUtil;
+import io.github.lgp547.anydoor.core.JsonUtil;
 import io.github.lgp547.anydoor.core.SpringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public class AnyController {
         String content = anyDoorDto.getContentStr();
         List<String> parameterTypes = anyDoorDto.getParameterTypes();
 
-        JsonNode jsonNode = SpringUtil.toJsonNode(content);
+        JsonNode jsonNode = JsonUtil.toJsonNode(content);
         Class<?> clazz = ClassUtil.forName(className);
         boolean containsBean = SpringUtil.containsBean(clazz);
         Object bean;
@@ -69,7 +70,7 @@ public class AnyController {
                 if (e != null) {
                     log.info(callMethodStr + " exception: ", e);
                 } else {
-                    log.info(callMethodStr + " return: {}", SpringUtil.toJsonStringNotExc(result));
+                    log.info(callMethodStr + " return: {}", JsonUtil.toJsonStringNotExc(result));
                 }
             });
             return null;

@@ -5,7 +5,7 @@
 
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.4-a</version>
 
     <name>any-door</name>
     <description>any-door</description>
@@ -31,10 +31,40 @@
     </dependencyManagement>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <scope>compile</scope>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -42,6 +72,8 @@
             <artifactId>aspectjweaver</artifactId>
             <scope>test</scope>
         </dependency>
+
+
 
     </dependencies>
 

@@ -5,10 +5,11 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.core.BridgeMethodResolver;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.method.HandlerMethod;
+import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -17,11 +18,21 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public class AnyDoorHandlerMethod extends HandlerMethod {
+public class AnyDoorHandlerMethod {
+
+    private final Object bean;
+
+    private final Method method;
+
+    private final Method bridgedMethod;
 
 
     public AnyDoorHandlerMethod(Object bean, Method method) {
-        super(bean, method);
+        this.bean = bean;
+        this.method = method;
+        this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
+        ReflectionUtils.makeAccessible(this.bridgedMethod);
+        this.parameters = initMethodParameters();
     }
 
     public CompletableFuture<Object> invokeAsync(JsonNode jsonNode) {
@@ -53,8 +64,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
                 Class<?> contextClass = parameter.getContainingClass();
                 Object paramObj = SpringUtil.readObject(targetType, contextClass, value);
                 if (null == paramObj) {
-                    paramObj = BeanUtils.instantiateClass(parameter.getParameterType());// todo: 捕获一下
-
+                    paramObj = SpringUtil.instantiateClass(parameter.getParameterType());
                 }
                 args[i] = paramObj;
             }

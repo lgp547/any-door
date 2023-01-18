@@ -28,7 +28,7 @@
 <dependency>
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
 </dependency>
 ```
 
@@ -76,7 +76,7 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 - 修复代理Bean的私有方法调用
 - 字符串类型传入null存在null字符串
 
-### 0.05
+### 0.0.4
 - 修改支持jdk8
 
 ## 适合场景

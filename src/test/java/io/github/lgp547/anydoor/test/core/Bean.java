@@ -7,8 +7,8 @@ import io.github.lgp547.anydoor.test.dto.User;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -119,9 +119,9 @@ public class Bean {
         return strings;
     }
 
-    public Set<String> oneParam1(Set<String> strings) {
-        Set<String> strings1 = new HashSet<>(Bean.strings);
-        assertIsTrue(strings1.equals(strings));
+    public Set<String> oneParam1Set(Set<String> strings) {
+        HashSet<String> set = new HashSet<>(Bean.strings);
+        assertIsTrue(set.equals(strings));
         return strings;
     }
 

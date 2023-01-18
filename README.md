@@ -1,21 +1,27 @@
 # AnyDoor 任意门
-简单来说就是执行任意对象的任意方法
 
-需要是Spring web项目，会在原有项目提供一个对外的路径(/any_door/run)，该路径可以调用到任意一个方法
+目标：执行Spring项目任意对象的任意方法
+
+最初灵感来源：[Lin ZiHao](https://github.com/schneiderlin)
+
+目前阶段：要求是Spring web项目，本jar包会在项目提供一个对外的路径(/any_door/run)，该路径实现了调用到任意一个方法
+
+目前情况：由于更多的是本地环境使用，以及每次填写请求参数过于麻烦，故开发了一个对应[任意门AnyDoor](https://plugins.jetbrains.com/plugin/20385-anydoor)插件，做到简单配置即可快速使用
+
+## 快速开始
+请选择 插件方式 还是 常规方式
+
+推荐使用 **插件方式**
 
 
-## 快速使用
-推荐结合IDEA插件使用！插件帮做了导入jar包以及封装了调用接口，做到快速使用
-
-### 快速使用(IDEA插件)
+### 1.插件方式（快速使用）
 本插件只需每个项目配置一次即可
 
-[任意门插件](https://plugins.jetbrains.com/plugin/20385-anydoor)
+[任意门AnyDoor插件](https://plugins.jetbrains.com/plugin/20385-anydoor)
 
-[任意门插件github地址](https://github.com/lgp547/any-door-plugin)
+[任意门AnyDoor插件github地址](https://github.com/lgp547/any-door-plugin)
 
-### 常规使用
-推荐使用插件方式：[任意门插件](https://plugins.jetbrains.com/plugin/20385-anydoor)
+### 2.常规方式（导包启动）
 
 #### 添加依赖
 ```xml
@@ -86,6 +92,7 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 - 对LocalDateTime(OffsetDateTime)的支持、增加测试方法
 - 对于不支持的类型，那就直接null进去
 - 返回值的打印并不必要，错误的话直接忽略
+- **重要功能** 无须依赖web，做到支持Spring项目使用
 - 是否能做到调度到任意的测试方法
 - 匿名内部类以及懒加载的时候调用方法
 

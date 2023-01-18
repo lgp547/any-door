@@ -53,7 +53,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
                 Class<?> contextClass = parameter.getContainingClass();
                 Object paramObj = SpringUtil.readObject(targetType, contextClass, value);
                 if (null == paramObj) {
-                    paramObj = BeanUtils.instantiateClass(parameter.getParameterType());
+                    paramObj = BeanUtils.instantiateClass(parameter.getParameterType());// todo: 捕获一下
 
                 }
                 args[i] = paramObj;

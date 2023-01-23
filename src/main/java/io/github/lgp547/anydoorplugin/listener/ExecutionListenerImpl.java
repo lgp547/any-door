@@ -18,7 +18,7 @@ public class ExecutionListenerImpl implements ExecutionListener {
     @Override
     public void processStartScheduled(@NotNull String executorId, @NotNull ExecutionEnvironment env) {
         ImportUtil.fillAnyDoorJar(env);
-        fillAnyDoorPort(env);
+//        fillAnyDoorPort(env);
     }
 
     private void fillAnyDoorPort(ExecutionEnvironment env) {

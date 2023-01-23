@@ -1,6 +1,9 @@
 package io.github.lgp547.anydoorplugin.settings;
 
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
@@ -12,19 +15,22 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
+/**
+ * java Swing
+ */
 public class AnyDoorSettingsComponent {
 
   private final JPanel myMainPanel;
   private final JBTextField anyDoorPortText = new JBTextField();
   private final JBTextField versionText = new JBTextField();
-  private final JBTextField mainClassModuleText = new JBTextField();
   private final JBCheckBox enableAnyDoorBox = new JBCheckBox("Enable any-door");
+  private final ComboBox<String> mainClassModuleComboBox = new ComboBox<>();
 
   public AnyDoorSettingsComponent(Project project) {
     JButton button = new JButton("Try import jar to RunModule");
     button.addActionListener(e -> {
       String version = versionText.getText();
-      String runModuleName = mainClassModuleText.getText();
+      String runModuleName = mainClassModuleComboBox.getItem();
       if (StringUtils.isBlank(version)) {
         NotifierUtil.notifyError(project, "Please fill version");
         return;
@@ -32,12 +38,16 @@ public class AnyDoorSettingsComponent {
       ImportUtil.fillAnyDoorJar(project, runModuleName, version);
     });
 
-    JBLabel label = new JBLabel("Main class RunModule name:");
-//    label.setToolTipText("Not required");
+    Module[] modules = ModuleManager.getInstance(project).getModules();
+    for (Module module : modules) {
+      mainClassModuleComboBox.addItem(module.getName());
+    }
+    mainClassModuleComboBox.setItem("start");
+
     myMainPanel = FormBuilder.createFormBuilder()
             .addLabeledComponent(new JBLabel("Run project port:"), anyDoorPortText, 1, false)
             .addLabeledComponent(new JBLabel("Any-door jar version:"), versionText, 1, false)
-            .addLabeledComponent(label, mainClassModuleText, 1, false)
+            .addLabeledComponent(new JBLabel("Main class RunModule name:"), mainClassModuleComboBox, 1, false)
             .addComponent(button)
             .addComponentFillVertically(new JPanel(), 0)
             .getPanel();
@@ -78,10 +88,10 @@ public class AnyDoorSettingsComponent {
   }
 
   public void setMainClassModuleText(String text) {
-    mainClassModuleText.setText(text);
+    mainClassModuleComboBox.setItem(text);
   }
 
   public String getMainClassModuleText() {
-    return mainClassModuleText.getText();
+    return mainClassModuleComboBox.getItem();
   }
 }

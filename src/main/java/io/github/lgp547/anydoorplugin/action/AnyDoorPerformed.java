@@ -58,7 +58,7 @@ public class AnyDoorPerformed {
                 initContent = gson.toJson(jsonObject);
             }
 
-            TextAreaDialog dialog = new TextAreaDialog(project, "Generate call code", initContent);
+            TextAreaDialog dialog = new TextAreaDialog(project, "fill call param", initContent);
             dialog.setOkAction(() -> {
                 service.putCache(cacheKey, dialog.getText());
                 openAnyDoor(className, methodName, paramTypeNameList, dialog.getText(), port, openExcConsumer);

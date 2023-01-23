@@ -7,7 +7,7 @@
         Any method to execute a Spring web project,Either the 'App' layer or the 'Dao' layer can execution directly.<br>
         Getting Started:<br>
         <ul>
-            <li>fill 'Preferences.Tools.Setting Any Door' text box (command+,)</li>
+            <li>fill 'Preferences.Other Settings.Setting Any Door' text box (command+,)</li>
             <li>select method and 'Open AnyDoor' (control/command+shift+Enter)</li>
             <li>fill json param before run</li>
         </ul>
@@ -24,7 +24,7 @@
     <extensions defaultExtensionNs="com.intellij">
 
         <!-- setting -->
-        <projectConfigurable parentId="tools" instance="io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsConfigurable"
+        <projectConfigurable instance="io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsConfigurable"
                              id="io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsConfigurable"
                              displayName="Settings Any Door" nonDefaultProject="true"/>
         <projectService serviceImplementation="io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState"/>

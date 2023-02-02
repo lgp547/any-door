@@ -32,7 +32,7 @@ public class Controller implements ApplicationRunner {
         doRun(clazz2, jsonNode);
         doRun(clazz3, jsonNode);
 
-        System.out.println("###################结束###################");
+        System.out.println("###################成功结束###################");
     }
 
     private void doRun(Class<?> clazz, JsonNode jsonNode) {

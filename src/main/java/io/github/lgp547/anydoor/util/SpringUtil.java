@@ -18,8 +18,7 @@ public class SpringUtil implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         SpringUtil.applicationContext = applicationContext;
         SpringWebmvcUtil.init(applicationContext);
-        // todo: 打印版本
-        log.info("mmmmmmmmmmmmmmmmmmm any-door springUtil init end mmmmmmmmmmmmmmmmmmm");
+        log.info("mmmmmmmmmmmmmmmmmmm any-door 0.0.5 springUtil init end mmmmmmmmmmmmmmmmmmm");
     }
 
     public static <T> T getBean(Class<T> requiredType) throws BeansException {

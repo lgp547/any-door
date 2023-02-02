@@ -5,14 +5,14 @@
 
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>0.0.4-a</version>
+    <version>0.0.5</version>
 
     <name>any-door</name>
     <description>any-door</description>
     <url>https://github.com/lgp547/any-door</url>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>8</java.version>
         <spring.boot.version>2.7.4</spring.boot.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>

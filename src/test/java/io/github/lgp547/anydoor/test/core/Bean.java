@@ -8,6 +8,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -25,9 +26,16 @@ public class Bean {
 
     public static final User user = new User(1, "AnyDoorUserName1");
 
-    public static final List<String> strings = List.of("AnyDoorStr1", "AnyDoorStr2", "AnyDoorStr1");
+    public static final List<String> strings = new ArrayList<String>() {{
+        add("AnyDoorStr1");
+        add("AnyDoorStr2");
+        add("AnyDoorStr1");
+    }};
 
-    public static final List<User> users = List.of(new User(2, "2"), new User(3, "3"));
+    public static final List<User> users = new ArrayList<User>() {{
+        add(new User(2, "2"));
+        add(new User(3, "3"));
+    }};
 
     public static final String emptyUser = "";
 

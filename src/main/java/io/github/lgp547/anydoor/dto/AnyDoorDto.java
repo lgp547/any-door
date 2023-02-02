@@ -1,11 +1,12 @@
-package io.github.lgp547.anydoor.controller;
+package io.github.lgp547.anydoor.dto;
 
-import io.github.lgp547.anydoor.core.JsonUtil;
-import io.github.lgp547.anydoor.core.SpringUtil;
+import io.github.lgp547.anydoor.util.ClassUtil;
+import io.github.lgp547.anydoor.util.JsonUtil;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * className      全链路名
@@ -32,6 +33,10 @@ public class AnyDoorDto {
         return className;
     }
 
+    public Class<?> getClazz() {
+        return ClassUtil.forName(className);
+    }
+
     public void setClassName(String className) {
         this.className = className;
     }
@@ -48,12 +53,8 @@ public class AnyDoorDto {
         return content;
     }
 
-    public String getContentStr() {
-        if (content instanceof String) {
-            return (String) content;
-        } else {
-            return JsonUtil.toJsonString(content);
-        }
+    public Map<String, Object> getContentMap() {
+        return JsonUtil.toMap(JsonUtil.toStrNotExc(content));
     }
 
     public void setContent(Object content) {

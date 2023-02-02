@@ -1,47 +1,25 @@
-package io.github.lgp547.anydoor.core;
+package io.github.lgp547.anydoor.support;
+
+import org.springframework.core.BridgeMethodResolver;
+import org.springframework.core.MethodParameter;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.SynthesizingMethodParameter;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.BridgeMethodResolver;
-import org.springframework.core.MethodParameter;
-import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.annotation.SynthesizingMethodParameter;
-import org.springframework.http.HttpStatus;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 public class HandlerMethod {
 
-	/** Logger that is available to subclasses. */
-	protected static final Log logger = LogFactory.getLog(HandlerMethod.class);
-
 	private final Object bean;
-
-	@Nullable
-	private final BeanFactory beanFactory;
-
-	@Nullable
-	private final MessageSource messageSource;
 
 	private final Class<?> beanType;
 
@@ -52,46 +30,21 @@ public class HandlerMethod {
 	private final MethodParameter[] parameters;
 
 	@Nullable
-	private HttpStatus responseStatus;
-
-	@Nullable
-	private String responseStatusReason;
-
-	@Nullable
-	private HandlerMethod resolvedFromHandlerMethod;
-
-	@Nullable
 	private volatile List<Annotation[][]> interfaceParameterAnnotations;
-
-	private final String description;
-
 
 	/**
 	 * Create an instance from a bean instance and a method.
 	 */
 	public HandlerMethod(Object bean, Method method) {
-		this(bean, method, null);
-	}
-
-	/**
-	 * Variant of {@link #HandlerMethod(Object, Method)} that
-	 * also accepts a {@link MessageSource} for use from subclasses.
-	 * @since 5.3.10
-	 */
-	protected HandlerMethod(Object bean, Method method, @Nullable MessageSource messageSource) {
 		Assert.notNull(bean, "Bean is required");
 		Assert.notNull(method, "Method is required");
 		this.bean = bean;
-		this.beanFactory = null;
-		this.messageSource = messageSource;
 		this.beanType = ClassUtils.getUserClass(bean);
 		this.method = method;
 		this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 		ReflectionUtils.makeAccessible(this.bridgedMethod);
 		this.parameters = initMethodParameters();
-		this.description = initDescription(this.beanType, this.method);
 	}
-
 
 
 	private MethodParameter[] initMethodParameters() {
@@ -101,15 +54,6 @@ public class HandlerMethod {
 			result[i] = new HandlerMethodParameter(i);
 		}
 		return result;
-	}
-
-
-	private static String initDescription(Class<?> beanType, Method method) {
-		StringJoiner joiner = new StringJoiner(", ", "(", ")");
-		for (Class<?> paramType : method.getParameterTypes()) {
-			joiner.add(paramType.getSimpleName());
-		}
-		return beanType.getName() + "#" + method.getName() + joiner.toString();
 	}
 
 
@@ -159,13 +103,6 @@ public class HandlerMethod {
 	 */
 	public MethodParameter getReturnType() {
 		return new HandlerMethodParameter(-1);
-	}
-
-	/**
-	 * Return the actual return value type.
-	 */
-	public MethodParameter getReturnValueType(@Nullable Object returnValue) {
-		return new ReturnValueMethodParameter(returnValue);
 	}
 
 	public boolean isVoid() {

@@ -1,7 +1,7 @@
 package io.github.lgp547.anydoor.autoconfig;
 
-import io.github.lgp547.anydoor.controller.AnyController;
-import io.github.lgp547.anydoor.core.SpringUtil;
+import io.github.lgp547.anydoor.controller.AnyDoorController;
+import io.github.lgp547.anydoor.util.SpringUtil;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,9 +23,9 @@ public class AnyDoorAutoConfiguration {
 
 
     @Bean
-    @ConditionalOnMissingBean(AnyController.class)
-    public AnyController anyController() {
-        return new AnyController();
+    @ConditionalOnMissingBean(AnyDoorController.class)
+    public AnyDoorController anyController() {
+        return new AnyDoorController();
     }
 
 }

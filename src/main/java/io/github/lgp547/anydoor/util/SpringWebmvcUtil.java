@@ -1,4 +1,4 @@
-package io.github.lgp547.anydoor.core;
+package io.github.lgp547.anydoor.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,11 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +27,20 @@ public class SpringWebmvcUtil {
 
     private static List<HttpMessageConverter<?>> httpMessageConverters = new ArrayList<>();
 
+    public static boolean webmvcSupport = false;
+
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static boolean init(ApplicationContext applicationContext) {
-        Map<String, HttpMessageConverter> beansOfType = applicationContext.getBeansOfType(HttpMessageConverter.class);
-        SpringWebmvcUtil.httpMessageConverters = new ArrayList(beansOfType.values());
-        return true;
+    public static void init(ApplicationContext applicationContext) {
+        try {
+            Map<String, HttpMessageConverter> beansOfType = applicationContext.getBeansOfType(HttpMessageConverter.class);
+            SpringWebmvcUtil.httpMessageConverters = new ArrayList(beansOfType.values());
+        } catch (Exception e) {
+            log.debug("SpringWebmvcUtil init fail", e);
+        }
+        webmvcSupport = true;
     }
 
-    public static HttpInputMessage getHttpInputMessage(String value) {
+    private static HttpInputMessage getHttpInputMessage(String value) {
         return new HttpInputMessage() {
 
             @Override
@@ -52,6 +62,9 @@ public class SpringWebmvcUtil {
 
     @Nullable
     public static Object readObject(Type targetType, @Nullable Class<?> contextClass, String value) {
+        if (!webmvcSupport) {
+            return null;
+        }
         if (!StringUtils.hasText(value)) {
             return null;
         }
@@ -63,12 +76,12 @@ public class SpringWebmvcUtil {
                 try {
                     return genericConverter.read(targetType, contextClass, httpInputMessage);
                 } catch (Exception e) {
-                    log.error("readObject IOException {}", e.getMessage());
+                    log.error("SpringWebmvcUtil readObject IOException {}", e.getMessage());
                     return null;
                 }
             }
         }
-        log.error("没有对应的消息转换器支持");
+        log.error("SpringWebmvcUtil 没有对应的消息转换器支持");
         return null;
     }
 }

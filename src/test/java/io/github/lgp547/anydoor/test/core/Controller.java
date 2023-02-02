@@ -1,8 +1,8 @@
 package io.github.lgp547.anydoor.test.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.github.lgp547.anydoor.controller.AnyController;
-import io.github.lgp547.anydoor.controller.AnyDoorDto;
+import io.github.lgp547.anydoor.controller.AnyDoorController;
+import io.github.lgp547.anydoor.dto.AnyDoorDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class Controller implements ApplicationRunner {
 
     @Autowired
-    AnyController anyController;
+    AnyDoorController anyDoorController;
 
     @RequestMapping("/run")
     @Override
@@ -48,7 +48,7 @@ public class Controller implements ApplicationRunner {
             anyDoorDto.setSync(true);
 
             try {
-                Object result = anyController.run(anyDoorDto);
+                Object result = anyDoorController.run(anyDoorDto);
             } catch (Exception e) {
                 if (method.getName().equals("exception")) {
                     continue;

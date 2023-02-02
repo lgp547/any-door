@@ -1,12 +1,9 @@
-package io.github.lgp547.anydoor.core;
+package io.github.lgp547.anydoor.util;
 
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.framework.Advised;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -20,9 +17,9 @@ public class ClassUtil {
     public static Class<?> forName(String className) {
         try {
             return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            log.error("forName ClassNotFoundException className {}", className, e);
-            throw new IllegalArgumentException("找不到类 className:" + className);
+        } catch (Exception e) {
+            log.debug("forName exception ", e);
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -35,7 +32,7 @@ public class ClassUtil {
             }
         }
         if (methods.isEmpty()) {
-            throw new IllegalArgumentException("找不到方法 clazz " + clazz.getName() + " methodName:" + methodName);
+            throw new IllegalArgumentException("not found method. clazz " + clazz.getName() + " methodName:" + methodName);
         } else if (methods.size() == 1) {
             method = methods.get(0);
         } else {
@@ -43,27 +40,13 @@ public class ClassUtil {
             try {
                 method = clazz.getMethod(methodName, classes.orElse(null));
             } catch (NoSuchMethodException e) {
-                String s = "找不到方法 clazz:" + clazz.getName() + " methodName:" + methodName + " parameterTypes:" + parameterTypes;
-                log.error("getMethod " + s, e);
+                String s = "not found method. clazz:" + clazz.getName() + " methodName:" + methodName + " parameterTypes:" + parameterTypes;
+                log.error(s, e);
                 throw new IllegalArgumentException(s);
             }
         }
         return method;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> T getTargetObject(Object candidate) {
-        Assert.notNull(candidate, "Candidate must not be null");
-        try {
-            if (AopUtils.isAopProxy(candidate) && candidate instanceof Advised) {
-                Object target = ((Advised) candidate).getTargetSource().getTarget();
-                if (target != null) {
-                    return (T) getTargetObject(target);
-                }
-            }
-        } catch (Exception ex) {
-            throw new IllegalStateException("Failed to unwrap proxied object", ex);
-        }
-        return (T) candidate;
-    }
+
 }

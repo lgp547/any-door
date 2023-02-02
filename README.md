@@ -28,7 +28,7 @@
 <dependency>
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
 </dependency>
 ```
 
@@ -76,6 +76,9 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 - 修复代理Bean的私有方法调用
 - 字符串类型传入null存在null字符串
 
+### 0.0.5
+- 修改支持jdk8
+
 ## 适合场景
 - xxlJob
 - rpc
@@ -92,3 +95,7 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 - **重要功能** 无须依赖web，做到支持Spring项目使用
 - 是否能做到调度到任意的测试方法
 - 匿名内部类以及懒加载的时候调用方法
+
+- 修改成jdk8、有指定前缀的无法使用
+- [ ] jar包打印版本和端口号
+- 把依赖beans和aop的移除

@@ -1,88 +1,32 @@
 package io.github.lgp547.anydoor.core;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.TextNode;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.SimpleTypeConverter;
-import org.springframework.core.BridgeMethodResolver;
+import io.github.lgp547.anydoor.support.HandlerMethod;
+import io.github.lgp547.anydoor.util.BeanUtil;
+import io.github.lgp547.anydoor.util.JsonUtil;
+import io.github.lgp547.anydoor.util.SpringWebmvcUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
-public class AnyDoorHandlerMethod {
+public class AnyDoorHandlerMethod extends HandlerMethod {
 
-    private final Object bean;
-
-    private final Method method;
-
-    private final Method bridgedMethod;
-
+    private static final Logger log = LoggerFactory.getLogger(AnyDoorHandlerMethod.class);
 
     public AnyDoorHandlerMethod(Object bean, Method method) {
-        this.bean = bean;
-        this.method = method;
-        this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
-        ReflectionUtils.makeAccessible(this.bridgedMethod);
-        this.parameters = initMethodParameters();
+        super(bean, method);
     }
 
-    public CompletableFuture<Object> invokeAsync(JsonNode jsonNode) {
-        return doInvokeAsync(getArgs(jsonNode));
-    }
-
-    protected Object[] getArgs(JsonNode jsonNode) {
-        MethodParameter[] parameters = getMethodParameters();
-        if (ObjectUtils.isEmpty(parameters)) {
-            return new Object[0];
-        }
-
-        Object[] args = new Object[parameters.length];
-        for (int i = 0; i < parameters.length; i++) {
-            MethodParameter parameter = parameters[i];
-            parameter.initParameterNameDiscovery(new DefaultParameterNameDiscoverer());
-            String value = Optional.ofNullable(jsonNode.get(parameter.getParameterName())).map(getJsonNodeValueFun()).orElse(null);
-            if (null == value) {
-                args[i] = null;
-                break;
-            }
-            if (BeanUtils.isSimpleProperty(parameter.getParameterType())) {
-                SimpleTypeConverter simpleTypeConverter = new SimpleTypeConverter();
-                args[i] = simpleTypeConverter.convertIfNecessary(value, parameter.getParameterType(), parameter);
-            } else {
-                // 用spring的mvc的转换
-                parameter = parameter.nestedIfOptional();
-                Type targetType = parameter.getNestedGenericParameterType();
-                Class<?> contextClass = parameter.getContainingClass();
-                Object paramObj = SpringUtil.readObject(targetType, contextClass, value);
-                if (null == paramObj) {
-                    paramObj = SpringUtil.instantiateClass(parameter.getParameterType());
-                }
-                args[i] = paramObj;
-            }
-
-        }
-        return args;
-    }
-
-    private Function<JsonNode, String> getJsonNodeValueFun() {
-        return curJson -> {
-            if (curJson instanceof TextNode) {
-                return curJson.asText();
-            } else if (curJson instanceof NullNode) {
-                return null;
-            } else {
-                return curJson.toString();
-            }
-        };
+    public CompletableFuture<Object> invokeAsync(Map<String, Object> contentMap) {
+        return doInvokeAsync(getArgs(contentMap));
     }
 
     protected CompletableFuture<Object> doInvokeAsync(Object... args) {
@@ -95,5 +39,59 @@ public class AnyDoorHandlerMethod {
         });
     }
 
+    protected Object[] getArgs(Map<String, Object> contentMap) {
+        MethodParameter[] parameters = getMethodParameters();
+        if (ObjectUtils.isEmpty(parameters)) {
+            return new Object[0];
+        }
 
+        Object[] args = new Object[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            MethodParameter parameter = parameters[i];
+            parameter.initParameterNameDiscovery(new DefaultParameterNameDiscoverer());
+            String value = Optional.ofNullable(contentMap.get(parameter.getParameterName())).map(JsonUtil::toStrNotExc).orElse(null);
+            if (null == value) {
+                args[i] = null;
+                break;
+            }
+
+            args[i] = getArgs(parameter, value);
+        }
+        return args;
+    }
+
+    /**
+     * simpleTypeConvert
+     * mvc提供的转换
+     * json序列化
+     * 反射构造
+     * null
+     */
+    private Object getArgs(MethodParameter parameter, String value) {
+        Class<?> contextClass = parameter.getContainingClass();
+
+        Object obj = null;
+        if (BeanUtil.isSimpleProperty(parameter.getParameterType())) {
+            obj = runNotExc(() -> BeanUtil.simpleTypeConvertIfNecessary(parameter, value));
+        }
+        if (obj == null) {
+            obj = runNotExc(() -> SpringWebmvcUtil.readObject(parameter.getNestedGenericParameterType(), contextClass, value));
+        }
+        if (obj == null) {
+            obj = runNotExc(() -> JsonUtil.toJavaBean(value, contextClass));
+        }
+        if (obj == null) {
+            obj = runNotExc(() -> BeanUtil.instantiate(parameter.getParameterType()));
+        }
+        return obj;
+    }
+
+    private static <T> T runNotExc(Supplier<T> supplier) {
+        try {
+            return supplier.get();
+        } catch (Exception e) {
+            log.debug("runNotExc exception", e);
+            return null;
+        }
+    }
 }

@@ -23,7 +23,7 @@ public class AnyDoorSettingsComponent {
   private final JPanel myMainPanel;
   private final JBTextField anyDoorPortText = new JBTextField();
   private final JBTextField versionText = new JBTextField();
-  private final JBCheckBox enableAnyDoorBox = new JBCheckBox("Enable any-door");
+  private final JBCheckBox enableAutoFill = new JBCheckBox("Enable auto fill Any-door jar");
   private final ComboBox<String> mainClassModuleComboBox = new ComboBox<>();
 
   public AnyDoorSettingsComponent(Project project) {
@@ -48,6 +48,7 @@ public class AnyDoorSettingsComponent {
             .addLabeledComponent(new JBLabel("Run project port:"), anyDoorPortText, 1, false)
             .addLabeledComponent(new JBLabel("Any-door jar version:"), versionText, 1, false)
             .addLabeledComponent(new JBLabel("Main class RunModule name:"), mainClassModuleComboBox, 1, false)
+            .addComponent(enableAutoFill)
             .addComponent(button)
             .addComponentFillVertically(new JPanel(), 0)
             .getPanel();
@@ -70,12 +71,12 @@ public class AnyDoorSettingsComponent {
     anyDoorPortText.setText(newText);
   }
 
-  public Boolean getEnableAnyDoorBox() {
-    return enableAnyDoorBox.isSelected();
+  public Boolean getEnableAutoFill() {
+    return enableAutoFill.isSelected();
   }
 
-  public void setEnableAnyDoorBox(boolean newStatus) {
-    enableAnyDoorBox.setSelected(newStatus);
+  public void setEnableAutoFill(boolean newStatus) {
+    enableAutoFill.setSelected(newStatus);
   }
 
   @NotNull

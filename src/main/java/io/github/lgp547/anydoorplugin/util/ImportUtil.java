@@ -48,16 +48,18 @@ public class ImportUtil {
             // Setting
             AnyDoorSettingsState anyDoorSettingsState = AnyDoorSettingsState.getAnyDoorSettingsState(project);
             String version = anyDoorSettingsState.version;
-            String runModule = anyDoorSettingsState.runModule;
+            if (!anyDoorSettingsState.enableAutoFill) {
+                return;
+            }
 
             // module
-            Module module;
+            Module module = null;
             RunProfile runProfile = env.getRunProfile();
             if (runProfile instanceof ApplicationConfiguration) {
                 module = ((ApplicationConfiguration) runProfile).getDefaultModule();
-            } else {
-                module = getMainModule(project, Optional.of(runModule));
-                throw new IllegalStateException("not supported");
+            }
+            if (null == module) {
+                return;
             }
             String jarName = "any-door";
             String libraryName = jarName + "-" + version;

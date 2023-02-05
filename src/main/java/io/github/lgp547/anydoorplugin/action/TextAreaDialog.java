@@ -90,7 +90,6 @@ public class TextAreaDialog extends DialogWrapper {
             textArea.addFocusListener(new FocusListener() {
                 @Override
                 public void focusGained(FocusEvent e) {
-//                    System.out.println("得到了");
                 }
 
                 @Override

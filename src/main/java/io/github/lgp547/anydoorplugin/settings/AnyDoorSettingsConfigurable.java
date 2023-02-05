@@ -42,7 +42,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
     return !mySettingsComponent.getAnyDoorPortText().equals(String.valueOf(settings.port)) ||
             !mySettingsComponent.getVersionText().equals(settings.version) ||
-            !mySettingsComponent.getEnableAnyDoorBox().equals(settings.enable) ||
+            !mySettingsComponent.getEnableAutoFill().equals(settings.enableAutoFill) ||
             !mySettingsComponent.getMainClassModuleText().equals(settings.runModule)
             ;
   }
@@ -53,7 +53,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     String anyDoorPortText = mySettingsComponent.getAnyDoorPortText();
     settings.port = NumberUtils.toInt(anyDoorPortText, settings.port);
 
-    settings.enable = mySettingsComponent.getEnableAnyDoorBox();
+    settings.enableAutoFill = mySettingsComponent.getEnableAutoFill();
     settings.version = mySettingsComponent.getVersionText();
     settings.runModule = mySettingsComponent.getMainClassModuleText();
   }
@@ -62,7 +62,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
   public void reset() {
     AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
     mySettingsComponent.setAnyDoorPortText(String.valueOf(settings.port));
-    mySettingsComponent.setEnableAnyDoorBox(settings.enable);
+    mySettingsComponent.setEnableAutoFill(settings.enableAutoFill);
     mySettingsComponent.setVersionText(settings.version);
     mySettingsComponent.setMainClassModuleText(settings.runModule);
   }

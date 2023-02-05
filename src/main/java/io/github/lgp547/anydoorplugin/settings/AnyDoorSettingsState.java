@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSettingsState> {
 
   public Integer port = 8080;
-  public Boolean enable = true;
+  public Boolean enableAutoFill = true;
   public String version = "0.0.5";
   public String runModule = "start";
   public Map<String, String> cache = new ConcurrentHashMap<>();

@@ -20,7 +20,9 @@ public class HttpUtil {
                 con.setUseCaches(false);
                 OutputStream os = con.getOutputStream();
                 os.write(reqBody.getBytes());
-                con.getResponseCode();
+                if (con.getResponseCode() != 200) {
+                    throw new IllegalArgumentException(String.format("response {code:%s, msg:%s}", con.getResponseCode(), con.getResponseMessage()));
+                }
             } catch (Exception e) {
                 errHandle.accept(urlStr, e);
             }

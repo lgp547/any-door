@@ -36,12 +36,11 @@ public class AnyDoorPerformed {
         }
 
         AnyDoorSettingsState service = anyDoorSettingsStateOpt.get();
-        Integer port = service.port;
         BiConsumer<String, Exception> openExcConsumer = (url, e) -> NotifierUtil.notifyError(project, "call " + url + " error [ " + e.getMessage() + " ]");
 
 
         if (paramTypeNameList.isEmpty()) {
-            openAnyDoor(className, methodName, paramTypeNameList, "{}", port, openExcConsumer);
+            openAnyDoor(className, methodName, paramTypeNameList, "{}", service, openExcConsumer);
         } else {
 
             String initContent;
@@ -61,21 +60,21 @@ public class AnyDoorPerformed {
             TextAreaDialog dialog = new TextAreaDialog(project, "fill call param", initContent);
             dialog.setOkAction(() -> {
                 service.putCache(cacheKey, dialog.getText());
-                openAnyDoor(className, methodName, paramTypeNameList, dialog.getText(), port, openExcConsumer);
+                openAnyDoor(className, methodName, paramTypeNameList, dialog.getText(), service, openExcConsumer);
             });
             dialog.show();
         }
     }
 
     private static void openAnyDoor(String className, String methodName,
-                                    List<String> paramTypeNameList, String content, Integer port, BiConsumer<String, Exception> errHandle) {
+                                    List<String> paramTypeNameList, String content, AnyDoorSettingsState service, BiConsumer<String, Exception> errHandle) {
         JsonObject jsonObjectReq = new JsonObject();
         jsonObjectReq.addProperty("content", content);
         jsonObjectReq.addProperty("methodName", methodName);
         jsonObjectReq.addProperty("className", className);
         jsonObjectReq.add("parameterTypes", toJsonArray(paramTypeNameList));
 
-        HttpUtil.postAsyncByJdk("http://127.0.0.1:" + port + "/any_door/run", jsonObjectReq.toString(), errHandle);
+        HttpUtil.postAsyncByJdk("http://127.0.0.1:" + service.port + service.webPathPrefix + "/any_door/run", jsonObjectReq.toString(), errHandle);
     }
 
     private static String getCacheKey(String className, String methodName, List<String> paramTypeNameList) {

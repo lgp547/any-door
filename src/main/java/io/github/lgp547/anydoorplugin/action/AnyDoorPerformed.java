@@ -1,9 +1,6 @@
 package io.github.lgp547.anydoorplugin.action;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
@@ -42,22 +39,10 @@ public class AnyDoorPerformed {
         if (paramTypeNameList.isEmpty()) {
             openAnyDoor(className, methodName, paramTypeNameList, "{}", service, openExcConsumer);
         } else {
-
-            String initContent;
             String cacheKey = getCacheKey(className, methodName, paramTypeNameList);
-            String cache = service.getCache(cacheKey);
-            if (cache != null) {
-                initContent = cache;
-            } else {
-                // generate default json
-                List<String> parameterNames = toParamNameList(method.getParameterList());
-                JsonObject jsonObject = new JsonObject();
-                parameterNames.forEach(name -> jsonObject.add(name, JsonNull.INSTANCE));
-                Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
-                initContent = gson.toJson(jsonObject);
-            }
+            String cacheContent = service.getCache(cacheKey);
 
-            TextAreaDialog dialog = new TextAreaDialog(project, "fill call param", initContent);
+            TextAreaDialog dialog = new TextAreaDialog(project, "fill call param", method.getParameterList(), cacheContent);
             dialog.setOkAction(() -> {
                 service.putCache(cacheKey, dialog.getText());
                 openAnyDoor(className, methodName, paramTypeNameList, dialog.getText(), service, openExcConsumer);
@@ -87,15 +72,6 @@ public class AnyDoorPerformed {
             PsiParameter parameter = Objects.requireNonNull(parameterList.getParameter(i));
             String canonicalText = parameter.getType().getCanonicalText();
             list.add(canonicalText);
-        }
-        return list;
-    }
-
-    private static List<String> toParamNameList(PsiParameterList parameterList) {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < parameterList.getParametersCount(); i++) {
-            PsiParameter parameter = Objects.requireNonNull(parameterList.getParameter(i));
-            list.add(parameter.getName());
         }
         return list;
     }

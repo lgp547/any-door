@@ -20,6 +20,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
     <depends>org.jetbrains.idea.maven</depends>
+    <depends>com.intellij.spring.boot</depends>
 
     <extensions defaultExtensionNs="com.intellij">
 

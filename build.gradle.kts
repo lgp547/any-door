@@ -1,12 +1,10 @@
 plugins {
     id("java")
     id("org.jetbrains.intellij") version "1.5.2"
-    id("com.github.johnrengelman.shadow") version "7.0.0" // Include dependency packaging
-
 }
 
 group = "io.github.lgp547"
-version = "1.0.4"
+version = "1.0.5"
 
 repositories {
     mavenCentral()
@@ -19,9 +17,9 @@ dependencies {
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
     version.set("2021.2")
-    type.set("IC") // Target IDE Platform
+    type.set("IU") // Target IDE Platform
 
-    plugins.set(listOf("org.jetbrains.idea.maven","com.intellij.java"))
+    plugins.set(listOf("org.jetbrains.idea.maven","com.intellij.java","com.intellij.spring.boot"))
 }
 
 tasks {

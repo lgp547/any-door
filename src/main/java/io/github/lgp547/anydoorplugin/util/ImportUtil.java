@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootModificationUtil;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryTable;
+import com.intellij.spring.boot.run.SpringBootApplicationRunConfiguration;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,8 +56,8 @@ public class ImportUtil {
             // module
             Module module = null;
             RunProfile runProfile = env.getRunProfile();
-            if (runProfile instanceof ApplicationConfiguration) {
-                module = ((ApplicationConfiguration) runProfile).getDefaultModule();
+            if (runProfile instanceof SpringBootApplicationRunConfiguration) {
+                module = ((SpringBootApplicationRunConfiguration) runProfile).getModule();
             }
             if (null == module) {
                 return;

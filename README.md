@@ -77,9 +77,10 @@ Run or Debug
 - [x] 参数窗口，默认弹出获取输入焦点
 
 ### 1.0.5 & 1.0.6
-- [x] spring boot项目才做主动填充
+- [x] spring boot项目才做主动填充。2021.4 版本要求 https://youtrack.jetbrains.com/issue/IDEA-272959
 - [x] 支持参数json格式
 - [x] 支持增加webPathPrefix
+  
 
 ## 后续支持
 - [x] **重要功能** 搜索运行模块名的代码优化（目前会有不支持的情况）

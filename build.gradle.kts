@@ -16,10 +16,10 @@ dependencies {
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
-    version.set("2021.2")
+    version.set("2022.1")
     type.set("IU") // Target IDE Platform
 
-    plugins.set(listOf("org.jetbrains.idea.maven","com.intellij.java","com.intellij.spring.boot"))
+    plugins.set(listOf("org.jetbrains.idea.maven","com.intellij.java","com.intellij.spring","com.intellij.spring.boot"))
 }
 
 tasks {

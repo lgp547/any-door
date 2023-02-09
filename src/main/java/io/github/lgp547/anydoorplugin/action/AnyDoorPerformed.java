@@ -10,6 +10,7 @@ import com.intellij.psi.PsiParameterList;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 import io.github.lgp547.anydoorplugin.util.HttpUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +72,7 @@ public class AnyDoorPerformed {
         for (int i = 0; i < parameterList.getParametersCount(); i++) {
             PsiParameter parameter = Objects.requireNonNull(parameterList.getParameter(i));
             String canonicalText = parameter.getType().getCanonicalText();
-            list.add(canonicalText);
+            list.add(StringUtils.substringBefore(canonicalText, "<"));
         }
         return list;
     }

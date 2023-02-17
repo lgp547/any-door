@@ -22,6 +22,7 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
   public String version = "0.0.5";
   public String runModule = "start";
   public String webPathPrefix = "";
+  public Long pid = 0L;
   public Map<String, String> cache = new ConcurrentHashMap<>();
 
   @Nullable

@@ -34,6 +34,8 @@ public class AnyDoorSettingsComponent{
 
     private final JBTextField webPathPrefix = new JBTextField();// tmp
 
+    private final JBTextField projectPid = new JBTextField();
+
 
     public AnyDoorSettingsComponent(Project project) {
         JButton button = new JButton("Try import jar to RunModule");
@@ -53,7 +55,11 @@ public class AnyDoorSettingsComponent{
         }
         mainClassModuleComboBox.setItem("start");
 
+        AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
+        projectPid.setText(String.valueOf(settings.pid));
+
         myMainPanel = FormBuilder.createFormBuilder()
+                .addLabeledComponent(new JBLabel("Project run pid:"), projectPid, 1, false)
                 .addLabeledComponent(new JBLabel("Project servlet port:"), anyDoorPortText, 1, false)
                 .addLabeledComponent(new JBLabel("Project servlet context-path:"), webPathPrefix, 1, false)
                 .addLabeledComponent(new JBLabel("Any-door jar version:"), versionText, 1, false)
@@ -130,5 +136,13 @@ public class AnyDoorSettingsComponent{
 
     public void setWebPathPrefix(String text) {
         webPathPrefix.setText(text);
+    }
+
+    public String getProjectPid() {
+        return projectPid.getText();
+    }
+
+    public void setProjectPid(String text) {
+        projectPid.setText(text);
     }
 }

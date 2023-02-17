@@ -45,7 +45,8 @@ public class AnyDoorSettingsConfigurable implements Configurable {
             !mySettingsComponent.getEnableAutoFill().equals(settings.enableAutoFill) ||
             !mySettingsComponent.getEnableAsyncExecute().equals(settings.enableAsyncExecute) ||
             !mySettingsComponent.getMainClassModuleText().equals(settings.runModule) ||
-            !mySettingsComponent.getWebPathPrefix().equals(settings.webPathPrefix)
+            !mySettingsComponent.getWebPathPrefix().equals(settings.webPathPrefix)  ||
+            !mySettingsComponent.getProjectPid().equals(String.valueOf(settings.pid))
             ;
   }
 
@@ -54,6 +55,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
     String anyDoorPortText = mySettingsComponent.getAnyDoorPortText();
     settings.port = NumberUtils.toInt(anyDoorPortText, settings.port);
+    settings.pid = NumberUtils.toLong(mySettingsComponent.getProjectPid(), settings.pid);
 
     settings.enableAutoFill = mySettingsComponent.getEnableAutoFill();
     settings.enableAsyncExecute = mySettingsComponent.getEnableAsyncExecute();
@@ -71,6 +73,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     mySettingsComponent.setVersionText(settings.version);
     mySettingsComponent.setMainClassModuleText(settings.runModule);
     mySettingsComponent.setWebPathPrefix(settings.webPathPrefix);
+    mySettingsComponent.setProjectPid(String.valueOf(settings.pid));
   }
 
   @Override

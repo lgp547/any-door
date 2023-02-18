@@ -58,6 +58,7 @@ public class AnyDoorPerformed {
         jsonObjectReq.addProperty("content", content);
         jsonObjectReq.addProperty("methodName", methodName);
         jsonObjectReq.addProperty("className", className);
+        jsonObjectReq.addProperty("sync", !service.enableAsyncExecute);
         jsonObjectReq.add("parameterTypes", toJsonArray(paramTypeNameList));
 
         HttpUtil.postAsyncByJdk("http://127.0.0.1:" + service.port + service.webPathPrefix + "/any_door/run", jsonObjectReq.toString(), errHandle);

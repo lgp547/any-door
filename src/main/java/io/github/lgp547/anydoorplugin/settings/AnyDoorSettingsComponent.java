@@ -18,7 +18,7 @@ import javax.swing.*;
 /**
  * java Swing
  */
-public class AnyDoorSettingsComponent {
+public class AnyDoorSettingsComponent{
 
     private final JPanel myMainPanel;
 
@@ -27,6 +27,8 @@ public class AnyDoorSettingsComponent {
     private final JBTextField versionText = new JBTextField();
 
     private final JBCheckBox enableAutoFill = new JBCheckBox();
+
+    private final JBCheckBox enableAsyncExecute = new JBCheckBox();
 
     private final ComboBox<String> mainClassModuleComboBox = new ComboBox<>();
 
@@ -56,6 +58,7 @@ public class AnyDoorSettingsComponent {
                 .addLabeledComponent(new JBLabel("Project servlet context-path:"), webPathPrefix, 1, false)
                 .addLabeledComponent(new JBLabel("Any-door jar version:"), versionText, 1, false)
                 .addLabeledComponent(new JBLabel("Enable auto fill Any-door jar:"), enableAutoFill, 1, false)
+                .addLabeledComponent(new JBLabel("Enable async execute:"),enableAsyncExecute,1,false)
                 .addLabeledComponent(new JBLabel("Main class RunModule name:"), mainClassModuleComboBox, 1, false)
                 .addComponent(button)
                 .addComponentFillVertically(new JPanel(), 0)
@@ -86,6 +89,16 @@ public class AnyDoorSettingsComponent {
     public void setEnableAutoFill(boolean newStatus) {
         enableAutoFill.setSelected(newStatus);
     }
+
+
+    public Boolean getEnableAsyncExecute() {
+        return enableAsyncExecute.isSelected();
+    }
+
+    public void setEnableAsyncExecute(boolean newStatus) {
+        enableAsyncExecute.setSelected(newStatus);
+    }
+
 
     @NotNull
     public String getVersionText() {

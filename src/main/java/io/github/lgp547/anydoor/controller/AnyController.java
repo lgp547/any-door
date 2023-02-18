@@ -60,10 +60,10 @@ public class AnyController {
 
 
         AnyDoorHandlerMethod handlerMethod = new AnyDoorHandlerMethod(bean, method);
-        CompletableFuture<Object> future = handlerMethod.invokeAsync(jsonNode);
         if (Objects.equals(anyDoorDto.getSync(), true)) {
-            return future.get();
+            return handlerMethod.invokeSync(jsonNode);
         } else {
+            CompletableFuture<Object> future = handlerMethod.invokeAsync(jsonNode);
             future.whenComplete((result, e) -> {
                 String callMethodStr = "/any_door/run " + method.getName();
                 if (e != null) {

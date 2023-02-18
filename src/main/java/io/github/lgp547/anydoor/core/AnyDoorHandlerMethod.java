@@ -25,7 +25,18 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
     }
 
     public CompletableFuture<Object> invokeAsync(JsonNode jsonNode) {
-        return doInvokeAsync(getArgs(jsonNode));
+        return CompletableFuture.supplyAsync(() -> invoke(getArgs(jsonNode)));
+    }
+    public Object invokeSync(JsonNode jsonNode) {
+        return invoke(getArgs(jsonNode));
+    }
+
+    protected Object invoke(Object... args){
+        try {
+            return getBridgedMethod().invoke(getBean(), args);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected Object[] getArgs(JsonNode jsonNode) {
@@ -73,16 +84,6 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
                 return curJson.toString();
             }
         };
-    }
-
-    protected CompletableFuture<Object> doInvokeAsync(Object... args) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return getBridgedMethod().invoke(getBean(), args);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 
 

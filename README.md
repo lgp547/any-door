@@ -81,7 +81,7 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 ### 0.0.5
 - 修改支持jdk8
 
-### 0.0.7
+### 0.0.8
 - 当同步执行时时不使用CompletableFuture以简化调用栈
 
 ## 适合场景

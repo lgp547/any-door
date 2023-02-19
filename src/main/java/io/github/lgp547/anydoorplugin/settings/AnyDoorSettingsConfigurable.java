@@ -43,6 +43,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     return !mySettingsComponent.getAnyDoorPortText().equals(String.valueOf(settings.port)) ||
             !mySettingsComponent.getVersionText().equals(settings.version) ||
             !mySettingsComponent.getEnableAutoFill().equals(settings.enableAutoFill) ||
+            !mySettingsComponent.getEnableAsyncExecute().equals(settings.enableAsyncExecute) ||
             !mySettingsComponent.getMainClassModuleText().equals(settings.runModule) ||
             !mySettingsComponent.getWebPathPrefix().equals(settings.webPathPrefix)
             ;
@@ -55,6 +56,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     settings.port = NumberUtils.toInt(anyDoorPortText, settings.port);
 
     settings.enableAutoFill = mySettingsComponent.getEnableAutoFill();
+    settings.enableAsyncExecute = mySettingsComponent.getEnableAsyncExecute();
     settings.version = mySettingsComponent.getVersionText();
     settings.runModule = mySettingsComponent.getMainClassModuleText();
     settings.webPathPrefix = mySettingsComponent.getWebPathPrefix();
@@ -65,6 +67,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
     mySettingsComponent.setAnyDoorPortText(String.valueOf(settings.port));
     mySettingsComponent.setEnableAutoFill(settings.enableAutoFill);
+    mySettingsComponent.setEnableAsyncExecute(settings.enableAsyncExecute);
     mySettingsComponent.setVersionText(settings.version);
     mySettingsComponent.setMainClassModuleText(settings.runModule);
     mySettingsComponent.setWebPathPrefix(settings.webPathPrefix);

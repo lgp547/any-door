@@ -18,6 +18,7 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
 
   public Integer port = 8080;
   public Boolean enableAutoFill = true;
+  public Boolean enableAsyncExecute = true;
   public String version = "0.0.5";
   public String runModule = "start";
   public String webPathPrefix = "";

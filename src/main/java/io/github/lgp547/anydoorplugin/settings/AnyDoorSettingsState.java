@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSettingsState> {
 
   public Integer port = 8080;
+  public Integer runProjectMode = 100; // 100 is Java attach, 200 is Spring mvc.
   public Boolean enableAutoFill = true;
   public Boolean enableAsyncExecute = true;
   public String version = "0.0.5";
@@ -61,4 +62,11 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
     return service;
   }
 
+  public boolean isSelectJavaAttach() {
+    return runProjectMode.equals(100);
+  }
+
+  public void updateRunProjectEnum(boolean selectJavaAttach) {
+    runProjectMode = selectJavaAttach ? 100 : 200;
+  }
 }

@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
+import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
 import io.github.lgp547.anydoorplugin.util.ImportUtil;
@@ -14,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.*;
+import java.util.Arrays;
 
 /**
  * java Swing
@@ -32,9 +35,13 @@ public class AnyDoorSettingsComponent{
 
     private final ComboBox<String> mainClassModuleComboBox = new ComboBox<>();
 
-    private final JBTextField webPathPrefix = new JBTextField();// tmp
+    private final JBTextField webPathPrefix = new JBTextField();
 
     private final JBTextField projectPid = new JBTextField();
+
+    private final JBRadioButton runProjectModeRadio1 = new JBRadioButton("Java attach");
+
+    private final JBRadioButton runProjectModeRadio2 = new JBRadioButton("Spring mvc");
 
 
     public AnyDoorSettingsComponent(Project project) {
@@ -50,13 +57,21 @@ public class AnyDoorSettingsComponent{
         });
 
         Module[] modules = ModuleManager.getInstance(project).getModules();
-        for (Module module : modules) {
-            mainClassModuleComboBox.addItem(module.getName());
-        }
+        Arrays.stream(modules).map(Module::getName).sorted().forEach(mainClassModuleComboBox::addItem);
         mainClassModuleComboBox.setItem("start");
 
         AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
         projectPid.setText(String.valueOf(settings.pid));
+
+
+        ButtonGroup runProjectModeGroup = new ButtonGroup();
+        runProjectModeGroup.add(runProjectModeRadio1);
+        runProjectModeGroup.add(runProjectModeRadio2);
+        JPanel runProjectModePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        runProjectModePanel.add(runProjectModeRadio1);
+        runProjectModePanel.add(runProjectModeRadio2);
+        runProjectModeRadio1.setSelected(true);
+
 
         myMainPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(new JBLabel("Project run pid:"), projectPid, 1, false)
@@ -66,6 +81,7 @@ public class AnyDoorSettingsComponent{
                 .addLabeledComponent(new JBLabel("Enable auto fill Any-door jar:"), enableAutoFill, 1, false)
                 .addLabeledComponent(new JBLabel("Enable async execute:"),enableAsyncExecute,1,false)
                 .addLabeledComponent(new JBLabel("Main class RunModule name:"), mainClassModuleComboBox, 1, false)
+                .addLabeledComponent(new JBLabel("Call run project mode:"), runProjectModePanel)
                 .addComponent(button)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
@@ -144,5 +160,17 @@ public class AnyDoorSettingsComponent{
 
     public void setProjectPid(String text) {
         projectPid.setText(text);
+    }
+
+    public Boolean isSelectJavaAttach() {
+        return runProjectModeRadio1.isSelected();
+    }
+
+    public void updateSelectJavaAttach(Boolean selectJavaAttach) {
+        if (selectJavaAttach) {
+            runProjectModeRadio1.setSelected(true);
+        } else {
+            runProjectModeRadio2.setSelected(true);
+        }
     }
 }

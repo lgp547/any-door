@@ -1,6 +1,5 @@
 package io.github.lgp547.anydoorplugin.util;
 
-import com.intellij.execution.application.ApplicationConfiguration;
 import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.module.Module;
@@ -28,14 +27,16 @@ import java.util.function.UnaryOperator;
 
 public class ImportUtil {
 
-    public static UnaryOperator<String> anyDoorJarPath = version -> "/io/github/lgp547/any-door/" + version + "/any-door-" + version + ".jar";
+    public final static UnaryOperator<String> ANY_DOOR_JAR_PATH = version -> "/io/github/lgp547/any-door/" + version + "/any-door-" + version + ".jar";
+
+    public final static String JAR_NAME = "any-door";
 
     public static void fillAnyDoorJar(Project project, @Nullable String runModuleName, String version) {
         try {
             Module module = getMainModule(project, Optional.ofNullable(runModuleName));
             String jarName = "any-door";
             removeModuleLibraryIfExist(module, jarName);
-            File file = fillModuleLibrary(project, module, jarName + "-" + version, anyDoorJarPath.apply(version));
+            File file = fillModuleLibrary(project, module, jarName + "-" + version, ANY_DOOR_JAR_PATH.apply(version));
             NotifierUtil.notifyInfo(project, module.getName() + " fill ModuleLibrary success " + file.getPath());
         } catch (Exception e) {
             NotifierUtil.notifyError(project, "fill ModuleLibrary fail: " + e.getMessage());
@@ -62,11 +63,11 @@ public class ImportUtil {
             if (null == module) {
                 return;
             }
-            String jarName = "any-door";
-            String libraryName = jarName + "-" + version;
-            boolean isExist = checkModuleLibrary(module, jarName, libraryName);
+
+            String libraryName = JAR_NAME + "-" + version;
+            boolean isExist = checkModuleLibrary(module, JAR_NAME, libraryName);
             if (!isExist) {
-                File file = fillModuleLibrary(project, module, libraryName, anyDoorJarPath.apply(version));
+                File file = fillModuleLibrary(project, module, libraryName, ANY_DOOR_JAR_PATH.apply(version));
                 NotifierUtil.notifyInfo(project, String.format("fill library success. module:%s path:%s", module.getName(), file.getPath()));
             }
         } catch (Exception e) {
@@ -82,8 +83,7 @@ public class ImportUtil {
      * @param jarPath     import jar path
      */
     public static File fillModuleLibrary(Project project, Module module, String libraryName, String jarPath) throws IOException {
-        File localRepository = MavenProjectsManager.getInstance(project).getLocalRepository();
-        String localPath = localRepository.getPath() + jarPath;
+        String localPath = getJarFilePath(project, jarPath);
         File file = new File(localPath);
         if (!file.isFile()) {
             String httpPath = "https://s01.oss.sonatype.org/content/repositories/releases" + jarPath;
@@ -94,6 +94,15 @@ public class ImportUtil {
         }
         ModuleRootModificationUtil.addModuleLibrary(module, libraryName, List.of("file://" + file.getPath()), List.of());
         return file;
+    }
+
+    public static String getJarFilePath(Project project, String jarPath) {
+        File localRepository = MavenProjectsManager.getInstance(project).getLocalRepository();
+        return localRepository.getPath() + jarPath;
+    }
+
+    public static String getAnyDoorJarPath(Project project, String version) {
+        return ImportUtil.getJarFilePath(project, ImportUtil.ANY_DOOR_JAR_PATH.apply(version));
     }
 
     public static Module getMainModule(Project project, Optional<String> runModuleNameOp) {

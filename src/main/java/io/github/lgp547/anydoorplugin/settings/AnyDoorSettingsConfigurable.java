@@ -41,6 +41,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
   public boolean isModified() {
     AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
     return !mySettingsComponent.getAnyDoorPortText().equals(String.valueOf(settings.port)) ||
+            !mySettingsComponent.isSelectJavaAttach().equals(settings.isSelectJavaAttach()) ||
             !mySettingsComponent.getVersionText().equals(settings.version) ||
             !mySettingsComponent.getEnableAutoFill().equals(settings.enableAutoFill) ||
             !mySettingsComponent.getEnableAsyncExecute().equals(settings.enableAsyncExecute) ||
@@ -56,6 +57,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     String anyDoorPortText = mySettingsComponent.getAnyDoorPortText();
     settings.port = NumberUtils.toInt(anyDoorPortText, settings.port);
     settings.pid = NumberUtils.toLong(mySettingsComponent.getProjectPid(), settings.pid);
+    settings.updateRunProjectEnum(mySettingsComponent.isSelectJavaAttach());
 
     settings.enableAutoFill = mySettingsComponent.getEnableAutoFill();
     settings.enableAsyncExecute = mySettingsComponent.getEnableAsyncExecute();
@@ -68,6 +70,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
   public void reset() {
     AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
     mySettingsComponent.setAnyDoorPortText(String.valueOf(settings.port));
+    mySettingsComponent.updateSelectJavaAttach(settings.isSelectJavaAttach());
     mySettingsComponent.setEnableAutoFill(settings.enableAutoFill);
     mySettingsComponent.setEnableAsyncExecute(settings.enableAsyncExecute);
     mySettingsComponent.setVersionText(settings.version);

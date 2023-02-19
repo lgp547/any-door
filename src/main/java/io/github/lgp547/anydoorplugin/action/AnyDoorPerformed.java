@@ -9,7 +9,10 @@ import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 import io.github.lgp547.anydoorplugin.util.HttpUtil;
+import io.github.lgp547.anydoorplugin.util.ImportUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
+import io.github.lgp547.anydoorplugin.util.VmUtil;
+import org.jetbrains.annotations.NotNull;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -38,7 +41,8 @@ public class AnyDoorPerformed {
 
 
         if (paramTypeNameList.isEmpty()) {
-            openAnyDoor(className, methodName, paramTypeNameList, "{}", service, openExcConsumer);
+            String jsonDtoStr = getJsonDtoStr(className, methodName, paramTypeNameList, "{}");
+            openAnyDoor(project, jsonDtoStr, service, openExcConsumer);
         } else {
             String cacheKey = getCacheKey(className, methodName, paramTypeNameList);
             String cacheContent = service.getCache(cacheKey);
@@ -46,22 +50,31 @@ public class AnyDoorPerformed {
             TextAreaDialog dialog = new TextAreaDialog(project, "fill call param", method.getParameterList(), cacheContent);
             dialog.setOkAction(() -> {
                 service.putCache(cacheKey, dialog.getText());
-                openAnyDoor(className, methodName, paramTypeNameList, dialog.getText(), service, openExcConsumer);
+                String jsonDtoStr = getJsonDtoStr(className, methodName, paramTypeNameList, dialog.getText());
+                openAnyDoor(project, jsonDtoStr, service, openExcConsumer);
             });
             dialog.show();
         }
     }
 
-    private static void openAnyDoor(String className, String methodName,
-                                    List<String> paramTypeNameList, String content, AnyDoorSettingsState service, BiConsumer<String, Exception> errHandle) {
+    private static void openAnyDoor(Project project, String jsonDtoStr, AnyDoorSettingsState service, BiConsumer<String, Exception> errHandle) {
+        if (service.isSelectJavaAttach()) {
+            String anyDoorJarPath = ImportUtil.getAnyDoorJarPath(project, service.version);
+            VmUtil.attachAsync(String.valueOf(service.pid), anyDoorJarPath, jsonDtoStr, errHandle);
+        } else {
+            HttpUtil.postAsyncByJdk("http://127.0.0.1:" + service.port + service.webPathPrefix + "/any_door/run", jsonDtoStr, errHandle);
+        }
+    }
+
+    @NotNull
+    private static String getJsonDtoStr(String className, String methodName, List<String> paramTypeNameList, String content) {
         JsonObject jsonObjectReq = new JsonObject();
         jsonObjectReq.addProperty("content", content);
         jsonObjectReq.addProperty("methodName", methodName);
         jsonObjectReq.addProperty("className", className);
         jsonObjectReq.addProperty("sync", !service.enableAsyncExecute);
         jsonObjectReq.add("parameterTypes", toJsonArray(paramTypeNameList));
-
-        HttpUtil.postAsyncByJdk("http://127.0.0.1:" + service.port + service.webPathPrefix + "/any_door/run", jsonObjectReq.toString(), errHandle);
+        return jsonObjectReq.toString();
     }
 
     private static String getCacheKey(String className, String methodName, List<String> paramTypeNameList) {

@@ -28,7 +28,7 @@
 <dependency>
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.7</version>
 </dependency>
 ```
 
@@ -47,6 +47,7 @@
 - methodName     要调用的方法名
 - content        入参参数，要求是json类型（允许为null）
 - parameterTypes 参数类型 （若是方法名是唯一的，允许为空）
+- sync           是否同步执行
 
 ```shell script
 curl --location --request GET 'http://localhost:8080/any_door/run'
@@ -55,7 +56,8 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
     "content": {"name":"any_door"},
     "methodName": "oneParam",
     "className": "io.github.lgp547.anydoor.core.test.Bean",
-    "parameterTypes": []
+    "parameterTypes": [],
+    "sync":false
 }'
 ```
 ## 发布版本
@@ -78,6 +80,9 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 
 ### 0.0.5
 - 修改支持jdk8
+
+### 0.0.8
+- 当同步执行时时不使用CompletableFuture以简化调用栈
 
 ## 适合场景
 - xxlJob

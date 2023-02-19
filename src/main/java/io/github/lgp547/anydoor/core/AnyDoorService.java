@@ -60,10 +60,10 @@ public class AnyDoorService {
 
 
         AnyDoorHandlerMethod handlerMethod = new AnyDoorHandlerMethod(bean, method);
-        CompletableFuture<Object> future = handlerMethod.invokeAsync(contentMap);
         if (Objects.equals(anyDoorDto.getSync(), true)) {
-            return future.get();
+            return handlerMethod.invokeSync(contentMap);
         } else {
+            CompletableFuture<Object> future = handlerMethod.invokeAsync(contentMap);
             future.whenComplete((result, e) -> {
                 String callMethodStr = "/any_door/run " + method.getName();
                 if (e != null) {

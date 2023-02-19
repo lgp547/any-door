@@ -28,15 +28,20 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
     public CompletableFuture<Object> invokeAsync(Map<String, Object> contentMap) {
         return doInvokeAsync(getArgs(contentMap));
     }
+    public Object invokeSync(Map<String, Object> contentMap) {
+        return doInvoke(getArgs(contentMap));
+    }
 
     protected CompletableFuture<Object> doInvokeAsync(Object... args) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return getBridgedMethod().invoke(getBean(), args);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        return CompletableFuture.supplyAsync(() -> doInvoke(args));
+    }
+
+    private Object doInvoke(Object[] args) {
+        try {
+            return getBridgedMethod().invoke(getBean(), args);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected Object[] getArgs(Map<String, Object> contentMap) {

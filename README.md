@@ -28,7 +28,7 @@
 <dependency>
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>0.0.7</version>
+    <version>0.0.9</version>
 </dependency>
 ```
 

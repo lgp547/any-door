@@ -21,7 +21,7 @@ import java.util.Arrays;
 /**
  * java Swing
  */
-public class AnyDoorSettingsComponent{
+public class AnyDoorSettingsComponent {
 
     private final JPanel myMainPanel;
 
@@ -45,7 +45,7 @@ public class AnyDoorSettingsComponent{
 
 
     public AnyDoorSettingsComponent(Project project) {
-        JButton button = new JButton("Try import jar to RunModule");
+        JButton button = new JButton("Try import `any-door` jar to module");
         button.addActionListener(e -> {
             String version = versionText.getText();
             String runModuleName = mainClassModuleComboBox.getItem();
@@ -72,17 +72,22 @@ public class AnyDoorSettingsComponent{
         runProjectModePanel.add(runProjectModeRadio2);
         runProjectModeRadio1.setSelected(true);
 
+        JPanel runProjectModePanel2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        runProjectModePanel2.add(mainClassModuleComboBox);
+        runProjectModePanel2.add(button);
 
+        // JAR -> any-door jar
+        // Execute -> java attach ｜ spring mvc
         myMainPanel = FormBuilder.createFormBuilder()
-                .addLabeledComponent(new JBLabel("Project run pid:"), projectPid, 1, false)
-                .addLabeledComponent(new JBLabel("Project servlet port:"), anyDoorPortText, 1, false)
-                .addLabeledComponent(new JBLabel("Project servlet context-path:"), webPathPrefix, 1, false)
-                .addLabeledComponent(new JBLabel("Any-door jar version:"), versionText, 1, false)
-                .addLabeledComponent(new JBLabel("Enable auto fill Any-door jar:"), enableAutoFill, 1, false)
-                .addLabeledComponent(new JBLabel("Enable async execute:"),enableAsyncExecute,1,false)
-                .addLabeledComponent(new JBLabel("Main class RunModule name:"), mainClassModuleComboBox, 1, false)
-                .addLabeledComponent(new JBLabel("Call run project mode:"), runProjectModePanel)
-                .addComponent(button)
+                .addLabeledComponent(new JBLabel("Enable auto fill `any-door` jar:"), enableAutoFill)
+                .addLabeledComponent(new JBLabel("Fill `any-door` jar version:"), versionText)
+                .addLabeledComponent(new JBLabel("Select Main class module name:"), runProjectModePanel2)
+                .addSeparator()
+                .addLabeledComponent(new JBLabel("Enable async execute `any-door`:"), enableAsyncExecute)
+                .addLabeledComponent(new JBLabel("Select execute `any-door` mode:"), runProjectModePanel)
+                .addLabeledComponent(new JBLabel("'Java attach' pid:"), projectPid)
+                .addLabeledComponent(new JBLabel("'Spring mvc' port:"), anyDoorPortText)
+                .addLabeledComponent(new JBLabel("'Spring mvc' context-path:"), webPathPrefix)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
     }

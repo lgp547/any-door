@@ -1,0 +1,1 @@
+Agent-Class: io.github.lgp547.anydoor.attach.AnyDoorAttach

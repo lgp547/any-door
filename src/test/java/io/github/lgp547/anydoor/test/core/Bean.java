@@ -3,12 +3,13 @@ package io.github.lgp547.anydoor.test.core;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.lgp547.anydoor.test.dto.Role;
 import io.github.lgp547.anydoor.test.dto.User;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -41,6 +42,8 @@ public class Bean {
 
     public static final String emptyNum = "0";
 
+    public static final Role role = new Role(100L, "roleName", users);
+
 
     public static JsonNode getContent() {
         ObjectNode jsonNode = new ObjectNode(JsonNodeFactory.instance);
@@ -53,6 +56,7 @@ public class Bean {
         jsonNode.put("emptyNum", emptyNum);
         String s = null;
         jsonNode.put("nameNull", s);
+        jsonNode.putPOJO("role", role);
         return jsonNode;
     }
 
@@ -154,5 +158,9 @@ public class Bean {
     public void exception() {
         System.out.println("exception");
         throw new RuntimeException("test exception");
+    }
+
+    public void role(Role role) {
+        assertIsTrue(Bean.role.equals(role));
     }
 }

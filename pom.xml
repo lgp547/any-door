@@ -5,7 +5,7 @@
 
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.7</version>
 
     <name>any-door</name>
     <description>any-door</description>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <optional>false</optional>
+            <optional>true</optional>
         </dependency>
         <!-- <optional>true</optional> -->
 
@@ -120,6 +120,21 @@
         </developer>
     </developers>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>
+                            src/main/resources/META-INF/MANIFEST.MF
+                        </manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <profiles>
         <profile>

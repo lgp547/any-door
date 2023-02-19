@@ -20,7 +20,7 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
   public Integer runProjectMode = 100; // 100 is Java attach, 200 is Spring mvc.
   public Boolean enableAutoFill = true;
   public Boolean enableAsyncExecute = true;
-  public String version = "0.0.5";
+  public String version = "0.0.7";
   public String runModule = "start";
   public String webPathPrefix = "";
   public Long pid = 0L;

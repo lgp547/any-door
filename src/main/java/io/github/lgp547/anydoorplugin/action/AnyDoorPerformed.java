@@ -41,7 +41,7 @@ public class AnyDoorPerformed {
 
 
         if (paramTypeNameList.isEmpty()) {
-            String jsonDtoStr = getJsonDtoStr(className, methodName, paramTypeNameList, "{}");
+            String jsonDtoStr = getJsonDtoStr(className, methodName, paramTypeNameList, "{}", !service.enableAsyncExecute);
             openAnyDoor(project, jsonDtoStr, service, openExcConsumer);
         } else {
             String cacheKey = getCacheKey(className, methodName, paramTypeNameList);
@@ -50,7 +50,7 @@ public class AnyDoorPerformed {
             TextAreaDialog dialog = new TextAreaDialog(project, "fill call param", method.getParameterList(), cacheContent);
             dialog.setOkAction(() -> {
                 service.putCache(cacheKey, dialog.getText());
-                String jsonDtoStr = getJsonDtoStr(className, methodName, paramTypeNameList, dialog.getText());
+                String jsonDtoStr = getJsonDtoStr(className, methodName, paramTypeNameList, dialog.getText(), !service.enableAsyncExecute);
                 openAnyDoor(project, jsonDtoStr, service, openExcConsumer);
             });
             dialog.show();
@@ -67,12 +67,12 @@ public class AnyDoorPerformed {
     }
 
     @NotNull
-    private static String getJsonDtoStr(String className, String methodName, List<String> paramTypeNameList, String content) {
+    private static String getJsonDtoStr(String className, String methodName, List<String> paramTypeNameList, String content, boolean isSync) {
         JsonObject jsonObjectReq = new JsonObject();
         jsonObjectReq.addProperty("content", content);
         jsonObjectReq.addProperty("methodName", methodName);
         jsonObjectReq.addProperty("className", className);
-        jsonObjectReq.addProperty("sync", !service.enableAsyncExecute);
+        jsonObjectReq.addProperty("sync", isSync);
         jsonObjectReq.add("parameterTypes", toJsonArray(paramTypeNameList));
         return jsonObjectReq.toString();
     }

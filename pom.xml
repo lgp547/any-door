@@ -5,7 +5,7 @@
 
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>0.0.8</version>
+    <version>0.0.9</version>
 
     <name>any-door</name>
     <description>any-door</description>
@@ -121,6 +121,12 @@
     </developers>
 
     <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/java/io/github/lgp547/anydoor/util</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

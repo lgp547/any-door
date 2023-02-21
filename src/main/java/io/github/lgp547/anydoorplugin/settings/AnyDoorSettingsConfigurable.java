@@ -11,81 +11,82 @@ import javax.swing.*;
 
 public class AnyDoorSettingsConfigurable implements Configurable {
 
-  private AnyDoorSettingsComponent mySettingsComponent;
-  private Project project;
+    private AnyDoorSettingsComponent mySettingsComponent;
+
+    private Project project;
 
 
-  public AnyDoorSettingsConfigurable(@NotNull Project project) {
-    this.project = project;
-  }
-
-  @Nls(capitalization = Nls.Capitalization.Title)
-  @Override
-  public String getDisplayName() {
-    return "Settings Any Door";
-  }
-
-  @Override
-  public JComponent getPreferredFocusedComponent() {
-    return mySettingsComponent.getPreferredFocusedComponent();
-  }
-
-  @Nullable
-  @Override
-  public JComponent createComponent() {
-    mySettingsComponent = new AnyDoorSettingsComponent(project);
-    return mySettingsComponent.getPanel();
-  }
-
-  @Override
-  public boolean isModified() {
-    AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
-    return !mySettingsComponent.getAnyDoorPortText().equals(String.valueOf(settings.port)) ||
-            !mySettingsComponent.isSelectJavaAttach().equals(settings.isSelectJavaAttach()) ||
-            !mySettingsComponent.getVersionText().equals(settings.version) ||
-            !mySettingsComponent.getEnableAutoFill().equals(settings.enableAutoFill) ||
-            !mySettingsComponent.getEnableAsyncExecute().equals(settings.enableAsyncExecute) ||
-            !mySettingsComponent.getMainClassModuleText().equals(settings.runModule) ||
-            !mySettingsComponent.getWebPathPrefix().equals(settings.webPathPrefix)  ||
-            !mySettingsComponent.getProjectPid().equals(String.valueOf(settings.pid))
-            ;
-  }
-
-  @Override
-  public void apply() {
-    AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
-    String anyDoorPortText = mySettingsComponent.getAnyDoorPortText();
-    settings.port = NumberUtils.toInt(anyDoorPortText, settings.port);
-    settings.pid = NumberUtils.toLong(mySettingsComponent.getProjectPid(), settings.pid);
-    settings.updateRunProjectEnum(mySettingsComponent.isSelectJavaAttach());
-
-    settings.enableAutoFill = mySettingsComponent.getEnableAutoFill();
-    settings.enableAsyncExecute = mySettingsComponent.getEnableAsyncExecute();
-    settings.runModule = mySettingsComponent.getMainClassModuleText();
-    settings.webPathPrefix = mySettingsComponent.getWebPathPrefix();
-
-    if (!settings.updateVersion(mySettingsComponent.getVersionText())) {
-      mySettingsComponent.setVersionText(settings.version);
+    public AnyDoorSettingsConfigurable(@NotNull Project project) {
+        this.project = project;
     }
-  }
 
-  @Override
-  public void reset() {
-    AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
-    mySettingsComponent.setAnyDoorPortText(String.valueOf(settings.port));
-    mySettingsComponent.updateSelectJavaAttach(settings.isSelectJavaAttach());
-    mySettingsComponent.setEnableAutoFill(settings.enableAutoFill);
-    mySettingsComponent.setEnableAsyncExecute(settings.enableAsyncExecute);
-    mySettingsComponent.setVersionText(settings.version);
-    mySettingsComponent.setMainClassModuleText(settings.runModule);
-    mySettingsComponent.setWebPathPrefix(settings.webPathPrefix);
-    mySettingsComponent.setProjectPid(String.valueOf(settings.pid));
-  }
+    @Nls(capitalization = Nls.Capitalization.Title)
+    @Override
+    public String getDisplayName() {
+        return "Settings Any Door";
+    }
 
-  @Override
-  public void disposeUIResources() {
-    project = null;
-    mySettingsComponent = null;
-  }
+    @Override
+    public JComponent getPreferredFocusedComponent() {
+        return mySettingsComponent.getPreferredFocusedComponent();
+    }
+
+    @Nullable
+    @Override
+    public JComponent createComponent() {
+        mySettingsComponent = new AnyDoorSettingsComponent(project);
+        return mySettingsComponent.getPanel();
+    }
+
+    @Override
+    public boolean isModified() {
+        AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
+        return !mySettingsComponent.getAnyDoorPortText().equals(String.valueOf(settings.port)) ||
+                !mySettingsComponent.isSelectJavaAttach().equals(settings.isSelectJavaAttach()) ||
+                !mySettingsComponent.getVersionText().equals(settings.version) ||
+                !mySettingsComponent.getEnableAutoFill().equals(settings.enableAutoFill) ||
+                !mySettingsComponent.getEnableAsyncExecute().equals(settings.enableAsyncExecute) ||
+                !mySettingsComponent.getMainClassModuleText().equals(settings.runModule) ||
+                !mySettingsComponent.getWebPathPrefix().equals(settings.webPathPrefix) ||
+                !mySettingsComponent.getProjectPid().equals(String.valueOf(settings.pid))
+                ;
+    }
+
+    @Override
+    public void apply() {
+        AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
+        String anyDoorPortText = mySettingsComponent.getAnyDoorPortText();
+        settings.port = NumberUtils.toInt(anyDoorPortText, settings.port);
+        settings.pid = NumberUtils.toLong(mySettingsComponent.getProjectPid(), settings.pid);
+        settings.updateRunProjectEnum(mySettingsComponent.isSelectJavaAttach());
+
+        settings.enableAutoFill = mySettingsComponent.getEnableAutoFill();
+        settings.enableAsyncExecute = mySettingsComponent.getEnableAsyncExecute();
+        settings.runModule = mySettingsComponent.getMainClassModuleText();
+        settings.webPathPrefix = mySettingsComponent.getWebPathPrefix();
+
+        if (!settings.updateVersion(mySettingsComponent.getVersionText())) {
+            mySettingsComponent.setVersionText(settings.version);
+        }
+    }
+
+    @Override
+    public void reset() {
+        AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
+        mySettingsComponent.setAnyDoorPortText(String.valueOf(settings.port));
+        mySettingsComponent.updateSelectJavaAttach(settings.isSelectJavaAttach());
+        mySettingsComponent.setEnableAutoFill(settings.enableAutoFill);
+        mySettingsComponent.setEnableAsyncExecute(settings.enableAsyncExecute);
+        mySettingsComponent.setVersionText(settings.version);
+        mySettingsComponent.setMainClassModuleText(settings.runModule);
+        mySettingsComponent.setWebPathPrefix(settings.webPathPrefix);
+        mySettingsComponent.setProjectPid(String.valueOf(settings.pid));
+    }
+
+    @Override
+    public void disposeUIResources() {
+        project = null;
+        mySettingsComponent = null;
+    }
 
 }

@@ -2,6 +2,7 @@ package io.github.lgp547.anydoor.core;
 
 import io.github.lgp547.anydoor.support.HandlerMethod;
 import io.github.lgp547.anydoor.util.BeanUtil;
+import io.github.lgp547.anydoor.util.LambdaUtil;
 import io.github.lgp547.anydoor.util.JsonUtil;
 import io.github.lgp547.anydoor.util.SpringWebmvcUtil;
 import org.slf4j.Logger;
@@ -84,6 +85,9 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         }
         if (obj == null) {
             obj = runNotExc(() -> JsonUtil.toJavaBean(value, contextClass));
+        }
+        if (obj == null) {
+            obj = runNotExc(() -> LambdaUtil.compileExpression(value, parameter.getNestedGenericParameterType()));
         }
         if (obj == null) {
             obj = runNotExc(() -> BeanUtil.instantiate(parameter.getParameterType()));

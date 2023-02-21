@@ -61,9 +61,12 @@ public class AnyDoorSettingsConfigurable implements Configurable {
 
     settings.enableAutoFill = mySettingsComponent.getEnableAutoFill();
     settings.enableAsyncExecute = mySettingsComponent.getEnableAsyncExecute();
-    settings.version = mySettingsComponent.getVersionText();
     settings.runModule = mySettingsComponent.getMainClassModuleText();
     settings.webPathPrefix = mySettingsComponent.getWebPathPrefix();
+
+    if (!settings.updateVersion(mySettingsComponent.getVersionText())) {
+      mySettingsComponent.setVersionText(settings.version);
+    }
   }
 
   @Override

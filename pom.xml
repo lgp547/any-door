@@ -63,6 +63,11 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>pl.joegreen</groupId>
+            <artifactId>lambda-from-string</artifactId>
+            <version>1.7</version>
+        </dependency>
 
         <!-- <optional>true</optional> -->
         <dependency>
@@ -90,7 +95,6 @@
         </dependency>
         <!-- test -->
     </dependencies>
-
 
 
     <!--项目在github或其它托管平台的地址-->
@@ -123,28 +127,61 @@
     <build>
         <resources>
             <resource>
-                <directory>src/main/java</directory>
                 <filtering>true</filtering>
-                <targetPath>../filtered-sources/java</targetPath>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-                <targetPath>../classes</targetPath>
+                <directory>${basedir}/src/main/resources</directory>
             </resource>
         </resources>
-        <sourceDirectory>target/filtered-sources/java</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestFile>
-                            src/main/resources/META-INF/MANIFEST.MF
-                        </manifestFile>
-                    </archive>
-                </configuration>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedArtifactAttached>false</shadedArtifactAttached>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <createSourcesJar>true</createSourcesJar>
+                            <shadeSourcesContent>true</shadeSourcesContent>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Agent-Class>io.github.lgp547.anydoor.attach.AnyDoorAttach</Agent-Class>
+                                        <Specification-Title>${project.name}</Specification-Title>
+                                        <Specification-Version>${project.version}</Specification-Version>
+                                        <Implementation-Title>${project.name}</Implementation-Title>
+                                        <Implementation-Version>${project.version}</Implementation-Version>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                            <artifactSet>
+                                <includes>
+                                    <include>pl.joegreen:lambda-from-string:jar:</include>
+                                </includes>
+                            </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>pl.joegreen:lambda-from-string</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/**/pom.*</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <relocations>
+                                <relocation>
+                                    <pattern>pl.joegreen.lambdaFromString</pattern>
+                                    <shadedPattern>io.github.lgp547.anydoor.bundled.pl.joegreen.lambdaFromString
+                                    </shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

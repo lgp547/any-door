@@ -86,7 +86,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         if (obj == null) {
             obj = runNotExc(() -> JsonUtil.toJavaBean(value, contextClass));
         }
-        if (obj == null) {
+        if (obj == null && (value.contains("->") || value.contains("::"))) {
             obj = runNotExc(() -> LambdaUtil.compileExpression(value, parameter.getNestedGenericParameterType()));
         }
         if (obj == null) {

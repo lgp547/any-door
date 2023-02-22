@@ -80,14 +80,14 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         if (BeanUtil.isSimpleProperty(parameter.getParameterType())) {
             obj = runNotExc(() -> BeanUtil.simpleTypeConvertIfNecessary(parameter, value));
         }
+        if (obj == null && parameter.getParameterType().isInterface() && (value.contains("->") || value.contains("::"))) {
+            obj = runNotExc(() -> LambdaUtil.compileExpression(value, parameter.getNestedGenericParameterType()));
+        }
         if (obj == null) {
             obj = runNotExc(() -> SpringWebmvcUtil.readObject(parameter.getNestedGenericParameterType(), contextClass, value));
         }
         if (obj == null) {
             obj = runNotExc(() -> JsonUtil.toJavaBean(value, contextClass));
-        }
-        if (obj == null && (value.contains("->") || value.contains("::"))) {
-            obj = runNotExc(() -> LambdaUtil.compileExpression(value, parameter.getNestedGenericParameterType()));
         }
         if (obj == null) {
             obj = runNotExc(() -> BeanUtil.instantiate(parameter.getParameterType()));

@@ -57,6 +57,9 @@ public class Bean {
         String s = null;
         jsonNode.put("nameNull", s);
         jsonNode.putPOJO("role", role);
+        jsonNode.put("func", "(a,b) -> a + b");
+        jsonNode.putPOJO("a", "Hello");
+        jsonNode.putPOJO("b", " World");
         return jsonNode;
     }
 

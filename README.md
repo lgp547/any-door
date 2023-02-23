@@ -28,7 +28,7 @@
 <dependency>
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>0.0.10</version>
+    <version>0.0.11</version>
 </dependency>
 ```
 
@@ -83,6 +83,9 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 
 ### 0.0.8
 - 当同步执行时时不使用CompletableFuture以简化调用栈
+
+### 0.0.11
+- 支持lambda表达式入参
 
 ## 适合场景
 - xxlJob

@@ -1,48 +1,68 @@
 # AnyDoorPlugin 任意门插件
 
-执行Spring web项目任意对象的任意方法
+执行Spring boot项目任意对象的任意方法
 
 ## 适合场景
 对于没有http接口的方法，又想快速进行测试，这个时候即可用到。
 
 常见场景：
-- XxlJob的注解入口
-- RPC的入口
-- MQ入口
+- XxlJob 的入口
+- RPC 的入口
+- MQ 入口
 - 一个里层方法修改后，想快速验证一下是否正确
 
 ## 快速开始
-每个项目只需要初始化一次即可
-### 安装插件
-插件市场直接搜索 anydoor 支持IDEA版本：2021.*~2022.3
+### 1 安装插件
+插件市场直接搜索 anydoor 
 
 ![img.png](dosc/image/安装插件.png)
 
-### 配置插件属性并进行导入
-1. 配置项目属性
-2. 点击Try按钮（成功or失败会有消息提示）
+### 2 启动项目
+插件正常使用前提标记
+![img.png](dosc/image/成功启动标记.png)
 
-![img.png](dosc/image/插件配置说明.jpg)
+启动项目分自动挡和手动档两种情况，自动挡需要满足下面三个要求
+- IDEA 是 Ultimate 版本
+- IDEA 版本 >= 2021.4
+- 运行的是 Spring boot 项目
 
-导入成功
+![img.png](dosc/image/Springboot项目配置.png)
 
-![img.png](dosc/image/导入成功.png)
+#### 2.1 符合自动挡
+直接启动项目即可
 
-### 启动项目
-Run or Debug
+#### 2.2 手动档
+1. 打开 IDEA 的 Preferences 配置，找到 `Settings Any Door` 
 
-### 执行调用
+![img.png](dosc/image/配置页.png)
+
+2. 选择 main 函数所在的模块，并点击尝试导入 jar 包按钮
+
+导入成功所示：![img.png](dosc/image/导入成功.png)
+
+### 3 执行调用
 1. 找到想要执行的方法，右键弹出选择打开任意门（有对应的快捷键）
 
-![img.png](dosc/image/打开任意门.jpeg)
+![img.png](打开任意门.png)
 
-2. 填写要调用的参数，并执行启动！
+2. 填写要调用的参数，并点击 ok 按钮
 
 ![img.png](dosc/image/启动.png)
 
-3. 你将会发现当前方法被执行了！（可进行断点查看） 
+3. **你将会发现当前方法被执行了！（可进行断点查看）**
 
-**注意** 若项目是有接口权限控制的，需要放行'/any_door/run'
+## 插件属性说明
+
+![img.png](dosc/image/插件配置说明.png)
+
+
+
+## 注意事项
+- 首次使用本插件建议能访问外网Maven中央仓库。因为本地 Maven 仓库没有对应的 [AnyDoor](https://github.com/lgp547/any-door) jar 包版本将会发起请求下载到本地仓库
+
+- 若选择mvc模式调度到运行项目
+  - 需要手动填充端口号和web的前缀
+  - 若是有接口权限控制的，需要放行 '/any_door/run' 路径
 
 ## 插件原理
 分两件事：导入jar包、调用项目接口
@@ -56,8 +76,19 @@ Run or Debug
 
 ![img.png](dosc/image/插入的maven路径.png)
 
-### 调用项目接口
-就是HTTP请求，[任意门AnyDoor](https://github.com/lgp547/any-door) 项目开放的路径
+
+
+### 调用项目
+分两种方式，Java attach 和 Spring mvc 。推荐是默认的 attach 方式。
+
+- attach：
+  - 通过jvm提供的功能，直接通过进程号进行跨进程调度
+- mvc
+  - 就是HTTP请求，请求指定端口的 '/any_door/run' 路径
+
+详情见 [任意门AnyDoor](https://github.com/lgp547/any-door)
+
+
 
 ## 发布版本
 ### 1.0.0
@@ -84,12 +115,12 @@ Run or Debug
 
 ## 后续支持
 - [x] **重要功能** 搜索运行模块名的代码优化（目前会有不支持的情况）
-- [ ] **重要功能** 不依赖端口号进行调度到执行的项目 ##开发中##
+- [x] **重要功能** 不依赖端口号进行调度到执行的项目 ##开发中##
 - [ ] **重要功能** 参数窗口，填写代码提示（计算窗口）
+- [ ] **重要功能** 支持团队协助，共享调用参数缓存
 - [x] 参数窗口，对于是复杂对象的并且没有缓存，直接生成json格式内容
 - [x] 参数窗口，增加：'reset simple'、'reset json'按钮
 - [ ] 增加清除所有缓存，显示缓存文件大小
-- [ ] 考虑：是否不使用Map，使用1年过期的缓存呢？
 - [ ] 考虑：窗口内直接执行想测试的代码
 - [ ] 增加移除所有模块的jar包按钮
 - [ ] 可以支持query类型的入参

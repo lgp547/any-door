@@ -33,3 +33,5 @@ build/
 .vscode/
 
 .*
+
+dependency-reduced-pom.xml

@@ -81,6 +81,9 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 ### 0.0.5
 - 修改支持jdk8
 
+### 0.0.7
+- 支持通过Attach进行调度运行项目
+
 ### 0.0.8
 - 当同步执行时时不使用CompletableFuture以简化调用栈
 
@@ -95,13 +98,4 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 
 
 ## 后续支持
-- 对于Dao层进行支持，目前会有丢失参数的情况、增加测试方法
-- 对LocalDateTime(OffsetDateTime)的支持、增加测试方法
-- 对于没有注册到Spring类，并且没有无参构造函数的类进行支持
-
-- 是否能做到调度到任意的测试方法
-- 匿名内部类以及懒加载的时候调用方法
-
-- [x] 对于不支持的类型，那就直接null进去
-- [x] jar包打印版本和端口号
-- [x] 支持不依赖web作为入口，支持Spring boot项目
+详情见issues

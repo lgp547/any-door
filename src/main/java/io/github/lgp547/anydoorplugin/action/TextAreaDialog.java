@@ -124,6 +124,12 @@ public class TextAreaDialog extends DialogWrapper {
                     textArea.requestFocusInWindow();
                 }
             });
+
+            textArea.addSettingsProvider(editor -> {
+                editor.setHorizontalScrollbarVisible(true);
+                editor.setVerticalScrollbarVisible(true);
+            });
+
             add(textArea, constraints);
 
             jButton1.addActionListener(e -> textArea.setText(getJsonText()));

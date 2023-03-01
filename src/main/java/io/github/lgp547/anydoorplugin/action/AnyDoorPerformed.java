@@ -1,6 +1,5 @@
 package io.github.lgp547.anydoorplugin.action;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
@@ -11,6 +10,7 @@ import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 import io.github.lgp547.anydoorplugin.util.HttpUtil;
 import io.github.lgp547.anydoorplugin.util.ImportUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
+import io.github.lgp547.anydoorplugin.util.JsonUtil;
 import io.github.lgp547.anydoorplugin.util.VmUtil;
 import org.jetbrains.annotations.NotNull;
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +60,8 @@ public class AnyDoorPerformed {
     private static void openAnyDoor(Project project, String jsonDtoStr, AnyDoorSettingsState service, BiConsumer<String, Exception> errHandle) {
         if (service.isSelectJavaAttach()) {
             String anyDoorJarPath = ImportUtil.getAnyDoorJarPath(project, service.version);
-            VmUtil.attachAsync(String.valueOf(service.pid), anyDoorJarPath, jsonDtoStr, errHandle);
+            String paramPath = project.getBasePath() + "/.idea/AnyDoorParam.json";
+            VmUtil.attachAsync(String.valueOf(service.pid), anyDoorJarPath, jsonDtoStr, paramPath, errHandle);
         } else {
             HttpUtil.postAsyncByJdk("http://127.0.0.1:" + service.port + service.webPathPrefix + "/any_door/run", jsonDtoStr, errHandle);
         }
@@ -69,11 +70,11 @@ public class AnyDoorPerformed {
     @NotNull
     private static String getJsonDtoStr(String className, String methodName, List<String> paramTypeNameList, String content, boolean isSync) {
         JsonObject jsonObjectReq = new JsonObject();
-        jsonObjectReq.addProperty("content", content);
+        jsonObjectReq.addProperty("content", JsonUtil.compressJson(content));
         jsonObjectReq.addProperty("methodName", methodName);
         jsonObjectReq.addProperty("className", className);
         jsonObjectReq.addProperty("sync", isSync);
-        jsonObjectReq.add("parameterTypes", toJsonArray(paramTypeNameList));
+        jsonObjectReq.add("parameterTypes", JsonUtil.toJsonArray(paramTypeNameList));
         return jsonObjectReq.toString();
     }
 
@@ -91,10 +92,5 @@ public class AnyDoorPerformed {
         return list;
     }
 
-    private static JsonArray toJsonArray(List<String> list) {
-        JsonArray jsonArray = new JsonArray();
-        list.forEach(jsonArray::add);
-        return jsonArray;
-    }
 
 }

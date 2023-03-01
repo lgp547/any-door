@@ -84,6 +84,11 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
     }
 
     public boolean updateVersion(String newVersion) {
+        if (StringUtils.contains(newVersion, "SNAPSHOT")) {
+            version = newVersion;
+            return true;
+        }
+
         int newVersionNum = NumberUtils.toInt(StringUtils.replace(newVersion, ".", ""));
         int minVersionNum = NumberUtils.toInt(StringUtils.replace(JAR_VERSION, ".", ""));
         boolean b = newVersionNum > minVersionNum;

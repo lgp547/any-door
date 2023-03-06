@@ -67,13 +67,15 @@
             <groupId>pl.joegreen</groupId>
             <artifactId>lambda-from-string</artifactId>
             <version>1.7</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- <optional>true</optional> -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
-            <optional>false</optional>
+            <!--<optional>false</optional>-->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

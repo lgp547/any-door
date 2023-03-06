@@ -38,11 +38,9 @@ import java.awt.event.FocusListener;
 import java.net.URI;
 import java.net.URL;
 import java.time.temporal.Temporal;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
+
+import static org.jetbrains.java.generate.psi.PsiAdapter.isMapType;
 
 public class TextAreaDialog extends DialogWrapper {
     private final ContentPanel contentPanel;
@@ -212,6 +210,9 @@ public class TextAreaDialog extends DialogWrapper {
                         if (isCollType(aClass)) {
                             return new JsonArray();
                         }
+                        if (isMapType(aClass)) {
+                            return new JsonObject();
+                        }
                     } catch (Exception ignored) {
                     }
                     JsonObject jsonObject1 = new JsonObject();
@@ -242,6 +243,10 @@ public class TextAreaDialog extends DialogWrapper {
     public static boolean isCollType(Class<?> type) {
         return type.isArray() || Collection.class.isAssignableFrom(type);
     }
+    public static boolean isMapType(Class<?> type) {
+        return  Map.class.isAssignableFrom(type);
+    }
+
 
     private class JSONEditor extends EditorTextField {
         private final FileType fileType = JsonFileType.INSTANCE;

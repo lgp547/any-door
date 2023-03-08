@@ -1,13 +1,14 @@
 package io.github.lgp547.anydoor.test.core;
 
 import java.util.function.BiFunction;
+
 import static io.github.lgp547.anydoor.test.util.AssertUtil.assertIsTrue;
 import static io.github.lgp547.anydoor.test.util.AssertUtil.assertNotNull;
 
 /**
  * 无注册Bean
  */
-public class Bean2 {
+public class DtoBean {
 
     public void noParam() {
         System.out.println("noParam");

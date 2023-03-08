@@ -1,18 +1,19 @@
 package io.github.lgp547.anydoor.test.core;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.github.lgp547.anydoor.test.dto.Role;
-import io.github.lgp547.anydoor.test.dto.User;
-import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.lgp547.anydoor.test.dto.Role;
+import io.github.lgp547.anydoor.test.dto.User;
+
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.RestController;
 
 import static io.github.lgp547.anydoor.test.util.AssertUtil.assertIsNull;
 import static io.github.lgp547.anydoor.test.util.AssertUtil.assertIsTrue;
@@ -165,5 +166,12 @@ public class Bean {
 
     public void role(Role role) {
         assertIsTrue(Bean.role.equals(role));
+    }
+
+    /**
+     * 重载的私有方法
+     */
+    private void role() {
+        System.out.println("执行重载的私有方法");
     }
 }

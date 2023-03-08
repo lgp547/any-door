@@ -8,7 +8,7 @@ import org.springframework.util.Assert;
  * 代理Bean
  */
 @Service
-public class Bean3 {
+public class AopBean {
 
     @Autowired
     private Bean bean;

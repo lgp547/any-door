@@ -1,22 +1,23 @@
 package io.github.lgp547.anydoor.core;
 
-import io.github.lgp547.anydoor.support.HandlerMethod;
-import io.github.lgp547.anydoor.util.BeanUtil;
-import io.github.lgp547.anydoor.util.LambdaUtil;
-import io.github.lgp547.anydoor.util.JsonUtil;
-import io.github.lgp547.anydoor.util.SpringWebmvcUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.DefaultParameterNameDiscoverer;
-import org.springframework.core.MethodParameter;
-import org.springframework.util.ObjectUtils;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+
+import io.github.lgp547.anydoor.support.HandlerMethod;
+import io.github.lgp547.anydoor.util.BeanUtil;
+import io.github.lgp547.anydoor.util.JsonUtil;
+import io.github.lgp547.anydoor.util.LambdaUtil;
+import io.github.lgp547.anydoor.util.SpringWebmvcUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.MethodParameter;
+import org.springframework.util.ObjectUtils;
 
 public class AnyDoorHandlerMethod extends HandlerMethod {
 
@@ -55,7 +56,13 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         for (int i = 0; i < parameters.length; i++) {
             MethodParameter parameter = parameters[i];
             parameter.initParameterNameDiscovery(new DefaultParameterNameDiscoverer());
-            String value = Optional.ofNullable(contentMap.get(parameter.getParameterName())).map(JsonUtil::toStrNotExc).orElse(null);
+            String value;
+            if (contentMap.containsKey(parameter.getParameterName())) {
+                value = Optional.ofNullable(contentMap.get(parameter.getParameterName())).map(JsonUtil::toStrNotExc).orElse(null);
+            } else {
+                // 对于是接口的话，通过顺序来填充参数，不再通过name来映射
+                value = Optional.ofNullable(contentMap.get("args" + i)).map(JsonUtil::toStrNotExc).orElse(null);
+            }
             if (null == value) {
                 args[i] = null;
                 break;

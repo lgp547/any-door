@@ -1,5 +1,7 @@
 package io.github.lgp547.anydoor.test.core;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +47,9 @@ public class Bean {
 
     public static final Role role = new Role(100L, "roleName", users);
 
+//    public static final Long dateTimeByLong = 1L;
+
+    public static final String dateTimeByStr = "2023-01-01T00:00:00";
 
     public static JsonNode getContent() {
         ObjectNode jsonNode = new ObjectNode(JsonNodeFactory.instance);
@@ -61,6 +66,8 @@ public class Bean {
         jsonNode.put("func", "(a,b) -> a + b");
         jsonNode.putPOJO("a", "Hello");
         jsonNode.putPOJO("b", " World");
+//        jsonNode.put("dateTimeByLong", dateTimeByLong);
+        jsonNode.put("dateTimeByStr", dateTimeByStr);
         return jsonNode;
     }
 
@@ -173,5 +180,17 @@ public class Bean {
      */
     private void role() {
         System.out.println("执行重载的私有方法");
+    }
+
+    /**
+     * 测试转LDT
+     */
+    public void testDate(LocalDateTime dateTimeByLong, LocalDateTime dateTimeByStr) {
+//        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(this.dateTimeByLong), ZoneId.systemDefault());
+//        Assert.isTrue(Objects.equals(dateTimeByLong, localDateTime));
+
+        LocalDateTime localDateTime1 = LocalDateTime.parse(this.dateTimeByStr, DateTimeFormatter.ISO_DATE_TIME);
+        Assert.isTrue(Objects.equals(dateTimeByStr, localDateTime1));
+
     }
 }

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.lgp547.anydoor.controller.AnyDoorController;
+import io.github.lgp547.anydoor.core.AnyDoorService;
 import io.github.lgp547.anydoor.dto.AnyDoorDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,8 @@ public class Controller implements ApplicationRunner {
         Class<?> clazz3 = AopBean.class;
         JsonNode jsonNode = Bean.getContent();
         doRun(clazz, jsonNode);
-        doRun(clazz2, jsonNode);
-        doRun(clazz3, jsonNode);
+//        doRun(clazz2, jsonNode);
+//        doRun(clazz3, jsonNode);
 
         System.out.println("###################成功结束###################");
     }
@@ -48,8 +49,9 @@ public class Controller implements ApplicationRunner {
             anyDoorDto.setParameterTypes(parameterTypes);
             anyDoorDto.setSync(true);
 
+            AnyDoorService anyDoorService = new AnyDoorService();
             try {
-                Object result = anyDoorController.run(anyDoorDto);
+                anyDoorService.doRun(anyDoorDto);
             } catch (Exception e) {
                 if (method.getName().equals("exception")) {
                     continue;

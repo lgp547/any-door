@@ -1,10 +1,12 @@
 package io.github.lgp547.anydoor.util;
 
+import java.time.temporal.Temporal;
+import java.util.Map;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 public class JsonUtil {
 
@@ -12,8 +14,17 @@ public class JsonUtil {
 
     public static ObjectMapper objectMapper = new ObjectMapper();
 
+    static {
+        // 日期和时间格式化
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        objectMapper.registerModule(javaTimeModule);
+    }
+
     public static <T> T toJavaBean(String content, Class<T> valueType) {
         try {
+            if (Temporal.class.isAssignableFrom(valueType)) {
+                content = "\"" + content + "\"";
+            }
             return objectMapper.readValue(content, valueType);
         } catch (Exception e) {
             log.debug("toJavaBean exception ", e);

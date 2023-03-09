@@ -65,7 +65,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
             }
             if (null == value) {
                 args[i] = null;
-                break;
+                continue;
             }
 
             args[i] = getArgs(parameter, value);
@@ -94,7 +94,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
             obj = runNotExc(() -> SpringWebmvcUtil.readObject(parameter.getNestedGenericParameterType(), contextClass, value));
         }
         if (obj == null) {
-            obj = runNotExc(() -> JsonUtil.toJavaBean(value, contextClass));
+            obj = runNotExc(() -> JsonUtil.toJavaBean(value, parameter.getParameterType()));
         }
         if (obj == null) {
             obj = runNotExc(() -> BeanUtil.instantiate(parameter.getParameterType()));

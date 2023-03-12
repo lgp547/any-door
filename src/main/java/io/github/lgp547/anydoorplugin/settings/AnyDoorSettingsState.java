@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @State(name = "AnyDoorSettingsState", storages = @Storage("AnyDoorSettingsState.xml"))
 public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSettingsState> {
 
-    private final static String JAR_VERSION = "0.0.7";
+    private final static String JAR_VERSION = "0.0.10";
 
     public Integer port = 8080;
 

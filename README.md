@@ -28,7 +28,7 @@
 <dependency>
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>0.0.9</version>
+    <version>0.0.10</version>
 </dependency>
 ```
 
@@ -89,6 +89,14 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 
 ### 0.0.9
 - 支持lambda表达式入参
+
+### 0.0.10
+- 修复Attach传递参数过长情况（通过文件传递）
+- 调整依赖，autoconfigure需要提供
+- 修复直接通过接口调用方法
+- 修复执行重载的私有方法
+- 修复时间支持：LocalDateTime传yyyy-MM-dd'T'HH:mm:ss
+- 修复Json序列化支持泛型
 
 ## 适合场景
 - xxlJob

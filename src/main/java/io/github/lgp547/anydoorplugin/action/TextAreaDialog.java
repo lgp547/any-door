@@ -149,7 +149,7 @@ public class TextAreaDialog extends DialogWrapper {
             String key = parameter.getName();
 
             PsiType type = parameter.getType();
-            JsonElement jsonElement = toJson(type);
+            JsonElement jsonElement = toJson(type, 0);
             if (jsonElement == JsonNull.INSTANCE && type instanceof PsiClassType) {
                 PsiClass psiClass = ((PsiClassType) type).resolve();
                 if (null != psiClass) {
@@ -157,7 +157,7 @@ public class TextAreaDialog extends DialogWrapper {
                         jsonElement = new JsonPrimitive("");
                     } else {
                         JsonObject jsonObject1 = new JsonObject();
-                        Arrays.stream(psiClass.getFields()).forEach(field -> jsonObject1.add(field.getName(), toJson(field.getType())));
+                        Arrays.stream(psiClass.getFields()).forEach(field -> jsonObject1.add(field.getName(), toJson(field.getType(), 0)));
                         jsonElement = jsonObject1;
                     }
                 }
@@ -168,10 +168,13 @@ public class TextAreaDialog extends DialogWrapper {
     }
 
     public static boolean isNoSupportType(PsiClass psiClass) {
-        return psiClass.isEnum();
+        return psiClass.isEnum() || psiClass instanceof PsiClass;
     }
 
-    public static JsonElement toJson(PsiType type) {
+    public static JsonElement toJson(PsiType type, Integer num) {
+        if (num > 5) {
+            return new JsonPrimitive("");
+        }
         if (type.isAssignableFrom(PsiType.INT)) {
             return new JsonPrimitive(0);
         }
@@ -216,7 +219,11 @@ public class TextAreaDialog extends DialogWrapper {
                     } catch (Exception ignored) {
                     }
                     JsonObject jsonObject1 = new JsonObject();
-                    Arrays.stream(psiClass.getFields()).forEach(field -> jsonObject1.add(field.getName(), toJson(field.getType())));
+                    Arrays.stream(psiClass.getFields()).forEach(field -> {
+                        if (!StringUtils.contains(field.getText(), " static ")) {
+                            jsonObject1.add(field.getName(), toJson(field.getType(), num + 1));
+                        }
+                    });
                     return jsonObject1;
                 }
             }

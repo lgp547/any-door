@@ -41,6 +41,12 @@ public class Bean {
         add(new User(3, "3"));
     }};
 
+    public static final List<Long> longs = new ArrayList<Long>() {{
+        add(1L);
+        add(2L);
+        add(3L);
+    }};
+
     public static final String emptyUser = "";
 
     public static final String emptyNum = "0";
@@ -68,6 +74,7 @@ public class Bean {
         jsonNode.putPOJO("b", " World");
 //        jsonNode.put("dateTimeByLong", dateTimeByLong);
         jsonNode.put("dateTimeByStr", dateTimeByStr);
+        jsonNode.putPOJO("longs", longs);
         return jsonNode;
     }
 
@@ -189,8 +196,12 @@ public class Bean {
 //        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(this.dateTimeByLong), ZoneId.systemDefault());
 //        Assert.isTrue(Objects.equals(dateTimeByLong, localDateTime));
 
-        LocalDateTime localDateTime1 = LocalDateTime.parse(this.dateTimeByStr, DateTimeFormatter.ISO_DATE_TIME);
+        LocalDateTime localDateTime1 = LocalDateTime.parse(Bean.dateTimeByStr, DateTimeFormatter.ISO_DATE_TIME);
         Assert.isTrue(Objects.equals(dateTimeByStr, localDateTime1));
 
+    }
+
+    public void listInt(List<Long> longs) {
+        assertIsTrue(Bean.longs.equals(longs));
     }
 }

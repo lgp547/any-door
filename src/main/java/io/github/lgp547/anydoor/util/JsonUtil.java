@@ -1,8 +1,10 @@
 package io.github.lgp547.anydoor.util;
 
+import java.lang.reflect.Type;
 import java.time.temporal.Temporal;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.slf4j.Logger;
@@ -20,12 +22,13 @@ public class JsonUtil {
         objectMapper.registerModule(javaTimeModule);
     }
 
-    public static <T> T toJavaBean(String content, Class<T> valueType) {
+    public static <T> T toJavaBean(String content, Type valueType) {
         try {
-            if (Temporal.class.isAssignableFrom(valueType)) {
+            JavaType javaType = JsonUtil.objectMapper.getTypeFactory().constructType(valueType);
+            if (javaType.isTypeOrSubTypeOf(Temporal.class)) {
                 content = "\"" + content + "\"";
             }
-            return objectMapper.readValue(content, valueType);
+            return objectMapper.readValue(content, javaType);
         } catch (Exception e) {
             log.debug("toJavaBean exception ", e);
             throw new IllegalArgumentException(e);

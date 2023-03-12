@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.ResolvableType;
 import org.springframework.util.ObjectUtils;
 
 public class AnyDoorHandlerMethod extends HandlerMethod {
@@ -94,7 +95,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
             obj = runNotExc(() -> SpringWebmvcUtil.readObject(parameter.getNestedGenericParameterType(), contextClass, value));
         }
         if (obj == null) {
-            obj = runNotExc(() -> JsonUtil.toJavaBean(value, parameter.getParameterType()));
+            obj = runNotExc(() -> JsonUtil.toJavaBean(value, ResolvableType.forMethodParameter(parameter).getType()));
         }
         if (obj == null) {
             obj = runNotExc(() -> BeanUtil.instantiate(parameter.getParameterType()));

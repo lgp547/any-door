@@ -31,8 +31,8 @@ public class Controller implements ApplicationRunner {
         Class<?> clazz3 = AopBean.class;
         JsonNode jsonNode = Bean.getContent();
         doRun(clazz, jsonNode);
-//        doRun(clazz2, jsonNode);
-//        doRun(clazz3, jsonNode);
+        doRun(clazz2, jsonNode);
+        doRun(clazz3, jsonNode);
 
         System.out.println("###################成功结束###################");
     }

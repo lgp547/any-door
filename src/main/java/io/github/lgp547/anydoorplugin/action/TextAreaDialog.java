@@ -235,7 +235,7 @@ public class TextAreaDialog extends DialogWrapper {
     }
 
     public static boolean isNoSupportType(PsiClass psiClass) {
-        return psiClass.isEnum() || psiClass instanceof PsiClass;
+        return psiClass.isEnum();
     }
 
     public static JsonElement toJson(PsiType type, Integer num) {

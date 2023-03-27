@@ -5,7 +5,7 @@
 
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>0.0.10</version>
+    <version>0.0.10-SNAPSHOT</version>
 
     <name>any-door</name>
     <description>any-door</description>
@@ -31,35 +31,10 @@
     </dependencyManagement>
 
     <dependencies>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <scope>provided</scope>
-        </dependency>
+        <!-- provided -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -67,27 +42,32 @@
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
         </dependency>
+        <!-- provided -->
 
+        <!-- compile -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>pl.joegreen</groupId>
             <artifactId>lambda-from-string</artifactId>
             <version>1.7</version>
             <scope>compile</scope>
         </dependency>
-
-        <!-- <optional>true</optional> -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <!--<optional>false</optional>-->
-            <scope>provided</scope>
+            <groupId>com.taobao.arthas</groupId>
+            <artifactId>arthas-vmtool</artifactId>
+            <version>3.6.7</version>
+            <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <!-- <optional>true</optional> -->
+        <!-- compile -->
 
         <!-- test -->
         <dependency>
@@ -147,81 +127,26 @@
                         <manifestFile>
                             src/main/resources/META-INF/MANIFEST.MF
                         </manifestFile>
+<!--                        <manifestEntries>-->
+<!--                            <Implementation-Version>${project.version}</Implementation-Version>-->
+<!--                        </manifestEntries>-->
                     </archive>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>dylib</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>dll</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>so</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <shadedArtifactAttached>false</shadedArtifactAttached>
-                            <createDependencyReducedPom>true</createDependencyReducedPom>
-                            <createSourcesJar>true</createSourcesJar>
-                            <shadeSourcesContent>true</shadeSourcesContent>
-                            <minimizeJar>true</minimizeJar>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <manifestEntries>
-                                        <Agent-Class>io.github.lgp547.anydoor.attach.AnyDoorAttach</Agent-Class>
-                                        <Specification-Title>${project.name}</Specification-Title>
-                                        <Specification-Version>${project.version}</Specification-Version>
-                                        <Implementation-Title>${project.name}</Implementation-Title>
-                                        <Implementation-Version>${project.version}</Implementation-Version>
-                                    </manifestEntries>
-                                </transformer>
-                            </transformers>
-                            <artifactSet>
-                                <includes>
-                                    <include>pl.joegreen:lambda-from-string:jar:</include>
-                                    <include>org.springframework.boot:spring-boot-autoconfigure:jar:</include>
-                                    <include>org.apache.commons:commons-lang3:jar:</include>
-                                </includes>
-                            </artifactSet>
-                            <filters>
-                                <filter>
-                                    <artifact>org.apache.commons:commons-lang3</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/**/pom.*</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
-                                    <artifact>pl.joegreen:lambda-from-string</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/**/pom.*</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                            <relocations>
-                                <!--<relocation>
-                                    <pattern>pl.joegreen.lambdaFromString</pattern>
-                                    <shadedPattern>io.github.lgp547.anydoor.bundled.pl.joegreen.lambdaFromString</shadedPattern>
-                                </relocation>-->
-                            </relocations>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
         </plugins>
     </build>
 

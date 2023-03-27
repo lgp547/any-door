@@ -6,8 +6,10 @@ import io.github.lgp547.anydoor.util.BeanUtil;
 import io.github.lgp547.anydoor.util.ClassUtil;
 import io.github.lgp547.anydoor.util.JsonUtil;
 import io.github.lgp547.anydoor.util.SpringUtil;
+import io.github.lgp547.anydoor.vmtool.VmToolUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -15,11 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class AnyDoorService {
 
     private static final Logger log = LoggerFactory.getLogger(AnyDoorService.class);
+
+    static {
+        SpringUtil.initApplicationContexts(VmToolUtils.getInstances(ApplicationContext.class));
+    }
 
     /**
      * 只允许 illegalArgumentException 抛出
@@ -27,16 +32,13 @@ public class AnyDoorService {
     public Object run(AnyDoorDto anyDoorDto) {
         try {
             return doRun(anyDoorDto);
-        } catch (IllegalArgumentException illegalArgumentException) {
-            log.error("run illegalArgumentException ", illegalArgumentException);
-            throw illegalArgumentException;
         } catch (Exception e) {
             log.error("run exception ", e);
             return null;
         }
     }
 
-    public Object doRun(AnyDoorDto anyDoorDto) throws InterruptedException, ExecutionException {
+    public Object doRun(AnyDoorDto anyDoorDto) {
         anyDoorDto.verify();
 
         Class<?> clazz = anyDoorDto.getClazz();

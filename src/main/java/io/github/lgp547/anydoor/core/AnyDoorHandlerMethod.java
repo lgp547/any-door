@@ -1,24 +1,22 @@
 package io.github.lgp547.anydoor.core;
 
+import io.github.lgp547.anydoor.support.HandlerMethod;
+import io.github.lgp547.anydoor.util.BeanUtil;
+import io.github.lgp547.anydoor.util.JsonUtil;
+import io.github.lgp547.anydoor.util.LambdaUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.MethodParameter;
+import org.springframework.core.ResolvableType;
+import org.springframework.util.ObjectUtils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
-
-import io.github.lgp547.anydoor.support.HandlerMethod;
-import io.github.lgp547.anydoor.util.BeanUtil;
-import io.github.lgp547.anydoor.util.JsonUtil;
-import io.github.lgp547.anydoor.util.LambdaUtil;
-import io.github.lgp547.anydoor.util.SpringWebmvcUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.core.DefaultParameterNameDiscoverer;
-import org.springframework.core.MethodParameter;
-import org.springframework.core.ResolvableType;
-import org.springframework.util.ObjectUtils;
 
 public class AnyDoorHandlerMethod extends HandlerMethod {
 
@@ -31,6 +29,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
     public CompletableFuture<Object> invokeAsync(Map<String, Object> contentMap) {
         return doInvokeAsync(getArgs(contentMap));
     }
+
     public Object invokeSync(Map<String, Object> contentMap) {
         return doInvoke(getArgs(contentMap));
     }
@@ -76,7 +75,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
 
     /**
      * simpleTypeConvert
-     * mvc提供的转换
+     * 函数式检查
      * json序列化
      * 反射构造
      * null
@@ -90,9 +89,6 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         }
         if (obj == null && parameter.getParameterType().isInterface() && (value.contains("->") || value.contains("::"))) {
             obj = runNotExc(() -> LambdaUtil.compileExpression(value, parameter.getNestedGenericParameterType()));
-        }
-        if (obj == null) {
-            obj = runNotExc(() -> SpringWebmvcUtil.readObject(parameter.getNestedGenericParameterType(), contextClass, value));
         }
         if (obj == null) {
             obj = runNotExc(() -> JsonUtil.toJavaBean(value, ResolvableType.forMethodParameter(parameter).getType()));

@@ -1,26 +1,20 @@
 package io.github.lgp547.anydoor.test.core;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.JsonNode;
-import io.github.lgp547.anydoor.controller.AnyDoorController;
 import io.github.lgp547.anydoor.core.AnyDoorService;
 import io.github.lgp547.anydoor.dto.AnyDoorDto;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 public class Controller implements ApplicationRunner {
-
-    @Autowired
-    AnyDoorController anyDoorController;
 
     @RequestMapping("/run")
     @Override

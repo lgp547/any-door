@@ -105,13 +105,16 @@ public class ImportNewUtil {
                     continue;
                 }
                 File tempFile = new File(tempDirectory + "/" + entry.getName());
-                if (tempFile.getParentFile().mkdirs()) {
-                    FileOutputStream tempFileOut = new FileOutputStream(tempFile.getPath());
-                    while ((bytesRead = jis.read(buffer)) != -1) {
-                        tempFileOut.write(buffer, 0, bytesRead);
-                    }
-                    tempFileOut.close();
+                if (!tempFile.exists()) {
+                    tempFile.getParentFile().mkdirs();
                 }
+
+                FileOutputStream tempFileOut = new FileOutputStream(tempFile.getPath());
+                while ((bytesRead = jis.read(buffer)) != -1) {
+                    tempFileOut.write(buffer, 0, bytesRead);
+                }
+                tempFileOut.close();
+
                 jis.closeEntry();
             }
 

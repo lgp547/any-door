@@ -4,14 +4,17 @@ plugins {
 }
 
 group = "io.github.lgp547"
-version = "1.0.9"
+version = "1.1.0"
 
 repositories {
     mavenCentral()
+//    mavenLocal {
+//        url = uri("/Users/lgp/.m2/repository")
+//    }
 }
 
 dependencies {
-
+    implementation("io.github.lgp547:any-door:1.0.0")
 }
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin

@@ -8,12 +8,10 @@ import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 import io.github.lgp547.anydoorplugin.util.HttpUtil;
-import io.github.lgp547.anydoorplugin.util.ImportUtil;
+import io.github.lgp547.anydoorplugin.util.ImportNewUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import io.github.lgp547.anydoorplugin.util.JsonUtil;
 import io.github.lgp547.anydoorplugin.util.VmUtil;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections.Transformer;
 import org.jetbrains.annotations.NotNull;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
  * 打开任意门，核心执行
@@ -73,7 +70,7 @@ public class AnyDoorPerformed {
 
     private static void openAnyDoor(Project project, String jsonDtoStr, AnyDoorSettingsState service, BiConsumer<String, Exception> errHandle) {
         if (service.isSelectJavaAttach()) {
-            String anyDoorJarPath = ImportUtil.getAnyDoorJarPath(project, service.version);
+            String anyDoorJarPath = ImportNewUtil.getPluginLibPath(ImportNewUtil.anyDoorLibraryName, service.version);
             String paramPath = project.getBasePath() + "/.idea/AnyDoorParam.json";
             VmUtil.attachAsync(String.valueOf(service.pid), anyDoorJarPath, jsonDtoStr, paramPath, errHandle);
         } else {

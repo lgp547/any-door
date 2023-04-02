@@ -129,16 +129,16 @@ public class TextAreaDialog extends DialogWrapper {
             }
 
             textArea.requestFocusInWindow();
-            textArea.addFocusListener(new FocusListener() {
-                @Override
-                public void focusGained(FocusEvent e) {
-                }
-
-                @Override
-                public void focusLost(FocusEvent e) {
-                    textArea.requestFocusInWindow();
-                }
-            });
+//            textArea.addFocusListener(new FocusListener() {
+//                @Override
+//                public void focusGained(FocusEvent e) {
+//                }
+//
+//                @Override
+//                public void focusLost(FocusEvent e) {
+//                    textArea.requestFocusInWindow();
+//                }
+//            });
 
             textArea.addSettingsProvider(editor -> {
                 editor.setHorizontalScrollbarVisible(true);

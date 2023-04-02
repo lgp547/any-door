@@ -39,7 +39,7 @@
         <!-- setting -->
         <projectConfigurable instance="io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsConfigurable"
                              id="io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsConfigurable"
-                             displayName="Settings Any Door" nonDefaultProject="true"/>
+                             displayName="Any Door" nonDefaultProject="true"/>
         <projectService serviceImplementation="io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState"/>
 
         <!-- notice -->

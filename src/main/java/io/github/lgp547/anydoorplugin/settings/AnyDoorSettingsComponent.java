@@ -1,7 +1,5 @@
 package io.github.lgp547.anydoorplugin.settings;
 
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.components.JBCheckBox;
@@ -9,14 +7,13 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
-import io.github.lgp547.anydoorplugin.util.ImportUtil;
+import io.github.lgp547.anydoorplugin.util.ImportNewUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 
 /**
  * java Swing
@@ -33,7 +30,7 @@ public class AnyDoorSettingsComponent {
 
     private final JBCheckBox enableAsyncExecute = new JBCheckBox();
 
-    private final ComboBox<String> mainClassModuleComboBox = new ComboBox<>();
+    private final ComboBox<String> pluginLibNames = new ComboBox<>();
 
     private final JBTextField webPathPrefix = new JBTextField();
 
@@ -48,17 +45,17 @@ public class AnyDoorSettingsComponent {
         JButton button = new JButton("Try import `any-door` jar to module");
         button.addActionListener(e -> {
             String version = versionText.getText();
-            String runModuleName = mainClassModuleComboBox.getItem();
+            String pluginLibName = pluginLibNames.getItem();
             if (StringUtils.isBlank(version)) {
                 NotifierUtil.notifyError(project, "Please fill version");
                 return;
             }
-            ImportUtil.fillAnyDoorJar(project, runModuleName, version);
+            ImportNewUtil.fillAnyDoorJar(project, pluginLibName, version);
         });
 
-        Module[] modules = ModuleManager.getInstance(project).getModules();
-        Arrays.stream(modules).map(Module::getName).sorted().forEach(mainClassModuleComboBox::addItem);
-        mainClassModuleComboBox.setItem("start");
+//        Module[] modules = ModuleManager.getInstance(project).getModules();
+//        Arrays.stream(modules).map(Module::getName).sorted().forEach(mainClassModuleComboBox::addItem);
+        pluginLibNames.setItem(ImportNewUtil.anyDoorLibraryName);
 
         AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
         projectPid.setText(String.valueOf(settings.pid));
@@ -73,7 +70,7 @@ public class AnyDoorSettingsComponent {
         runProjectModeRadio1.setSelected(true);
 
         JPanel runProjectModePanel2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        runProjectModePanel2.add(mainClassModuleComboBox);
+        runProjectModePanel2.add(pluginLibNames);
         runProjectModePanel2.add(button);
 
         // JAR -> any-door jar
@@ -136,12 +133,12 @@ public class AnyDoorSettingsComponent {
         versionText.setText(newText);
     }
 
-    public void setMainClassModuleText(String text) {
-        mainClassModuleComboBox.setItem(text);
+    public void setPluginLibNames(String text) {
+        pluginLibNames.setItem(text);
     }
 
-    public String getMainClassModuleText() {
-        return mainClassModuleComboBox.getItem();
+    public String getPluginLibNames() {
+        return pluginLibNames.getItem();
     }
 
     public String getWebPathPrefix() {

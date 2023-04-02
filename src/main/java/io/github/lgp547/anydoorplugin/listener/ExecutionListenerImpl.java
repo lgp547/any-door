@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
-import io.github.lgp547.anydoorplugin.util.ImportUtil;
+import io.github.lgp547.anydoorplugin.util.ImportNewUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import io.github.lgp547.anydoorplugin.util.RuntimeUtil;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -18,7 +18,7 @@ public class ExecutionListenerImpl implements ExecutionListener {
 
     @Override
     public void processStartScheduled(@NotNull String executorId, @NotNull ExecutionEnvironment env) {
-        ImportUtil.fillAnyDoorJar(env);
+        ImportNewUtil.checkAndGenAnyDoorJarAllDependence(env);
     }
 
     @Override

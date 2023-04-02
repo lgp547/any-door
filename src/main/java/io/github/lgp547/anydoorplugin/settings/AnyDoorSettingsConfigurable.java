@@ -23,7 +23,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
     public String getDisplayName() {
-        return "Settings Any Door";
+        return "Any Door";
     }
 
     @Override
@@ -46,7 +46,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
                 !mySettingsComponent.getVersionText().equals(settings.version) ||
                 !mySettingsComponent.getEnableAutoFill().equals(settings.enableAutoFill) ||
                 !mySettingsComponent.getEnableAsyncExecute().equals(settings.enableAsyncExecute) ||
-                !mySettingsComponent.getMainClassModuleText().equals(settings.runModule) ||
+//                !mySettingsComponent.getMainClassModuleText().equals(settings.runModule) ||
                 !mySettingsComponent.getWebPathPrefix().equals(settings.webPathPrefix) ||
                 !mySettingsComponent.getProjectPid().equals(String.valueOf(settings.pid))
                 ;
@@ -62,7 +62,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
 
         settings.enableAutoFill = mySettingsComponent.getEnableAutoFill();
         settings.enableAsyncExecute = mySettingsComponent.getEnableAsyncExecute();
-        settings.runModule = mySettingsComponent.getMainClassModuleText();
+        settings.runModule = mySettingsComponent.getPluginLibNames();
         settings.webPathPrefix = mySettingsComponent.getWebPathPrefix();
 
         if (!settings.updateVersion(mySettingsComponent.getVersionText())) {
@@ -78,7 +78,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
         mySettingsComponent.setEnableAutoFill(settings.enableAutoFill);
         mySettingsComponent.setEnableAsyncExecute(settings.enableAsyncExecute);
         mySettingsComponent.setVersionText(settings.version);
-        mySettingsComponent.setMainClassModuleText(settings.runModule);
+        mySettingsComponent.setPluginLibNames(settings.runModule);
         mySettingsComponent.setWebPathPrefix(settings.webPathPrefix);
         mySettingsComponent.setProjectPid(String.valueOf(settings.pid));
     }

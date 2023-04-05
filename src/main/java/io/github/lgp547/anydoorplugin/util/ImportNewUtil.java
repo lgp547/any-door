@@ -1,9 +1,10 @@
 package io.github.lgp547.anydoorplugin.util;
 
-import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.project.Project;
+import io.github.lgp547.anydoorplugin.AnyDoorInfo;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,18 +13,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.UnaryOperator;
+import java.util.Optional;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
 public class ImportNewUtil {
-
-    public static final String anyDoorAllDependenceName = "any-door-all-dependence.jar";
-
-    public static final String anyDoorLibraryName = "any-door";
-
-    public final static UnaryOperator<String> ANY_DOOR_JAR_PATH = version -> "/io/github/lgp547/any-door/" + version + "/any-door-" + version + ".jar";
 
     public static String getPluginBasePath() {
         return PathManager.getPluginsPath() + "/any-door-plugin/lib";
@@ -35,6 +30,7 @@ public class ImportNewUtil {
 
     public static void fillAnyDoorJar(Project project, String libName, String libVersion) {
         try {
+            // First check that the base path exists, then check from the maven path, and then download from the remote end
             removeLibraryIfExist(libName);
             String filePath = fillLibrary(libName, libVersion);
             NotifierUtil.notifyInfo(project, "fill " + libName + " library success: " + filePath);
@@ -49,7 +45,7 @@ public class ImportNewUtil {
     private static String fillLibrary(String libName, String libVersion) throws IOException {
         File file = new File(getPluginLibPath(libName, libVersion));
         if (!file.exists()) {
-            String httpPath = "https://s01.oss.sonatype.org/content/repositories/releases" + ANY_DOOR_JAR_PATH.apply(libVersion);
+            String httpPath = "https://s01.oss.sonatype.org/content/repositories/releases" + AnyDoorInfo.ANY_DOOR_JAR_PATH.apply(libVersion);
             FileUtils.copyURLToFile(new URL(httpPath), file);
             if (!file.isFile()) {
                 throw new RuntimeException("down jar file fail");
@@ -72,19 +68,20 @@ public class ImportNewUtil {
         }
     }
 
-    public static void checkAndGenAnyDoorJarAllDependence(ExecutionEnvironment env) {
+    public static void checkAndGenAnyDoorJarAllDependence(@NotNull Project project) {
         try {
-            String dependenceJarFilePath = getPluginBasePath() + "/" + anyDoorAllDependenceName;
+            String dependenceJarFilePath = getPluginBasePath() + "/" + AnyDoorInfo.ANY_DOOR_ALL_DEPENDENCE_JAR;
             if (new File(dependenceJarFilePath).exists()) {
                 return;
             }
 
-            File[] dependenceJars = new File(getPluginBasePath()).listFiles(curFile -> !curFile.getName().startsWith(anyDoorLibraryName) && curFile.getName().endsWith(".jar"));
+            File[] dependenceJars = new File(getPluginBasePath()).listFiles(curFile -> !curFile.getName().startsWith(AnyDoorInfo.ANY_DOOR_NAME) && curFile.getName().endsWith(".jar"));
             if (dependenceJars != null && dependenceJars.length != 0) {
                 genAllDependenceFile(dependenceJars, dependenceJarFilePath);
             }
+            NotifierUtil.notifyInfo(project, String.format("%s dependence gen %s", Optional.ofNullable(dependenceJars).map(i -> i.length), dependenceJarFilePath));
         } catch (Exception e) {
-            NotifierUtil.notifyError(env.getProject(), anyDoorAllDependenceName + " does not exist. errMsg:" + e.getMessage());
+            NotifierUtil.notifyError(project, AnyDoorInfo.ANY_DOOR_ALL_DEPENDENCE_JAR + " does not exist. errMsg:" + e.getMessage());
         }
     }
 
@@ -92,7 +89,7 @@ public class ImportNewUtil {
         FileOutputStream out = new FileOutputStream(dependenceJarFilePath);
         JarOutputStream jos = new JarOutputStream(out);
 
-        Path tempDirectory = Files.createTempDirectory(anyDoorLibraryName);
+        Path tempDirectory = Files.createTempDirectory(AnyDoorInfo.ANY_DOOR_NAME);
         for (File jarFile : dependenceJars) {
             FileInputStream fis = new FileInputStream(jarFile);
             JarInputStream jis = new JarInputStream(fis);

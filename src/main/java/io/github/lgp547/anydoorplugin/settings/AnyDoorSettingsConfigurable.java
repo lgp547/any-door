@@ -41,13 +41,8 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
-        return !mySettingsComponent.getAnyDoorPortText().equals(String.valueOf(settings.port)) ||
-                !mySettingsComponent.isSelectJavaAttach().equals(settings.isSelectJavaAttach()) ||
-                !mySettingsComponent.getVersionText().equals(settings.version) ||
-                !mySettingsComponent.getEnableAutoFill().equals(settings.enableAutoFill) ||
+        return !mySettingsComponent.getDependenceVersion().equals(settings.dependenceVersion) ||
                 !mySettingsComponent.getEnableAsyncExecute().equals(settings.enableAsyncExecute) ||
-//                !mySettingsComponent.getMainClassModuleText().equals(settings.runModule) ||
-                !mySettingsComponent.getWebPathPrefix().equals(settings.webPathPrefix) ||
                 !mySettingsComponent.getProjectPid().equals(String.valueOf(settings.pid))
                 ;
     }
@@ -55,31 +50,19 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     @Override
     public void apply() {
         AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
-        String anyDoorPortText = mySettingsComponent.getAnyDoorPortText();
-        settings.port = NumberUtils.toInt(anyDoorPortText, settings.port);
         settings.pid = NumberUtils.toLong(mySettingsComponent.getProjectPid(), settings.pid);
-        settings.updateRunProjectEnum(mySettingsComponent.isSelectJavaAttach());
-
-        settings.enableAutoFill = mySettingsComponent.getEnableAutoFill();
         settings.enableAsyncExecute = mySettingsComponent.getEnableAsyncExecute();
-        settings.runModule = mySettingsComponent.getPluginLibNames();
-        settings.webPathPrefix = mySettingsComponent.getWebPathPrefix();
-
-        if (!settings.updateVersion(mySettingsComponent.getVersionText())) {
-            mySettingsComponent.setVersionText(settings.version);
+        if (!settings.updateDependence(mySettingsComponent.getDependenceNames(), mySettingsComponent.getDependenceVersion())) {
+            mySettingsComponent.setDependenceVersion(settings.dependenceVersion);
         }
     }
 
     @Override
     public void reset() {
         AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
-        mySettingsComponent.setAnyDoorPortText(String.valueOf(settings.port));
-        mySettingsComponent.updateSelectJavaAttach(settings.isSelectJavaAttach());
-        mySettingsComponent.setEnableAutoFill(settings.enableAutoFill);
         mySettingsComponent.setEnableAsyncExecute(settings.enableAsyncExecute);
-        mySettingsComponent.setVersionText(settings.version);
-        mySettingsComponent.setPluginLibNames(settings.runModule);
-        mySettingsComponent.setWebPathPrefix(settings.webPathPrefix);
+        mySettingsComponent.setDependenceVersion(settings.dependenceVersion);
+        mySettingsComponent.setDependenceNames(settings.dependenceName);
         mySettingsComponent.setProjectPid(String.valueOf(settings.pid));
     }
 

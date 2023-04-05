@@ -18,7 +18,7 @@ public class ExecutionListenerImpl implements ExecutionListener {
 
     @Override
     public void processStartScheduled(@NotNull String executorId, @NotNull ExecutionEnvironment env) {
-        ImportNewUtil.checkAndGenAnyDoorJarAllDependence(env);
+        ImportNewUtil.checkAndGenAnyDoorJarAllDependence(env.getProject());
     }
 
     @Override

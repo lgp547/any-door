@@ -6,8 +6,8 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
+import io.github.lgp547.anydoorplugin.AnyDoorInfo;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
-import io.github.lgp547.anydoorplugin.util.HttpUtil;
 import io.github.lgp547.anydoorplugin.util.ImportNewUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import io.github.lgp547.anydoorplugin.util.JsonUtil;
@@ -69,13 +69,9 @@ public class AnyDoorPerformed {
     }
 
     private static void openAnyDoor(Project project, String jsonDtoStr, AnyDoorSettingsState service, BiConsumer<String, Exception> errHandle) {
-        if (service.isSelectJavaAttach()) {
-            String anyDoorJarPath = ImportNewUtil.getPluginLibPath(ImportNewUtil.anyDoorLibraryName, service.version);
-            String paramPath = project.getBasePath() + "/.idea/AnyDoorParam.json";
-            VmUtil.attachAsync(String.valueOf(service.pid), anyDoorJarPath, jsonDtoStr, paramPath, errHandle);
-        } else {
-            HttpUtil.postAsyncByJdk("http://127.0.0.1:" + service.port + service.webPathPrefix + "/any_door/run", jsonDtoStr, errHandle);
-        }
+        String anyDoorJarPath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_NAME, service.dependenceVersion);
+        String paramPath = project.getBasePath() + "/.idea/AnyDoorParam.json";
+        VmUtil.attachAsync(String.valueOf(service.pid), anyDoorJarPath, jsonDtoStr, paramPath, errHandle);
     }
 
     @NotNull

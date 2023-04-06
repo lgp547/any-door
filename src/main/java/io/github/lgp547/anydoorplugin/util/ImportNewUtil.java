@@ -21,11 +21,11 @@ import java.util.jar.JarOutputStream;
 public class ImportNewUtil {
 
     public static String getPluginBasePath() {
-        return PathManager.getPluginsPath() + "/any-door-plugin/lib";
+        return PathManager.getPluginsPath() + File.separator + "any-door-plugin" + File.separator + "lib";
     }
 
     public static String getPluginLibPath(String libraryName, String libraryVersion) {
-        return getPluginBasePath() + "/" + libraryName + "-" + libraryVersion + ".jar";
+        return getPluginBasePath() + File.separator + libraryName + "-" + libraryVersion + ".jar";
     }
 
     public static void fillAnyDoorJar(Project project, String libName, String libVersion) {
@@ -122,6 +122,7 @@ public class ImportNewUtil {
 
         copyJarFile(tempDirectory.toString(), jos, tempDirectory.toFile().listFiles());
         jos.close();
+        out.close();
     }
 
     private static void copyJarFile(String basePath, JarOutputStream jos, File[] files) throws IOException {

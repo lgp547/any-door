@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.lgp547:any-door:1.0.0")
+    implementation("io.github.lgp547:any-door:1.0.1-SNAPSHOT")
 }
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin

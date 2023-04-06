@@ -15,7 +15,7 @@ public class VmToolUtils {
 
     private static VmTool instance = null;
 
-    static {
+    public static void init() {
         String libName;
         if (OSUtils.isMac()) {
             libName = "libArthasJniLibrary.dylib";
@@ -33,7 +33,7 @@ public class VmToolUtils {
                 File bootJarPath = new File(codeSource.getLocation().toURI().getSchemeSpecificPart());
                 log.info("load vmtool from {}", bootJarPath.getAbsolutePath());
 
-                String libPath = FileUtil.copyChildFile(bootJarPath, "vmlib" + File.separator + libName);
+                String libPath = FileUtil.copyChildFile(bootJarPath, "vmlib/" + libName);
                 instance = VmTool.getInstance(libPath);
             } catch (Throwable e) {
                 log.error("VmToolUtils init fail", e);

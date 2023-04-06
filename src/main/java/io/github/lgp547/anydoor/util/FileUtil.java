@@ -33,7 +33,7 @@ public class FileUtil {
 
                     // 如果该文件是需要提取的资源文件
                     if (entryName.equals(child)) {
-                        return getTmpLibFile(jarFile.getInputStream(entry)).getAbsolutePath();
+                        return getTmpLibFile(jarFile.getInputStream(entry));
                     }
                 }
             } catch (IOException e) {
@@ -45,18 +45,20 @@ public class FileUtil {
             file = new File(file.getAbsolutePath(), child);
         }
         try {
-            return getTmpLibFile(Files.newInputStream(file.toPath())).getAbsolutePath();
+            return getTmpLibFile(Files.newInputStream(file.toPath()));
         } catch (IOException e) {
             log.error("copy file child error", e);
         }
         return "";
     }
 
-    public static File getTmpLibFile(InputStream inputStream) throws IOException {
+    public static String getTmpLibFile(InputStream inputStream) throws IOException {
         File tmpLibFile = File.createTempFile(VmTool.JNI_LIBRARY_NAME, null);
-        FileOutputStream tmpLibOutputStream = new FileOutputStream(tmpLibFile);
-        copy(inputStream, tmpLibOutputStream);
-        return tmpLibFile;
+        try (FileOutputStream tmpLibOutputStream = new FileOutputStream(tmpLibFile);
+             InputStream inputStreamNew = inputStream) {
+            copy(inputStreamNew, tmpLibOutputStream);
+        }
+        return tmpLibFile.getAbsolutePath();
     }
 
     public static void copy(InputStream in, OutputStream out) throws IOException {

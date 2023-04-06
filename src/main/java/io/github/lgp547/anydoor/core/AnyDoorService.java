@@ -22,8 +22,18 @@ public class AnyDoorService {
 
     private static final Logger log = LoggerFactory.getLogger(AnyDoorService.class);
 
-    static {
-        SpringUtil.initApplicationContexts(VmToolUtils.getInstances(ApplicationContext.class));
+    private static volatile boolean isInit = false;
+
+    public AnyDoorService() {
+        if (!isInit) {
+            synchronized (AnyDoorService.class) {
+                if (!isInit) {
+                    VmToolUtils.init();
+                    SpringUtil.initApplicationContexts(VmToolUtils.getInstances(ApplicationContext.class));
+                    isInit = true;
+                }
+            }
+        }
     }
 
     /**

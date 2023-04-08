@@ -4,6 +4,7 @@ import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.project.Project;
 import io.github.lgp547.anydoorplugin.AnyDoorInfo;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -134,7 +135,9 @@ public class ImportNewUtil {
                 copyJarFile(basePath, jos, file.listFiles());
                 continue;
             }
-            jos.putNextEntry(new JarEntry(file.getAbsolutePath().substring(basePath.length() + 1)));
+            String jarEntryName = file.getAbsolutePath().substring(basePath.length() + 1);
+            jarEntryName = StringUtils.replace(jarEntryName, "\\", "/");
+            jos.putNextEntry(new JarEntry(jarEntryName));
             Files.copy(file.toPath(), jos);
         }
     }

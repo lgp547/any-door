@@ -1,11 +1,13 @@
 package io.github.lgp547.anydoorplugin.settings;
 
+import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
+import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -26,7 +28,7 @@ public class AnyDoorSettingsComponent {
 
     private final JBTextField dependenceVersion = new JBTextField();
 
-//    private final JButton button = new JButton("Try update dependence version");
+    private final JButton button = new JButton("Idea plugins base path");
 
     public AnyDoorSettingsComponent(Project project) {
         componentInit(project);
@@ -41,7 +43,8 @@ public class AnyDoorSettingsComponent {
         myMainPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(new JBLabel("Enable async execute:"), enableAsyncExecute)
                 .addLabeledComponent(new JBLabel("Project run pid:"), projectPid)
-//                .addSeparator()
+                .addSeparator()
+                .addComponent(button)
 //                .addLabeledComponent(new JBLabel("Fill dependence name and version:"), runProjectModePanel)
 //                .addComponent(button)
                 .addComponentFillVertically(new JPanel(), 0)
@@ -62,6 +65,8 @@ public class AnyDoorSettingsComponent {
 //        AnyDoorInfo.libMap.keySet().forEach(dependenceNames::setItem);
         AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
         projectPid.setText(String.valueOf(settings.pid));
+
+        button.addActionListener(e -> NotifierUtil.notifyInfo(project, PathManager.getPluginsPath()));
     }
 
     public JPanel getPanel() {

@@ -22,7 +22,7 @@ intellij {
     version.set("2022.1")
     type.set("IU") // Target IDE Platform
 
-    plugins.set(listOf("org.jetbrains.idea.maven","com.intellij.java","com.intellij.spring","com.intellij.spring.boot"))
+    plugins.set(listOf("com.intellij.java"))
 }
 
 tasks {
@@ -33,8 +33,8 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("211")
-        untilBuild.set("223.*")
+        sinceBuild.set("183.*")
+        untilBuild.set("231.*")
     }
 
 //    signPlugin {

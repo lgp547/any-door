@@ -129,16 +129,6 @@ public class TextAreaDialog extends DialogWrapper {
             }
 
             textArea.requestFocusInWindow();
-//            textArea.addFocusListener(new FocusListener() {
-//                @Override
-//                public void focusGained(FocusEvent e) {
-//                }
-//
-//                @Override
-//                public void focusLost(FocusEvent e) {
-//                    textArea.requestFocusInWindow();
-//                }
-//            });
 
             textArea.addSettingsProvider(editor -> {
                 editor.setHorizontalScrollbarVisible(true);
@@ -217,25 +207,13 @@ public class TextAreaDialog extends DialogWrapper {
 
             PsiType type = parameter.getType();
             JsonElement jsonElement = toJson(type, 0);
-            if (jsonElement == JsonNull.INSTANCE && type instanceof PsiClassType) {
-                PsiClass psiClass = ((PsiClassType) type).resolve();
-                if (null != psiClass) {
-                    if (isNoSupportType(psiClass)) {
-                        jsonElement = new JsonPrimitive("");
-                    } else {
-                        JsonObject jsonObject1 = new JsonObject();
-                        Arrays.stream(psiClass.getFields()).forEach(field -> jsonObject1.add(field.getName(), toJson(field.getType(), 0)));
-                        jsonElement = jsonObject1;
-                    }
-                }
-            }
             jsonObject.add(key, jsonElement);
         }
         return jsonObject;
     }
 
     public static boolean isNoSupportType(PsiClass psiClass) {
-        return psiClass.isEnum() || psiClass.isInterface();
+        return psiClass.isEnum();
     }
 
     public static JsonElement toJson(PsiType type, Integer num) {
@@ -278,16 +256,28 @@ public class TextAreaDialog extends DialogWrapper {
                             return new JsonPrimitive("");
                         }
                         if (isCollType(aClass)) {
-                            return new JsonArray();
+                            JsonArray jsonElements = new JsonArray();
+                            Arrays.stream(((PsiClassType) type).getParameters()).map(i -> toJson(i, num + 1)).forEach(jsonElements::add);
+                            return jsonElements;
                         }
                         if (isMapType(aClass)) {
-                            return new JsonObject();
+                            JsonObject jsonObject = new JsonObject();
+                            PsiType[] parameters = ((PsiClassType) type).getParameters();
+                            if (parameters.length > 1 && num < 5) {
+                                JsonElement key = toJson(parameters[0], num + 1);
+                                JsonElement value = toJson(parameters[1], num + 1);
+                                jsonObject.add(key instanceof JsonPrimitive ? key.getAsString() : key.toString(), value);
+                            }
+                            return jsonObject;
                         }
                     } catch (Exception ignored) {
                     }
+                    if (psiClass.isInterface()) {
+                        return new JsonPrimitive("");
+                    }
                     JsonObject jsonObject1 = new JsonObject();
                     Arrays.stream(psiClass.getFields()).forEach(field -> {
-                        if (!StringUtils.contains(field.getText(), " static ")) {
+                        if (!StringUtils.contains(field.getText(), " static ") && num < 5) {
                             jsonObject1.add(field.getName(), toJson(field.getType(), num + 1));
                         }
                     });

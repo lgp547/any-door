@@ -46,13 +46,21 @@
     </extensions>
 
     <actions>
-        <action id="AnyDoorPlugin.AnyDoorAnAction"
-                class="io.github.lgp547.anydoorplugin.action.AnyDoorAnAction"
+        <action id="AnyDoorPlugin.AnyDoorOpenAction"
+                class="io.github.lgp547.anydoorplugin.action.AnyDoorOpenAction"
                 text="Open AnyDoor"
-                description="The specified port '/any_door/run' will be called"
+                description="The method will be called"
                 icon="io.github.lgp547.anydoorplugin.util.AnyDoorIcons.default_icon">
             <keyboard-shortcut keymap="$default" first-keystroke="control shift D"/>
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+        <action id="AnyDoorPlugin.AnyDoorAgainOpenAction"
+                class="io.github.lgp547.anydoorplugin.action.AnyDoorAgainOpenAction"
+                text="Again Open AnyDoor"
+                description="The last method will be called"
+                icon="io.github.lgp547.anydoorplugin.util.AnyDoorIcons.default_icon">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt control shift S"/>
+            <add-to-group group-id="EditorPopupMenu"/>
         </action>
     </actions>
 

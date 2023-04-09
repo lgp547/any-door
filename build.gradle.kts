@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.lgp547:any-door:1.0.1-SNAPSHOT")
+    implementation("io.github.lgp547:any-door:1.0.1")
 }
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
@@ -33,7 +33,7 @@ tasks {
     }
 
     patchPluginXml {
-        sinceBuild.set("183.*")
+        sinceBuild.set("203.*")
         untilBuild.set("231.*")
     }
 

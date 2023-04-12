@@ -162,8 +162,9 @@ public class TextAreaDialog extends DialogWrapper {
             try {
                 URI uri = new URI(str);
                 String query = uri.getRawQuery();
-                Map<String, String> queryParams = Arrays.stream(query.split("&"))
+                Map<String, Object> queryParams = Arrays.stream(query.split("&"))
                         .map(param -> param.split("="))
+                        .filter(param -> param[0].length() > 0)
                         .collect(Collectors.toMap(param -> param[0],
                                 param -> {
                                     if (param.length > 1) {
@@ -171,6 +172,12 @@ public class TextAreaDialog extends DialogWrapper {
                                     }
                                     return "";
                                 }));
+                // wrap if it is a DTO
+                if (psiParameterList.getParametersCount() > 0
+                        && psiParameterList.getParameter(0).getType() instanceof PsiClassType) {
+                    String name = psiParameterList.getParameter(0).getName();
+                    queryParams = Map.of(name, queryParams);
+                }
                 Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls().create();
                 return gson.toJson(queryParams);
             } catch (Exception ignored) {
@@ -185,6 +192,14 @@ public class TextAreaDialog extends DialogWrapper {
                 Type type = new TypeToken<Map<String, Object>>() {
                 }.getType();
                 Map<String, Object> map = gson.fromJson(text, type);
+                // unwrap if it is a DTO
+                if (psiParameterList.getParametersCount() > 0
+                        && psiParameterList.getParameter(0).getType() instanceof PsiClassType) {
+                    String name = psiParameterList.getParameter(0).getName();
+                    Object obj = map.get(name);
+                    String json = gson.toJson(obj);
+                    map = gson.fromJson(json, type);
+                }
                 String queryParam = map.entrySet().stream()
                         .map(entry -> entry.getKey()
                                 + "="

@@ -1,6 +1,6 @@
 # AnyDoorPlugin 任意门插件
 
-执行Spring boot项目任意对象的任意方法
+执行 Spring 项目任意对象的任意方法
 
 ## 适合场景
 对于没有http接口的方法，又想快速进行测试，这个时候即可用到。
@@ -16,9 +16,9 @@
 
 ## 支持功能
 - **核心** 调度任意方法
-- 不依赖 Spring MVC 端口也可执行
 - 执行参数将会缓存
-- spring boot 项目会主动填充依赖 jar 包
+- 可在任意地方重复上一次的调用
+- 配置页面可打印Idea插件的路径
 
 ## 快速开始
 ### 1 安装插件
@@ -27,27 +27,7 @@
 ![img.png](dosc/image/安装插件.png)
 
 ### 2 启动项目
-插件正常使用前提标记
-![img.png](dosc/image/成功启动标记.png)
-
-启动项目分自动挡和手动档两种情况，自动挡需要满足下面三个要求
-- IDEA 是 Ultimate 版本
-- IDEA 版本 >= 2021.4
-- 运行的是 Spring boot 项目
-
-![img.png](dosc/image/Springboot项目配置.png)
-
-#### 2.1 符合自动挡
-直接启动项目即可
-
-#### 2.2 手动档
-1. 打开 IDEA 的 Preferences 配置，找到 `Settings Any Door` 
-
-![img.png](dosc/image/配置页.png)
-
-2. 选择 main 函数所在的模块，并点击尝试导入 jar 包按钮
-
-导入成功所示：![img.png](dosc/image/导入成功.png)
+- 主动填充运行的进程id（可在配置页面修改）
 
 ### 3 执行调用
 1. 找到想要执行的方法，右键弹出选择打开任意门（有对应的快捷键）
@@ -62,40 +42,12 @@
 
 ## 插件属性说明
 
-![img.png](dosc/image/插件配置说明.png)
-
-
-
-## 注意事项
-- 首次使用本插件建议能访问外网Maven中央仓库。因为本地 Maven 仓库没有对应的 [AnyDoor](https://github.com/lgp547/any-door) jar 包版本将会发起请求下载到本地仓库
-
-- 若选择mvc模式调度到运行项目
-  - 需要手动填充端口号和web的前缀
-  - 若是有接口权限控制的，需要放行 '/any_door/run' 路径
+![img.png](dosc/image/配置页.png)
 
 ## 插件原理
-分两件事：导入jar包、调用项目接口
-### 导入jar包
+Java attach：通过jvm提供的功能，直接通过进程号进行跨进程调度
 
-导入jar包，实际就是优先本地的AnyDoor的jar包导入到当前项目模块（若本地Maven配置目录没有，将会从中央仓库下载并放到本地仓库），
-
-导入成功后可以在设置页面查看，当然删除也是在这里
-
-![img.png](dosc/image/jar包导入.jpg)
-
-![img.png](dosc/image/插入的maven路径.png)
-
-
-
-### 调用项目
-分两种方式，Java attach 和 Spring mvc 。推荐是默认的 attach 方式。
-
-- attach：
-  - 通过jvm提供的功能，直接通过进程号进行跨进程调度
-- mvc
-  - 就是HTTP请求，请求指定端口的 '/any_door/run' 路径
-
-详情见 [任意门AnyDoor](https://github.com/lgp547/any-door)
+实现代码详情见 [任意门AnyDoor](https://github.com/lgp547/any-door)
 
 
 
@@ -132,7 +84,14 @@
 - [x] 修复Map字段的处理
 - [x] 修复接口类调用参数为空
 
+### 1.1.0
+需要 anyDoor jar 版本 >= 1.0.1
+- [x] **重要调整：**把任意门jar包添加到当前项目，无需再远程下载jar包
+- [x] 生成json参数支持多层嵌套
+- [x] 调整配置页面
+- [x] 移除mvc调用方式
+- [x] 增加打印idea插件所在路径
+
 ## 后续支持
 详情见issues
-若一个类有多个Bean的情况下，无法调度具体的Bean
 

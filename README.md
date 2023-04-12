@@ -2,64 +2,37 @@
 
 目标：执行Spring项目任意对象的任意方法
 
-最初灵感来源：[Lin ZiHao](https://github.com/schneiderlin)
+最初想法提出人：[Lin ZiHao](https://github.com/schneiderlin)
 
-目前阶段：要求是Spring web项目，本jar包会在项目提供一个对外的路径(/any_door/run)，该路径实现了调用到任意一个方法
+## 适合场景
+- xxlJob
+- rpc
+- mq入口
+- 小改动的测试
 
-目前情况：由于更多的是本地环境使用，以及每次填写请求参数过于麻烦，故开发了一个对应[任意门AnyDoor](https://plugins.jetbrains.com/plugin/20385-anydoor)插件，做到简单配置即可快速使用
+## 快速开始（结合插件）
+> 前置要求：需要运行项目有 spring-context 依赖，若没有见插件的readme
 
-## 快速开始
-请选择 插件方式 还是 常规方式
+下载插件，启动项目，选择方法，右键执行
 
-推荐使用 **插件方式**
+[AnyDoorPlugin-开源地址](https://github.com/lgp547/any-door-plugin)
+
+[AnyDoorPlugin-idea插件中心](https://plugins.jetbrains.com/plugin/20385-anydoor)
+
+## 支持功能
+- 对象相关：
+  - 对于是Spring注册的Bean，会通过上下文拿到对象（若有代理既是代理对象），执行当前方法
+  - 对于非Spring注册的Bean，会通过反射创建对象，执行当前方法
+- 方法相关：
+  - 支持同步或异步执行当前方法，默认异步
+  - 支持私有方法
+  - 打印响应结果
+- 参数相关：
+  - 对给的参数进行序列化，支持json格式
+  - 函数的参数支持lambda表达式入参，例如：Function的可以 `A -> A`
+  - 时间支持：LocalDateTime传yyyy-MM-dd'T'HH:mm:ss
 
 
-### 1.插件方式（快速使用）
-本插件只需每个项目配置一次即可
-
-[任意门AnyDoor插件](https://plugins.jetbrains.com/plugin/20385-anydoor)
-
-[任意门AnyDoor插件github地址](https://github.com/lgp547/any-door-plugin)
-
-### 2.常规方式（导包启动）
-
-#### 添加依赖
-```xml
-<dependency>
-    <groupId>io.github.lgp547</groupId>
-    <artifactId>any-door</artifactId>
-    <version>0.0.10</version>
-</dependency>
-```
-
-#### 启动项目
-有打印出日记说明添加成功（是info级别）
-![img.png](dosc/image/启动成功.jpg)
-
-#### 调用接口
-
-路径：/any_door/run
-
-端口：既是启动项目所在的端口
-
-参数说明：
-- className      要调用的类的全链路名
-- methodName     要调用的方法名
-- content        入参参数，要求是json类型（允许为null）
-- parameterTypes 参数类型 （若是方法名是唯一的，允许为空）
-- sync           是否同步执行
-
-```shell script
-curl --location --request GET 'http://localhost:8080/any_door/run'
---header 'Content-Type: application/json' \
---data-raw '{
-    "content": {"name":"any_door"},
-    "methodName": "oneParam",
-    "className": "io.github.lgp547.anydoor.core.test.Bean",
-    "parameterTypes": [],
-    "sync":false
-}'
-```
 ## 发布版本
 ### 0.0.2
 - 支持Bean私有方法
@@ -98,11 +71,10 @@ curl --location --request GET 'http://localhost:8080/any_door/run'
 - 修复时间支持：LocalDateTime传yyyy-MM-dd'T'HH:mm:ss
 - 修复Json序列化支持泛型
 
-## 适合场景
-- xxlJob
-- rpc
-- mq入口
-- 小改动的测试
+### 1.0.0 && 1.0.1 重大更新
+- 加入Arthas依赖，支持获取到运行时的对象信息
+- 调整打包依赖
+- 移除mvc依赖、移除spring boot依赖
 
 
 ## 后续支持

@@ -6,13 +6,16 @@ import io.github.lgp547.anydoor.util.JsonUtil;
 import io.github.lgp547.anydoor.util.LambdaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.framework.AopProxy;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ObjectUtils;
 
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -39,8 +42,19 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
     }
 
     private Object doInvoke(Object[] args) {
+        Object bean = getBean();
+        if (bean instanceof Proxy) {
+            InvocationHandler invocationHandler = Proxy.getInvocationHandler(bean);
+            if (invocationHandler instanceof AopProxy) {
+                try {
+                    return invocationHandler.invoke(bean, getBridgedMethod(), args);
+                } catch (Throwable e) {
+                    log.error("invoke exception ", e);
+                }
+            }
+        }
         try {
-            return getBridgedMethod().invoke(getBean(), args);
+            return getBridgedMethod().invoke(bean, args);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

@@ -7,6 +7,7 @@ import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * className      全链路名
@@ -28,6 +29,10 @@ public class AnyDoorDto {
     private List<String> parameterTypes;
 
     private Boolean isSync;
+
+    private Integer num;
+
+    private Boolean concurrent;
 
     public String getClassName() {
         return className;
@@ -77,13 +82,32 @@ public class AnyDoorDto {
         isSync = sync;
     }
 
+    public Integer getNum() {
+        return num == null || num < 1 ? 1 : num;
+    }
+
+    public void setNum(Integer num) {
+        this.num = num;
+    }
+
+    public boolean getConcurrent() {
+        return Objects.equals(concurrent, Boolean.TRUE);
+    }
+
+    public void setConcurrent(Boolean concurrent) {
+        this.concurrent = concurrent;
+    }
+
     @Override
     public String toString() {
         return "AnyDoorDto{" +
                 "className='" + className + '\'' +
                 ", methodName='" + methodName + '\'' +
-                ", content='" + content + '\'' +
+                ", content=" + content +
                 ", parameterTypes=" + parameterTypes +
+                ", isSync=" + isSync +
+                ", runNum=" + num +
+                ", isConcurrent=" + concurrent +
                 '}';
     }
 

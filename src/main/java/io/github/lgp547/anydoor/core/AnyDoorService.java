@@ -16,11 +16,13 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 
 public class AnyDoorService {
 
     private static final Logger log = LoggerFactory.getLogger(AnyDoorService.class);
+
+    private static final String ANY_DOOR_RUN_MARK = "any-door run ";
 
     private static volatile boolean isInit = false;
 
@@ -72,19 +74,48 @@ public class AnyDoorService {
 
 
         AnyDoorHandlerMethod handlerMethod = new AnyDoorHandlerMethod(bean, method);
+        Object result = null;
         if (Objects.equals(anyDoorDto.getSync(), true)) {
-            return handlerMethod.invokeSync(contentMap);
-        } else {
-            CompletableFuture<Object> future = handlerMethod.invokeAsync(contentMap);
-            future.whenComplete((result, e) -> {
-                String callMethodStr = "/any_door/run " + method.getName();
-                if (e != null) {
-                    log.info(callMethodStr + " exception: ", e);
-                } else {
-                    log.info(callMethodStr + " return: {}", JsonUtil.toStrNotExc(result));
+            if (anyDoorDto.getNum() == 1) {
+                result = handlerMethod.invokeSync(contentMap);
+            } else {
+                if (anyDoorDto.getConcurrent()) {
+                    throw new IllegalArgumentException("Concurrent calls do not support sync");
                 }
-            });
-            return null;
+                handlerMethod.parallelInvokeSync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName));
+            }
+        } else {
+            if (anyDoorDto.getNum() == 1) {
+                handlerMethod.invokeAsync(contentMap).whenComplete(futureResultLogConsumer(methodName));
+            } else {
+                if (anyDoorDto.getConcurrent()) {
+                    handlerMethod.concurrentInvokeAsync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName), excLogConsumer(methodName));
+                } else {
+                    handlerMethod.parallelInvokeAsync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName));
+                }
+            }
         }
+        if (result != null) {
+            log.info(ANY_DOOR_RUN_MARK + methodName + " return: {}", JsonUtil.toStrNotExc(result));
+        }
+        return result;
+    }
+
+    private BiConsumer<Integer, Object> resultLogConsumer(String methodName) {
+        return (num, result) -> log.info(ANY_DOOR_RUN_MARK + methodName + " " + num + " return: {}", JsonUtil.toStrNotExc(result));
+    }
+
+    private BiConsumer<Integer, Throwable> excLogConsumer(String methodName) {
+        return (num, throwable) -> log.info(ANY_DOOR_RUN_MARK + methodName + " " + num + " exception: ", throwable);
+    }
+
+    private BiConsumer<Object, Throwable> futureResultLogConsumer(String methodName) {
+        return (result, throwable) -> {
+            if (throwable != null) {
+                log.info(ANY_DOOR_RUN_MARK + methodName + " exception: ", throwable);
+            } else {
+                log.info(ANY_DOOR_RUN_MARK + methodName + " return: {}", JsonUtil.toStrNotExc(result));
+            }
+        };
     }
 }

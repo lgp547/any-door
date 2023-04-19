@@ -19,6 +19,7 @@ import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class AnyDoorHandlerMethod extends HandlerMethod {
@@ -30,15 +31,53 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
     }
 
     public CompletableFuture<Object> invokeAsync(Map<String, Object> contentMap) {
-        return doInvokeAsync(getArgs(contentMap));
+        return CompletableFuture.supplyAsync(() -> invokeSync(contentMap));
     }
 
+    /**
+     * 阻塞调度线程，简化堆栈使用
+     */
     public Object invokeSync(Map<String, Object> contentMap) {
         return doInvoke(getArgs(contentMap));
     }
 
-    protected CompletableFuture<Object> doInvokeAsync(Object... args) {
-        return CompletableFuture.supplyAsync(() -> doInvoke(args));
+    /**
+     * 并行，阻塞调度进程
+     */
+    public void parallelInvokeSync(Map<String, Object> contentMap, int num, BiConsumer<Integer, Object> resultLogConsumer) {
+        Object[] args = getArgs(contentMap);
+        for (int i = 0; i < num; i++) {
+            resultLogConsumer.accept(i, doInvoke(args));
+        }
+    }
+
+    /**
+     * 并行，不阻塞调度进程
+     */
+    public void parallelInvokeAsync(Map<String, Object> contentMap, int num, BiConsumer<Integer, Object> resultLogConsumer) {
+        Object[] args = getArgs(contentMap);
+        CompletableFuture.runAsync(() -> {
+            for (int i = 0; i < num; i++) {
+                resultLogConsumer.accept(i, doInvoke(args));
+            }
+        });
+    }
+
+    /**
+     * 并发，不阻塞调度进程
+     */
+    public void concurrentInvokeAsync(Map<String, Object> contentMap, int num, BiConsumer<Integer, Object> resultLogConsumer, BiConsumer<Integer, Throwable> excLogConsumer) {
+        Object[] args = getArgs(contentMap);
+        for (int i = 0; i < num; i++) {
+            final int i1 = i;
+            CompletableFuture.supplyAsync(() -> doInvoke(args)).whenComplete(((o, throwable) -> {
+                if (throwable != null) {
+                    excLogConsumer.accept(i1, throwable);
+                } else {
+                    resultLogConsumer.accept(i1, o);
+                }
+            }));
+        }
     }
 
     private Object doInvoke(Object[] args) {
@@ -95,8 +134,6 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
      * null
      */
     private Object getArgs(MethodParameter parameter, String value) {
-        Class<?> contextClass = parameter.getContainingClass();
-
         Object obj = null;
         if (BeanUtil.isSimpleProperty(parameter.getParameterType())) {
             obj = runNotExc(() -> BeanUtil.simpleTypeConvertIfNecessary(parameter, value));

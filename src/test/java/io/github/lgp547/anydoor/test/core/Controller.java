@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,6 +28,8 @@ public class Controller implements ApplicationRunner {
         doRun(clazz, jsonNode);
         doRun(clazz2, jsonNode);
         doRun(clazz3, jsonNode);
+        doRun(BatchParallelBean.class, jsonNode);
+        doRun(BatchConcurrentBean.class, jsonNode);
 
         System.out.println("###################成功结束###################");
     }
@@ -42,6 +45,15 @@ public class Controller implements ApplicationRunner {
             List<String> parameterTypes = Arrays.stream(method.getParameterTypes()).map(Class::getName).collect(Collectors.toList());
             anyDoorDto.setParameterTypes(parameterTypes);
             anyDoorDto.setSync(true);
+            if (Objects.equals(clazz, BatchParallelBean.class)) {
+                anyDoorDto.setNum(10);
+                anyDoorDto.setConcurrent(false);
+            }
+            if (Objects.equals(clazz, BatchConcurrentBean.class)) {
+                anyDoorDto.setSync(false);
+                anyDoorDto.setNum(10);
+                anyDoorDto.setConcurrent(true);
+            }
 
             AnyDoorService anyDoorService = new AnyDoorService();
             try {

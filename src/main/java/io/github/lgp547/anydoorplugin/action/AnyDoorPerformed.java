@@ -7,6 +7,7 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import io.github.lgp547.anydoorplugin.AnyDoorInfo;
+import io.github.lgp547.anydoorplugin.dialog.TextAreaDialog;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 import io.github.lgp547.anydoorplugin.util.ImportNewUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;

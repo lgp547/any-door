@@ -7,6 +7,9 @@ import com.intellij.psi.PsiMethod;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * 响应 Again Open AnyDoor 入口
+ */
 public class AnyDoorAgainOpenAction extends AnAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {

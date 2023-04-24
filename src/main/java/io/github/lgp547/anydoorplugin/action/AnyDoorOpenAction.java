@@ -19,6 +19,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
+/**
+ * 响应 Open AnyDoor 入口
+ */
 public class AnyDoorOpenAction extends AnAction {
 
     private final static Key<PsiMethod> USER_DATE_ELEMENT_KEY = new Key<>("user.psi.Element");

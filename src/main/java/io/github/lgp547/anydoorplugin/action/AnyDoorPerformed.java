@@ -52,7 +52,7 @@ public class AnyDoorPerformed {
             String cacheKey = getCacheKey(className, methodName, paramTypeNameList);
             String cacheContent = service.getCache(cacheKey);
 
-            TextAreaDialog dialog = new TextAreaDialog(project, "fill call param", method.getParameterList(), cacheContent);
+            TextAreaDialog dialog = new TextAreaDialog(project, String.format("fill method(%s) param. %s pid", methodName, service.pid), method.getParameterList(), cacheContent);
             dialog.setOkAction(() -> {
                 String text = dialog.getText();
                 service.putCache(cacheKey, text);

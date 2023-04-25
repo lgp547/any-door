@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
+/**
+ * 每次打开配置页面都会构造新的
+ */
 public class AnyDoorSettingsConfigurable implements Configurable {
 
     private AnyDoorSettingsComponent mySettingsComponent;
@@ -34,7 +37,9 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        mySettingsComponent = new AnyDoorSettingsComponent(project);
+        if (null == mySettingsComponent) {
+            mySettingsComponent = new AnyDoorSettingsComponent(project);
+        }
         return mySettingsComponent.getPanel();
     }
 

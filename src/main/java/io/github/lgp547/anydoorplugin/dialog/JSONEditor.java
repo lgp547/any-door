@@ -19,6 +19,7 @@ import com.intellij.util.LocalTimeCounter;
 import io.github.lgp547.anydoorplugin.util.JsonElementUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -38,7 +39,7 @@ public class JSONEditor extends EditorTextField {
     private String defaultContent;
     private String cacheContent;
 
-    public JSONEditor(String cacheText, PsiParameterList psiParameterList, Project project) {
+    public JSONEditor(String cacheText, @Nullable PsiParameterList psiParameterList, Project project) {
         super("", project, JsonFileType.INSTANCE);
 
         this.cacheContent = cacheText;

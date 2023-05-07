@@ -1,6 +1,9 @@
 package io.github.lgp547.anydoorplugin.dialog;
 
+import com.intellij.ui.components.JBCheckBox;
+import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
+import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.JBDimension;
 
 import javax.swing.*;
@@ -16,6 +19,8 @@ public class ContentPanel extends JBPanel<ContentPanel> {
     private final JButton jsonToQueryButton = new JButton("json to query");
     private final JButton queryToJsonButton = new JButton("query to json");
 
+    private final JBTextField runNum = new JBTextField( "1",10);
+    private final JBCheckBox isConcurrent = new JBCheckBox("Concurrent run", true);
 
     public ContentPanel(Component textArea) {
         super(new GridBagLayout());
@@ -33,12 +38,22 @@ public class ContentPanel extends JBPanel<ContentPanel> {
         functionPanel.add(queryToJsonButton);
         add(functionPanel, constraints1);
 
+        GridBagConstraints constraints2 = new GridBagConstraints();
+        constraints2.anchor = GridBagConstraints.EAST;
+        constraints2.gridx = 0;
+        constraints2.gridy = 1;
+        JPanel functionPanel1 = new JPanel();
+        functionPanel1.add(new JBLabel("Run num"));
+        functionPanel1.add(runNum);
+        functionPanel1.add(isConcurrent);
+        add(functionPanel1, constraints2);
+
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1;
         constraints.weighty = 1;
         constraints.gridx = 0;
-        constraints.gridy = 1;
+        constraints.gridy = 2;
 
         add(textArea, constraints);
     }

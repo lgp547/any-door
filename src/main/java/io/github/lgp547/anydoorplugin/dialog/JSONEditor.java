@@ -1,33 +1,31 @@
 package io.github.lgp547.anydoorplugin.dialog;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.intellij.ide.highlighter.HighlighterFactory;
 import com.intellij.json.JsonFileType;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiParameterList;
 import com.intellij.ui.EditorTextField;
 import com.intellij.util.LocalTimeCounter;
+import io.github.lgp547.anydoor.util.JsonUtil;
 import io.github.lgp547.anydoorplugin.util.JsonElementUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -36,15 +34,16 @@ public class JSONEditor extends EditorTextField {
 
     private final PsiParameterList psiParameterList;
 
-    private String defaultContent;
     private String cacheContent;
+    private String simpleContent;
+    private String jsonContent;
 
     public JSONEditor(String cacheText, @Nullable PsiParameterList psiParameterList, Project project) {
         super("", project, JsonFileType.INSTANCE);
 
         this.cacheContent = cacheText;
         this.psiParameterList = psiParameterList;
-        setDocument(createDocument(StringUtils.isBlank(cacheContent) ? defaultContent : cacheContent));
+        setDocument(createDocument(StringUtils.isBlank(cacheContent) ? jsonContent : cacheContent));
 
         addSettingsProvider(editor -> {
             editor.setHorizontalScrollbarVisible(true);
@@ -52,29 +51,13 @@ public class JSONEditor extends EditorTextField {
         });
     }
 
-    public String getDefaultContent() {
-        if (defaultContent == null) {
-            defaultContent = JsonElementUtil.getJsonText(psiParameterList);
-        }
-        return defaultContent;
-    }
-
-    public void resetDefaultContent() {
-        setText(getDefaultContent());
-    }
-
-    public String getCacheContent() {
-        return cacheContent;
-    }
-
-    public PsiParameterList getPsiParameterList() {
-        return psiParameterList;
-    }
-
-    public String parseQueryParam(String text) {
-        String str = text.contains("?") ? text : "?" + text;
+    /**
+     * 将当前query内容放到json的第二层
+     */
+    public void queryToJson() {
+        String text = getText();
         try {
-            URI uri = new URI(str);
+            URI uri = new URI(text.contains("?") ? text : "?" + text);
             String query = uri.getRawQuery();
             Map<String, Object> queryParams = Arrays.stream(query.split("&"))
                     .map(param -> param.split("="))
@@ -87,45 +70,38 @@ public class JSONEditor extends EditorTextField {
                                 return "";
                             }));
             // wrap if it is a DTO
-            if (psiParameterList.getParametersCount() > 0
-                    && psiParameterList.getParameter(0).getType() instanceof PsiClassType) {
-                String name = psiParameterList.getParameter(0).getName();
+            if (psiParameterList.getParametersCount() > 0) {
+                String name = Objects.requireNonNull(psiParameterList.getParameter(0)).getName();
                 queryParams = Map.of(name, queryParams);
             }
-            Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().serializeNulls().create();
-            return gson.toJson(queryParams);
+            text = JsonUtil.toStrNotExc(queryParams);
         } catch (Exception ignored) {
-
         }
         setText(text);
-        return text;
     }
 
-    public String genQueryParam(String text) {
+    /**
+     * 将当前json内容的第二层转成query参数
+     */
+    public void jsonToQuery() {
+        String text = getText();
         try {
-            Gson gson = new Gson();
-            Type type = new TypeToken<Map<String, Object>>() {
-            }.getType();
-            Map<String, Object> map = gson.fromJson(text, type);
-            // unwrap if it is a DTO
-            if (psiParameterList.getParametersCount() > 0
-                    && psiParameterList.getParameter(0).getType() instanceof PsiClassType) {
-                String name = psiParameterList.getParameter(0).getName();
-                Object obj = map.get(name);
-                String json = gson.toJson(obj);
-                map = gson.fromJson(json, type);
+            Map<String, Object> map = new HashMap<>();
+            Map<String, Object> contentMap = JsonUtil.toMap(text);
+            for (int i = 0; i < psiParameterList.getParametersCount(); i++) {
+                Object obj = contentMap.get(Objects.requireNonNull(psiParameterList.getParameter(i)).getName());
+                map.putAll(JsonUtil.toMap(JsonUtil.toStrNotExc(obj)));
             }
+
             String queryParam = map.entrySet().stream()
                     .map(entry -> entry.getKey()
                             + "="
                             + URLEncoder.encode(entry.getValue().toString(), Charset.defaultCharset()))
                     .collect(Collectors.joining("&"));
-            return "?" + queryParam;
+            text = "?" + queryParam;
         } catch (Exception ignored) {
-
         }
         setText(text);
-        return text;
     }
 
     protected Document createDocument(String initText) {
@@ -146,6 +122,24 @@ public class JSONEditor extends EditorTextField {
         ex.setOneLineMode(false);
 
         return ex;
+    }
+
+    public void genCacheContent() {
+        setText(cacheContent);
+    }
+
+    public void genSimpleContent() {
+        if (simpleContent == null) {
+            simpleContent = JsonElementUtil.getSimpleText(psiParameterList);
+        }
+        setText(simpleContent);
+    }
+
+    public void genJsonContent() {
+        if (jsonContent == null) {
+            jsonContent = JsonElementUtil.getJsonText(psiParameterList);
+        }
+        setText(jsonContent);
     }
 
 //    private static class MyTextFieldCompletionProvider extends TextFieldCompletionProvider implements DumbAware {

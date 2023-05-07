@@ -144,4 +144,15 @@ public class JsonElementUtil {
         }
         return jsonObject;
     }
+
+    public static String getSimpleText(PsiParameterList parameterList) {
+        JsonObject jsonObject = new JsonObject();
+        for (int i = 0; i < parameterList.getParametersCount(); i++) {
+            PsiParameter parameter = Objects.requireNonNull(parameterList.getParameter(i));
+            String key = parameter.getName();
+            jsonObject.add(key, new JsonObject());
+        }
+        Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        return gson.toJson(jsonObject);
+    }
 }

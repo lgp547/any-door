@@ -19,9 +19,11 @@ public class TextAreaDialog extends DialogWrapper {
         setTitle(title);
         textArea = new JSONEditor(cacheContent, psiParameterList, project);
         contentPanel = new ContentPanel(textArea);
-        contentPanel.addActionListener1(e -> textArea.resetDefaultContent());
-        contentPanel.addActionListener2(e -> textArea.parseQueryParam(textArea.getText()));
-        contentPanel.addActionListener3(e -> textArea.genQueryParam(textArea.getText()));
+        contentPanel.addCacheButtonListener(e -> textArea.genCacheContent());
+        contentPanel.addSimpleButtonListener(e -> textArea.genSimpleContent());
+        contentPanel.addJsonButtonListener(e -> textArea.genJsonContent());
+        contentPanel.addJsonToQueryButtonListener(e -> textArea.jsonToQuery());
+        contentPanel.addQueryToJsonButtonListener(e -> textArea.queryToJson());
 
 
         init();

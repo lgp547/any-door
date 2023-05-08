@@ -6,6 +6,8 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import io.github.lgp547.anydoorplugin.AnyDoorInfo;
+import io.github.lgp547.anydoorplugin.dto.ParamCacheDto;
+import io.github.lgp547.anydoorplugin.util.JsonUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -42,12 +44,20 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
         updateDependence(dependenceName, dependenceVersion);
     }
 
-    public void putCache(String key, String value) {
-        cache.put(key, value);
+    public void putCache(String key, ParamCacheDto value) {
+        cache.put(key, JsonUtil.toStrNotExc(value));
     }
 
-    public String getCache(String key) {
-        return cache.get(key);
+    public ParamCacheDto getCache(String key) {
+        String value = cache.get(key);
+        try {
+            ParamCacheDto obj = JsonUtil.toJavaBean(value, ParamCacheDto.class);
+            if (obj.getContent() != null) {
+                return obj;
+            }
+        } catch (Exception ignored) {
+        }
+        return new ParamCacheDto(value);
     }
 
     public static Optional<AnyDoorSettingsState> getAnyDoorSettingsStateNotExc(@NotNull Project project) {

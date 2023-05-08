@@ -5,6 +5,7 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.JBDimension;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,6 +59,21 @@ public class ContentPanel extends JBPanel<ContentPanel> {
         add(textArea, constraints);
     }
 
+    public void initRunNum(long num) {
+        runNum.setText(String.valueOf(num));
+    }
+
+    public void initIsConcurrent(boolean isConcurrent) {
+        this.isConcurrent.setSelected(isConcurrent);
+    }
+
+    public Long getRunNum() {
+        return NumberUtils.toLong(runNum.getText(), 1);
+    }
+
+    public Boolean getIsConcurrent() {
+        return isConcurrent.isSelected();
+    }
 
     public void addCacheButtonListener(Consumer<ActionEvent> consumer) {
         cacheButton.addActionListener(consumer::accept);

@@ -6,6 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -36,4 +37,11 @@ public class JsonUtil {
         return gson.toJson(newJsonObj);
     }
 
+    public static String toStrNotExc(Object value) {
+        return io.github.lgp547.anydoor.util.JsonUtil.toStrNotExc(value);
+    }
+
+    public static <T> T toJavaBean(String content, Type valueType) {
+        return io.github.lgp547.anydoor.util.JsonUtil.toJavaBean(content, valueType);
+    }
 }

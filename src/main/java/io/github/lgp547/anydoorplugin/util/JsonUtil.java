@@ -1,18 +1,22 @@
 package io.github.lgp547.anydoorplugin.util;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class JsonUtil {
 
     public static Gson gson = new GsonBuilder().create();
+
+    public static ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * compress json
@@ -37,11 +41,35 @@ public class JsonUtil {
         return gson.toJson(newJsonObj);
     }
 
-    public static String toStrNotExc(Object value) {
-        return io.github.lgp547.anydoor.util.JsonUtil.toStrNotExc(value);
+    public static String toStr(Object value) throws Exception {
+        if (value == null) {
+            return null;
+        } else if (value instanceof String) {
+            return (String) value;
+        } else {
+            return objectMapper.writeValueAsString(value);
+        }
     }
 
-    public static <T> T toJavaBean(String content, Type valueType) {
-        return io.github.lgp547.anydoor.util.JsonUtil.toJavaBean(content, valueType);
+    public static String toStrNotExc(Object value) {
+        try {
+            return toStr(value);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static <T> T toJavaBean(String content, Class<T> tClass) throws Exception {
+        return objectMapper.readValue(content, tClass);
+    }
+
+    public static Map<String, Object> toMap(String content) {
+        try {
+            TypeReference<Map<String, Object>> typeReference = new TypeReference<>() {
+            };
+            return objectMapper.readValue(content, typeReference);
+        } catch (Exception ignored) {
+        }
+        return new HashMap<>();
     }
 }

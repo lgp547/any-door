@@ -12,7 +12,7 @@ import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiParameterList;
 import com.intellij.ui.EditorTextField;
 import com.intellij.util.LocalTimeCounter;
-import io.github.lgp547.anydoor.util.JsonUtil;
+import io.github.lgp547.anydoorplugin.util.JsonUtil;
 import io.github.lgp547.anydoorplugin.util.JsonElementUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -74,7 +74,7 @@ public class JSONEditor extends EditorTextField {
                 String name = Objects.requireNonNull(psiParameterList.getParameter(0)).getName();
                 queryParams = Map.of(name, queryParams);
             }
-            text = JsonUtil.toStrNotExc(queryParams);
+            text = io.github.lgp547.anydoorplugin.util.JsonUtil.toStr(queryParams);
         } catch (Exception ignored) {
         }
         setText(text);

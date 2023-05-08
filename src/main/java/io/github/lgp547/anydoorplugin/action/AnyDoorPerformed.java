@@ -55,13 +55,14 @@ public class AnyDoorPerformed {
 
             TextAreaDialog dialog = new TextAreaDialog(project, String.format("fill method(%s) param", methodName), method.getParameterList(), service.getCache(cacheKey));
             dialog.setOkAction(() -> {
-                String text = JsonUtil.compressJson(dialog.getText());
+                String text = dialog.getText();
                 ParamCacheDto paramCacheDto = new ParamCacheDto(dialog.getRunNum(), dialog.getIsConcurrent(), text);
                 service.putCache(cacheKey, paramCacheDto);
                 // Change to args for the interface type
                 if (psiClass.isInterface()) {
                     text = JsonUtil.transformedKey(text, getParamTypeNameTransformer(method.getParameterList()));
                 }
+                text = JsonUtil.compressJson(text);
                 String jsonDtoStr = getJsonDtoStr(className, methodName, paramTypeNameList, text, !service.enableAsyncExecute, paramCacheDto);
                 openAnyDoor(project, jsonDtoStr, service, openExcConsumer);
             });

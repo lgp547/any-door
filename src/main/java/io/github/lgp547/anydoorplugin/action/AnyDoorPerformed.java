@@ -31,7 +31,7 @@ import java.util.function.BiConsumer;
  */
 public class AnyDoorPerformed {
 
-    public void invoke(Project project, PsiMethod method) {
+    public void invoke(Project project, PsiMethod method, Runnable okAction) {
         PsiClass psiClass = (PsiClass) method.getParent();
         String className = psiClass.getQualifiedName();
         String methodName = method.getName();
@@ -55,6 +55,7 @@ public class AnyDoorPerformed {
 
             TextAreaDialog dialog = new TextAreaDialog(project, String.format("fill method(%s) param", methodName), method.getParameterList(), service.getCache(cacheKey));
             dialog.setOkAction(() -> {
+                okAction.run();
                 String text = dialog.getText();
                 ParamCacheDto paramCacheDto = new ParamCacheDto(dialog.getRunNum(), dialog.getIsConcurrent(), text);
                 service.putCache(cacheKey, paramCacheDto);

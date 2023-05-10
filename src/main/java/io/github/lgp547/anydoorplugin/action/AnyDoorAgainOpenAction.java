@@ -20,7 +20,7 @@ public class AnyDoorAgainOpenAction extends AnAction {
         PsiMethod psiMethod = AnyDoorOpenAction.getPreMethod(project.getName());
         if (null != psiMethod) {
             try {
-                new AnyDoorPerformed().invoke(project, psiMethod);
+                new AnyDoorPerformed().invoke(project, psiMethod, () -> {});
             } catch (Exception exception) {
                 NotifierUtil.notifyError(project, "invoke exception " + exception.getMessage());
             }

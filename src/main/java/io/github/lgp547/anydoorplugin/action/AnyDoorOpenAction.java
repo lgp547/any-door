@@ -53,8 +53,8 @@ public class AnyDoorOpenAction extends AnAction {
                     throw new IllegalArgumentException("idea arg error (method is null)");
                 }
             }
-            new AnyDoorPerformed().invoke(project, psiMethod);
-            PRE_METHOD_MAP.put(project.getName(), psiMethod);
+            final PsiMethod finalPsiMethod = psiMethod;
+            new AnyDoorPerformed().invoke(project, finalPsiMethod, () -> PRE_METHOD_MAP.put(project.getName(), finalPsiMethod));
         } catch (Exception exception) {
             NotifierUtil.notifyError(project, "invoke exception " + exception.getMessage());
         }

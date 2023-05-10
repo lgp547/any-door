@@ -43,7 +43,13 @@ public class JSONEditor extends EditorTextField {
 
         this.cacheContent = cacheText;
         this.psiParameterList = psiParameterList;
-        setDocument(createDocument(StringUtils.isBlank(cacheContent) ? jsonContent : cacheContent));
+
+        if (StringUtils.isBlank(cacheContent)) {
+            jsonContent = JsonElementUtil.getJsonText(psiParameterList);
+            setDocument(createDocument(jsonContent));
+        } else {
+            setDocument(createDocument(cacheContent));
+        }
 
         addSettingsProvider(editor -> {
             editor.setHorizontalScrollbarVisible(true);

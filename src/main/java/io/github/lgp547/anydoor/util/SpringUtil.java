@@ -13,7 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class SpringUtil {
@@ -22,9 +22,11 @@ public class SpringUtil {
 
     private static List<ApplicationContext> applicationContextList;
 
-    public static void initApplicationContexts(ApplicationContext[] applicationContexts) {
-        List<ApplicationContext> curApplicationContextList = Arrays.stream(applicationContexts).collect(Collectors.toList());
-        SpringUtil.applicationContextList = curApplicationContextList;
+    private static Supplier<ApplicationContext[]> applicationContextsSupplier;
+
+    public static void initApplicationContexts(Supplier<ApplicationContext[]> applicationContextsSupplier) {
+        SpringUtil.applicationContextsSupplier = applicationContextsSupplier;
+        List<ApplicationContext> curApplicationContextList = updateApplicationContextList();
 
         if (curApplicationContextList.size() != 1) {
             log.info("project has multiple spring contexts. " + curApplicationContextList.stream().map(ApplicationContext::getDisplayName).collect(Collectors.toList()));
@@ -61,9 +63,24 @@ public class SpringUtil {
         return 0;
     }
 
+    private static List<ApplicationContext> updateApplicationContextList() {
+        SpringUtil.applicationContextList = Arrays.stream(applicationContextsSupplier.get()).collect(Collectors.toList());
+        return SpringUtil.applicationContextList;
+    }
+
     public static <T> T getBean(Class<T> requiredType) throws BeansException {
         Objects.requireNonNull(applicationContextList);
-        for (ApplicationContext applicationContext : applicationContextList) {
+
+        try {
+            return doGetBean(requiredType, applicationContextList);
+        } catch (IllegalStateException illegalStateException) {
+            log.warn("Update and try again. applicationContext getBean IllegalStateException {}", illegalStateException.getMessage());
+            return doGetBean(requiredType, updateApplicationContextList());
+        }
+    }
+
+    private static <T> T doGetBean(Class<T> requiredType, List<ApplicationContext> applicationContextList1) {
+        for (ApplicationContext applicationContext : applicationContextList1) {
             try {
                 return applicationContext.getBean(requiredType);
             } catch (BeansException ignored) {
@@ -76,7 +93,7 @@ public class SpringUtil {
         try {
             getBean(requiredType);
             return true;
-        } catch (BeansException e) {
+        } catch (Exception e) {
             return false;
         }
     }

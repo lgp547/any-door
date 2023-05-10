@@ -31,7 +31,7 @@ public class AnyDoorService {
             synchronized (AnyDoorService.class) {
                 if (!isInit) {
                     VmToolUtils.init();
-                    SpringUtil.initApplicationContexts(VmToolUtils.getInstances(ApplicationContext.class));
+                    SpringUtil.initApplicationContexts(() -> VmToolUtils.getInstances(ApplicationContext.class));
                     isInit = true;
                 }
             }

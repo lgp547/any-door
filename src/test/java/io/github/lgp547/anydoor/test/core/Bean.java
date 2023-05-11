@@ -1,6 +1,8 @@
 package io.github.lgp547.anydoor.test.core;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,9 +16,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.lgp547.anydoor.test.dto.Role;
 import io.github.lgp547.anydoor.test.dto.User;
 
+import io.github.lgp547.anydoor.util.jackson.AnyDoorTimeDeserializer;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RestController;
 
+import static io.github.lgp547.anydoor.test.util.AssertUtil.assertIsEquals;
 import static io.github.lgp547.anydoor.test.util.AssertUtil.assertIsNull;
 import static io.github.lgp547.anydoor.test.util.AssertUtil.assertIsTrue;
 import static io.github.lgp547.anydoor.test.util.AssertUtil.assertNotNull;
@@ -53,9 +57,12 @@ public class Bean {
 
     public static final Role role = new Role(100L, "roleName", users);
 
-//    public static final Long dateTimeByLong = 1L;
+    public static final Long dateTimeByLong = 1L;
 
-    public static final String dateTimeByStr = "2023-01-01T00:00:00";
+    public static final String dateTimeByISO = "2023-01-01T00:00:00";
+
+    public static final String dateTimeByCom = "2023-01-01 00:00:00";
+
 
     public static JsonNode getContent() {
         ObjectNode jsonNode = new ObjectNode(JsonNodeFactory.instance);
@@ -72,8 +79,9 @@ public class Bean {
         jsonNode.put("func", "(a,b) -> a + b");
         jsonNode.putPOJO("a", "Hello");
         jsonNode.putPOJO("b", " World");
-//        jsonNode.put("dateTimeByLong", dateTimeByLong);
-        jsonNode.put("dateTimeByStr", dateTimeByStr);
+        jsonNode.put("dateTimeByLong", dateTimeByLong);
+        jsonNode.put("dateTimeByISO", dateTimeByISO);
+        jsonNode.put("dateTimeByCom", dateTimeByCom);
         jsonNode.putPOJO("longs", longs);
         return jsonNode;
     }
@@ -192,12 +200,16 @@ public class Bean {
     /**
      * 测试转LDT
      */
-    public void testDate(LocalDateTime dateTimeByLong, LocalDateTime dateTimeByStr) {
-//        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(this.dateTimeByLong), ZoneId.systemDefault());
-//        Assert.isTrue(Objects.equals(dateTimeByLong, localDateTime));
+    public void testDate(LocalDateTime dateTimeByLong, LocalDateTime dateTimeByISO, LocalDateTime dateTimeByCom) {
 
-        LocalDateTime localDateTime1 = LocalDateTime.parse(Bean.dateTimeByStr, DateTimeFormatter.ISO_DATE_TIME);
-        Assert.isTrue(Objects.equals(dateTimeByStr, localDateTime1));
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(Bean.dateTimeByLong), ZoneId.systemDefault());
+        assertIsTrue(Objects.equals(dateTimeByLong, localDateTime));
+
+        LocalDateTime localDateTime1 = LocalDateTime.parse(Bean.dateTimeByISO, DateTimeFormatter.ISO_DATE_TIME);
+        assertIsEquals(dateTimeByISO, localDateTime1);
+
+        LocalDateTime localDateTime2 = LocalDateTime.parse(Bean.dateTimeByCom, AnyDoorTimeDeserializer.DATETIME_FORMAT);
+        assertIsEquals(dateTimeByCom, localDateTime2);
 
     }
 

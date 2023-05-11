@@ -136,26 +136,18 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
     private Object getArgs(MethodParameter parameter, String value) {
         Object obj = null;
         if (BeanUtil.isSimpleProperty(parameter.getParameterType())) {
-            obj = runNotExc(() -> BeanUtil.simpleTypeConvertIfNecessary(parameter, value));
+            obj = LambdaUtil.runNotExc(() -> BeanUtil.simpleTypeConvertIfNecessary(parameter, value));
         }
         if (obj == null && parameter.getParameterType().isInterface() && (value.contains("->") || value.contains("::"))) {
-            obj = runNotExc(() -> LambdaUtil.compileExpression(value, parameter.getNestedGenericParameterType()));
+            obj = LambdaUtil.runNotExc(() -> LambdaUtil.compileExpression(value, parameter.getNestedGenericParameterType()));
         }
         if (obj == null) {
-            obj = runNotExc(() -> JsonUtil.toJavaBean(value, ResolvableType.forMethodParameter(parameter).getType()));
+            obj = LambdaUtil.runNotExc(() -> JsonUtil.toJavaBean(value, ResolvableType.forMethodParameter(parameter).getType()));
         }
         if (obj == null) {
-            obj = runNotExc(() -> BeanUtil.instantiate(parameter.getParameterType()));
+            obj = LambdaUtil.runNotExc(() -> BeanUtil.instantiate(parameter.getParameterType()));
         }
         return obj;
     }
 
-    private static <T> T runNotExc(Supplier<T> supplier) {
-        try {
-            return supplier.get();
-        } catch (Exception e) {
-            log.debug("runNotExc exception", e);
-            return null;
-        }
-    }
 }

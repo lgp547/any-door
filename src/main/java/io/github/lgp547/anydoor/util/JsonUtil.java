@@ -1,14 +1,15 @@
 package io.github.lgp547.anydoor.util;
 
-import java.lang.reflect.Type;
-import java.time.temporal.Temporal;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.github.lgp547.anydoor.util.jackson.AnyDoorJavaTimeModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Type;
+import java.time.temporal.Temporal;
+import java.util.Map;
 
 public class JsonUtil {
 
@@ -17,9 +18,8 @@ public class JsonUtil {
     public static ObjectMapper objectMapper = new ObjectMapper();
 
     static {
-        // 日期和时间格式化
-        JavaTimeModule javaTimeModule = new JavaTimeModule();
-        objectMapper.registerModule(javaTimeModule);
+        objectMapper.registerModule(new AnyDoorJavaTimeModule());
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     public static <T> T toJavaBean(String content, Type valueType) {

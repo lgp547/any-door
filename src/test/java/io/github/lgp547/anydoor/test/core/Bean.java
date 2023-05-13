@@ -13,6 +13,7 @@ import java.util.Set;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.lgp547.anydoor.test.dto.Permission;
 import io.github.lgp547.anydoor.test.dto.Role;
 import io.github.lgp547.anydoor.test.dto.User;
 
@@ -63,6 +64,7 @@ public class Bean {
 
     public static final String dateTimeByCom = "2023-01-01 00:00:00";
 
+    public static final Permission permission = new Permission(1L, "permissionName");
 
     public static JsonNode getContent() {
         ObjectNode jsonNode = new ObjectNode(JsonNodeFactory.instance);
@@ -83,6 +85,7 @@ public class Bean {
         jsonNode.put("dateTimeByISO", dateTimeByISO);
         jsonNode.put("dateTimeByCom", dateTimeByCom);
         jsonNode.putPOJO("longs", longs);
+        jsonNode.putPOJO("permission", permission);
         return jsonNode;
     }
 
@@ -213,7 +216,11 @@ public class Bean {
 
     }
 
-    public void listInt(List<Long> longs) {
+    public void listLong(List<Long> longs) {
         assertIsTrue(Bean.longs.equals(longs));
+    }
+
+    public void testBuilder(Permission permission) {
+        assertIsEquals(Bean.permission, permission);
     }
 }

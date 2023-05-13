@@ -130,7 +130,8 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
      * simpleTypeConvert
      * 函数式检查
      * json序列化
-     * 反射构造
+     * 通过Builder构造
+     * 反射构造并尝试set进去 （转Map然后塞进去）
      * null
      */
     private Object getArgs(MethodParameter parameter, String value) {

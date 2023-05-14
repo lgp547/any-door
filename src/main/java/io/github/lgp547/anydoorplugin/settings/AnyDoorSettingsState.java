@@ -28,7 +28,7 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
 
     public String dependenceVersion = AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION;
 
-    public Long pid = 0L;
+    public Long pid = -1L;
 
     public Map<String, String> cache = new ConcurrentHashMap<>();
 

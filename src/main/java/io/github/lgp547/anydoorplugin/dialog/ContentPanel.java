@@ -20,7 +20,8 @@ public class ContentPanel extends JBPanel<ContentPanel> {
     private final JButton jsonToQueryButton = new JButton("json to query");
     private final JButton queryToJsonButton = new JButton("query to json");
 
-    private final JBTextField runNum = new JBTextField( "1",10);
+    private final JBTextField runNum = new JBTextField( "1", 10);
+    private final JBTextField pid = new JBTextField( "-1", 5);
     private final JBCheckBox isConcurrent = new JBCheckBox("Concurrent run", true);
 
     public ContentPanel(Component textArea) {
@@ -49,6 +50,15 @@ public class ContentPanel extends JBPanel<ContentPanel> {
         functionPanel1.add(isConcurrent);
         add(functionPanel1, constraints2);
 
+        GridBagConstraints constraints3 = new GridBagConstraints();
+        constraints3.anchor = GridBagConstraints.WEST;
+        constraints3.gridx = 0;
+        constraints3.gridy = 1;
+        JPanel functionPanel3 = new JPanel();
+        functionPanel3.add(new JBLabel("Pid"));
+        functionPanel3.add(pid);
+        add(functionPanel3, constraints3);
+
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
         constraints.weightx = 1;
@@ -67,12 +77,20 @@ public class ContentPanel extends JBPanel<ContentPanel> {
         this.isConcurrent.setSelected(isConcurrent);
     }
 
+    public void initPid(long pid) {
+        this.pid.setText(String.valueOf(pid));
+    }
+
     public Long getRunNum() {
         return NumberUtils.toLong(runNum.getText(), 1);
     }
 
     public Boolean getIsConcurrent() {
         return isConcurrent.isSelected();
+    }
+
+    public Long getPid() {
+        return NumberUtils.toLong(pid.getText(), -1);
     }
 
     public void addCacheButtonListener(Consumer<ActionEvent> consumer) {

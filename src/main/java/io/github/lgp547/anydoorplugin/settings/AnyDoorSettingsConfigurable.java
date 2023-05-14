@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 /**
- * 每次打开配置页面都会构造新的
+ * A new one is constructed each time the configuration page is opened
  */
 public class AnyDoorSettingsConfigurable implements Configurable {
 

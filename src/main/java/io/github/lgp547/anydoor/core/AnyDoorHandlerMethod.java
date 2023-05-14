@@ -130,7 +130,6 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
      * simpleTypeConvert
      * 函数式检查
      * json序列化
-     * 通过Builder构造
      * 反射构造并尝试set进去 （转Map然后塞进去）
      * null
      */
@@ -146,7 +145,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
             obj = LambdaUtil.runNotExc(() -> JsonUtil.toJavaBean(value, ResolvableType.forMethodParameter(parameter).getType()));
         }
         if (obj == null) {
-            obj = LambdaUtil.runNotExc(() -> BeanUtil.instantiate(parameter.getParameterType()));
+            obj = LambdaUtil.runNotExc(() -> BeanUtil.toBean(parameter.getParameterType(), value));
         }
         return obj;
     }

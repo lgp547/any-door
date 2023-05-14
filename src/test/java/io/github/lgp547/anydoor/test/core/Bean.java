@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -41,6 +42,8 @@ public class Bean {
         add("AnyDoorStr1");
     }};
 
+    public static final String[] strArray = new String[]{"a", "b", "c"};
+
     public static final List<User> users = new ArrayList<User>() {{
         add(new User(2, "2"));
         add(new User(3, "3"));
@@ -72,6 +75,7 @@ public class Bean {
         jsonNode.put("name", name);
         jsonNode.putPOJO("user", user);
         jsonNode.putPOJO("strings", strings);
+        jsonNode.putPOJO("strArray", strArray);
         jsonNode.putPOJO("users", users);
         jsonNode.put("emptyUser", emptyUser);
         jsonNode.put("emptyNum", emptyNum);
@@ -150,6 +154,11 @@ public class Bean {
     public List<String> oneParam1(List<String> strings) {
         assertIsTrue(Bean.strings.equals(strings));
         return strings;
+    }
+
+    public String[] oneParam1(String[] strArray) {
+        assertIsTrue(Arrays.equals(Bean.strArray, strArray));
+        return strArray;
     }
 
     public Set<String> oneParam1Set(Set<String> strings) {

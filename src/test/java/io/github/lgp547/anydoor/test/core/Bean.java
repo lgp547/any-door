@@ -67,6 +67,8 @@ public class Bean {
 
     public static final String dateTimeByCom = "2023-01-01 00:00:00";
 
+    public static final String dateTimeByCom1 = "2023-01-02";
+
     public static final Permission permission = new Permission(1L, "permissionName");
 
     public static JsonNode getContent() {
@@ -88,6 +90,7 @@ public class Bean {
         jsonNode.put("dateTimeByLong", dateTimeByLong);
         jsonNode.put("dateTimeByISO", dateTimeByISO);
         jsonNode.put("dateTimeByCom", dateTimeByCom);
+        jsonNode.put("dateTimeByCom1", dateTimeByCom1);
         jsonNode.putPOJO("longs", longs);
         jsonNode.putPOJO("permission", permission);
         return jsonNode;
@@ -212,16 +215,16 @@ public class Bean {
     /**
      * 测试转LDT
      */
-    public void testDate(LocalDateTime dateTimeByLong, LocalDateTime dateTimeByISO, LocalDateTime dateTimeByCom) {
+    public void testDate(LocalDateTime dateTimeByLong, LocalDateTime dateTimeByISO, LocalDateTime dateTimeByCom,
+                         LocalDateTime dateTimeByCom1) {
 
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(Bean.dateTimeByLong), ZoneId.systemDefault());
-        assertIsTrue(Objects.equals(dateTimeByLong, localDateTime));
+        assertIsTrue(Objects.equals(dateTimeByLong, LocalDateTime.ofInstant(Instant.ofEpochMilli(Bean.dateTimeByLong), ZoneId.systemDefault())));
 
-        LocalDateTime localDateTime1 = LocalDateTime.parse(Bean.dateTimeByISO, DateTimeFormatter.ISO_DATE_TIME);
-        assertIsEquals(dateTimeByISO, localDateTime1);
+        assertIsEquals(dateTimeByISO, LocalDateTime.parse(Bean.dateTimeByISO, DateTimeFormatter.ISO_DATE_TIME));
 
-        LocalDateTime localDateTime2 = LocalDateTime.parse(Bean.dateTimeByCom, AnyDoorTimeDeserializer.DATETIME_FORMAT);
-        assertIsEquals(dateTimeByCom, localDateTime2);
+        assertIsEquals(dateTimeByCom, LocalDateTime.parse(Bean.dateTimeByCom, AnyDoorTimeDeserializer.DATETIME_FORMAT));
+
+        assertIsEquals(dateTimeByCom1, LocalDateTime.parse(Bean.dateTimeByCom1 + " 00:00:00", AnyDoorTimeDeserializer.DATETIME_FORMAT));
 
     }
 

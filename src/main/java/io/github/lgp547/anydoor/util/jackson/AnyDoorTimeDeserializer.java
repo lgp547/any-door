@@ -22,17 +22,20 @@ public class AnyDoorTimeDeserializer extends JsonDeserializer<LocalDateTime> {
 
     @Override
     public LocalDateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
-        LocalDateTime localDateTime;
+        LocalDateTime dateTime;
         String text = jsonParser.getText();
 
-        localDateTime = LambdaUtil.runNotExc(() -> LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(text)), ZoneId.systemDefault()));
-        if (null == localDateTime) {
-            localDateTime = LambdaUtil.runNotExc(() -> getLocalDateTime(jsonParser, deserializationContext, INSTANCE));
+        dateTime = LambdaUtil.runNotExc(() -> LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(text)), ZoneId.systemDefault()));
+        if (null == dateTime) {
+            dateTime = LambdaUtil.runNotExc(() -> getLocalDateTime(jsonParser, deserializationContext, INSTANCE));
         }
-        if (null == localDateTime) {
-            localDateTime = LambdaUtil.runNotExc(() -> getLocalDateTime(jsonParser, deserializationContext, LocalDateTimeDeserializer.INSTANCE));
+        if (null == dateTime) {
+            dateTime = LambdaUtil.runNotExc(() -> getLocalDateTime(jsonParser, deserializationContext, LocalDateTimeDeserializer.INSTANCE));
         }
-        return localDateTime;
+        if (null == dateTime) {
+            dateTime = LambdaUtil.runNotExc(() -> LocalDateTime.parse(text + " 00:00:00", AnyDoorTimeDeserializer.DATETIME_FORMAT));
+        }
+        return dateTime;
     }
 
     private LocalDateTime getLocalDateTime(JsonParser jsonParser, DeserializationContext deserializationContext, LocalDateTimeDeserializer instance) {

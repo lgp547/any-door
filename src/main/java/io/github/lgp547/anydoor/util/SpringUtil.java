@@ -24,7 +24,20 @@ public class SpringUtil {
 
     private static Supplier<ApplicationContext[]> applicationContextsSupplier;
 
+    private static volatile boolean isInit = false;
+
     public static void initApplicationContexts(Supplier<ApplicationContext[]> applicationContextsSupplier) {
+        if (!isInit) {
+            synchronized (SpringUtil.class) {
+                if (!isInit) {
+                    doInit(applicationContextsSupplier);
+                    isInit = true;
+                }
+            }
+        }
+    }
+
+    private static void doInit(Supplier<ApplicationContext[]> applicationContextsSupplier) {
         SpringUtil.applicationContextsSupplier = applicationContextsSupplier;
         List<ApplicationContext> curApplicationContextList = updateApplicationContextList();
 

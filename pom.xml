@@ -5,7 +5,7 @@
 
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <name>any-door</name>
     <description>any-door</description>
@@ -31,6 +31,21 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- <optional>true</optional> -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <optional>true</optional>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <optional>true</optional>
+            <scope>provided</scope>
+        </dependency>
+        <!-- <optional>true</optional> -->
+
         <!-- provided -->
         <dependency>
             <groupId>org.springframework</groupId>

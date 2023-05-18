@@ -10,6 +10,7 @@ import io.github.lgp547.anydoorplugin.AnyDoorInfo;
 import io.github.lgp547.anydoorplugin.dialog.TextAreaDialog;
 import io.github.lgp547.anydoorplugin.dto.ParamCacheDto;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
+import io.github.lgp547.anydoorplugin.util.HttpUtil;
 import io.github.lgp547.anydoorplugin.util.ImportNewUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import io.github.lgp547.anydoorplugin.util.JsonUtil;
@@ -73,9 +74,13 @@ public class AnyDoorPerformed {
     }
 
     private static void openAnyDoor(Project project, String jsonDtoStr, AnyDoorSettingsState service, BiConsumer<String, Exception> errHandle) {
-        String anyDoorJarPath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_NAME, service.dependenceVersion);
-        String paramPath = project.getBasePath() + "/.idea/AnyDoorParam.json";
-        VmUtil.attachAsync(String.valueOf(service.pid), anyDoorJarPath, jsonDtoStr, paramPath, errHandle);
+        if (service.isSelectJavaAttach()) {
+            String anyDoorJarPath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_NAME, service.dependenceVersion);
+            String paramPath = project.getBasePath() + "/.idea/AnyDoorParam.json";
+            VmUtil.attachAsync(String.valueOf(service.pid), anyDoorJarPath, jsonDtoStr, paramPath, errHandle);
+        } else {
+            HttpUtil.postAsyncByJdk(service.mvcAddress + ":" + service.mvcPort + service.mvcWebPathPrefix + "/any_door/run", jsonDtoStr, errHandle);
+        }
     }
 
     @NotNull

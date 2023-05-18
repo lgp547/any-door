@@ -1,7 +1,12 @@
 package io.github.lgp547.anydoorplugin.util;
 
 import com.intellij.openapi.application.PathManager;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ModuleRootModificationUtil;
+import com.intellij.openapi.roots.libraries.Library;
+import com.intellij.openapi.roots.libraries.LibraryTable;
 import io.github.lgp547.anydoorplugin.AnyDoorInfo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -9,11 +14,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -141,4 +149,61 @@ public class ImportNewUtil {
             Files.copy(file.toPath(), jos);
         }
     }
+
+    public static void fillAnyDoorJar(Project project, String moduleName) {
+        try {
+            Module module = getMainModule(project, Optional.ofNullable(moduleName));
+            removeModuleLibraryIfExist(module, AnyDoorInfo.ANY_DOOR_NAME);
+            File file = fillModuleLibrary(module, AnyDoorInfo.ANY_DOOR_NAME + "-" + AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION,
+                    ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_NAME, AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION));
+            NotifierUtil.notifyInfo(project, module.getName() + " fill ModuleLibrary success " + file.getPath());
+        } catch (Exception e) {
+            NotifierUtil.notifyError(project, "fill ModuleLibrary fail: " + e.getMessage());
+        }
+    }
+
+    public static Module getMainModule(Project project, Optional<String> runModuleNameOp) {
+        Module[] modules = ModuleManager.getInstance(project).getModules();
+        if (modules.length == 1) {
+            return modules[0];
+        }
+        if (runModuleNameOp.isPresent()) {
+            for (Module module : modules) {
+                if (module.getName().equals(runModuleNameOp.get())) {
+                    return module;
+                }
+            }
+        }
+        throw new RuntimeException("main module could not find. size " + modules.length);
+    }
+
+    public static void removeModuleLibraryIfExist(@NotNull Module module, String jarName) {
+        ModuleRootModificationUtil.updateModel(module, modifiableRootModel -> {
+            LibraryTable moduleLibraryTable = modifiableRootModel.getModuleLibraryTable();
+            Iterator<Library> libraryIterator = moduleLibraryTable.getLibraryIterator();
+            while (libraryIterator.hasNext()) {
+                Library next = libraryIterator.next();
+                if (StringUtils.contains(next.getName(), jarName)) {
+                    moduleLibraryTable.removeLibrary(next);
+                }
+            }
+        });
+    }
+
+    public static void removeAllModuleLibrary(Project project, String jarName) {
+        Module[] modules = ModuleManager.getInstance(project).getModules();
+        for (Module module : modules) {
+            removeModuleLibraryIfExist(module, jarName);
+        }
+    }
+
+    public static File fillModuleLibrary(Module module, String libraryName, String filePath) throws IOException {
+        File file = new File(filePath);
+        if (!file.isFile()) {
+            throw new FileNotFoundException("File not found [" + filePath + "]");
+        }
+        ModuleRootModificationUtil.addModuleLibrary(module, libraryName, List.of("file://" + file.getPath()), List.of());
+        return file;
+    }
+
 }

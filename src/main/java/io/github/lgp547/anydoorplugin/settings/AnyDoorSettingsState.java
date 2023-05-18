@@ -32,6 +32,14 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
 
     public Map<String, String> cache = new ConcurrentHashMap<>();
 
+    public Integer runProjectStrategy = 100; // 100 is Java attach, 200 is Spring mvc.
+
+    public String mvcAddress = "http://127.0.0.1";
+
+    public Integer mvcPort = 8080;
+
+    public String mvcWebPathPrefix = "";
+
     @Nullable
     @Override
     public AnyDoorSettingsState getState() {
@@ -75,6 +83,14 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
             throw new IllegalStateException("get AnyDoorSettings Service error");
         }
         return service;
+    }
+
+    public boolean isSelectJavaAttach() {
+        return runProjectStrategy.equals(100);
+    }
+
+    public void updateRunProjectEnum(boolean selectJavaAttach) {
+        runProjectStrategy = selectJavaAttach ? 100 : 200;
     }
 
     public boolean updateDependence(String newName, String newVersion) {

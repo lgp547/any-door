@@ -48,7 +48,11 @@ public class AnyDoorSettingsConfigurable implements Configurable {
         AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
         return !mySettingsComponent.getDependenceVersion().equals(settings.dependenceVersion) ||
                 !mySettingsComponent.getEnableAsyncExecute().equals(settings.enableAsyncExecute) ||
-                !mySettingsComponent.getProjectPid().equals(String.valueOf(settings.pid))
+                !mySettingsComponent.getProjectPid().equals(String.valueOf(settings.pid)) ||
+                !mySettingsComponent.isSelectJavaAttach().equals(settings.isSelectJavaAttach()) ||
+                !mySettingsComponent.getMvcAddress().equals(settings.mvcAddress) ||
+                !mySettingsComponent.getMvcPort().equals(settings.mvcPort) ||
+                !mySettingsComponent.getMvcWebPathPrefix().equals(settings.mvcWebPathPrefix)
                 ;
     }
 
@@ -60,6 +64,10 @@ public class AnyDoorSettingsConfigurable implements Configurable {
         if (!settings.updateDependence(mySettingsComponent.getDependenceNames(), mySettingsComponent.getDependenceVersion())) {
             mySettingsComponent.setDependenceVersion(settings.dependenceVersion);
         }
+        settings.updateRunProjectEnum(mySettingsComponent.isSelectJavaAttach());
+        settings.mvcAddress = mySettingsComponent.getMvcAddress();
+        settings.mvcPort = mySettingsComponent.getMvcPort();
+        settings.mvcWebPathPrefix = mySettingsComponent.getMvcWebPathPrefix();
     }
 
     @Override
@@ -69,6 +77,10 @@ public class AnyDoorSettingsConfigurable implements Configurable {
         mySettingsComponent.setDependenceVersion(settings.dependenceVersion);
         mySettingsComponent.setDependenceNames(settings.dependenceName);
         mySettingsComponent.setProjectPid(String.valueOf(settings.pid));
+        mySettingsComponent.updateSelectJavaAttach(settings.isSelectJavaAttach());
+        mySettingsComponent.setMvcAddressText(settings.mvcAddress);
+        mySettingsComponent.setMvcPortText(settings.mvcPort);
+        mySettingsComponent.setMvcWebPathPrefix(settings.mvcWebPathPrefix);
     }
 
     @Override

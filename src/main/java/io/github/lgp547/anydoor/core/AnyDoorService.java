@@ -26,7 +26,10 @@ public class AnyDoorService {
 
     private static volatile boolean isInit = false;
 
-    public AnyDoorService() {
+    public AnyDoorService(boolean isMvc) {
+        if (isMvc) {
+            return;
+        }
         if (!isInit) {
             synchronized (AnyDoorService.class) {
                 if (!isInit) {

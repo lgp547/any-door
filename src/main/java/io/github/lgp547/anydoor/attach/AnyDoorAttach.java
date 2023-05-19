@@ -32,7 +32,7 @@ public class AnyDoorAttach {
 
         AnyDoorDto anyDoorDto = JsonUtil.toJavaBean(agentArgs, AnyDoorDto.class);
 
-        AnyDoorService anyDoorService = new AnyDoorService();
+        AnyDoorService anyDoorService = new AnyDoorService(false);
         anyDoorService.run(anyDoorDto);
     }
 

@@ -10,6 +10,7 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBRadioButton;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.FormBuilder;
+import io.github.lgp547.anydoorplugin.AnyDoorInfo;
 import io.github.lgp547.anydoorplugin.util.ImportNewUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -49,7 +50,9 @@ public class AnyDoorSettingsComponent {
 
     private final ComboBox<String> mainClassModuleComboBox = new ComboBox<>();
 
-    private final JButton importButton = new JButton("Try import `any-door` jar to module");
+    private final JButton importButton = new JButton("Import `any-door` jar to module");
+
+    private final JButton removeAllButton = new JButton("Remove `any-door` jar for all module");
 
     public AnyDoorSettingsComponent(Project project) {
         componentInit(project);
@@ -69,11 +72,15 @@ public class AnyDoorSettingsComponent {
         runProjectModePanel2.add(mainClassModuleComboBox);
         runProjectModePanel2.add(importButton);
 
+        JPanel runProjectModePanel3 = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        runProjectModePanel3.add(button);
+        runProjectModePanel3.add(removeAllButton);
+
         myMainPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(new JBLabel("Enable async execute:"), enableAsyncExecute)
-                .addComponent(button)
+                .addComponent(runProjectModePanel3)
                 .addSeparator()
-                .addLabeledComponent(new JBLabel("Select execute `any-door` mode:"), runProjectModePanel)
+                .addLabeledComponent(new JBLabel("Execute `any-door` mode:"), runProjectModePanel)
                 .addLabeledComponent(new JBLabel("'Java attach' pid:"), projectPid)
                 .addLabeledComponent(new JBLabel("'Spring mvc' address:"), mvcAddressText)
                 .addLabeledComponent(new JBLabel("'Spring mvc' port:"), mvcPortText)
@@ -112,6 +119,8 @@ public class AnyDoorSettingsComponent {
         mainClassModuleComboBox.setItem("start");
 
         importButton.addActionListener(e -> ImportNewUtil.fillAnyDoorJar(project, mainClassModuleComboBox.getItem()));
+
+        removeAllButton.addActionListener(e -> ImportNewUtil.removeAllModuleLibrary(project, AnyDoorInfo.ANY_DOOR_NAME));
     }
 
     public JPanel getPanel() {

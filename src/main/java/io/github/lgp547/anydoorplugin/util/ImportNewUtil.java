@@ -132,6 +132,7 @@ public class ImportNewUtil {
         copyJarFile(tempDirectory.toString(), jos, tempDirectory.toFile().listFiles());
         jos.close();
         out.close();
+        FileUtils.deleteDirectory(tempDirectory.toFile());
     }
 
     private static void copyJarFile(String basePath, JarOutputStream jos, File[] files) throws IOException {
@@ -195,6 +196,7 @@ public class ImportNewUtil {
         for (Module module : modules) {
             removeModuleLibraryIfExist(module, jarName);
         }
+        NotifierUtil.notifyInfo(project, "Remove module success");
     }
 
     public static File fillModuleLibrary(Module module, String libraryName, String filePath) throws IOException {

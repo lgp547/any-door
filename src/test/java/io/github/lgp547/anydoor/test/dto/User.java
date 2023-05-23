@@ -4,6 +4,15 @@ package io.github.lgp547.anydoor.test.dto;
 import java.util.Objects;
 
 public class User {
+
+    private static final String privateTag = "privateTag";
+
+    public static final String publicTag = "publicTag";
+
+    public String getPublicTag() {
+        return publicTag;
+    }
+
     private Integer id;
 
     private String name;

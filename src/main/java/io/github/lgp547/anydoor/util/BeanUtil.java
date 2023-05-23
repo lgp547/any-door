@@ -2,6 +2,7 @@ package io.github.lgp547.anydoor.util;
 
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -60,9 +61,27 @@ public class BeanUtil {
             if (!field.isAccessible()) {
                 field.setAccessible(true);
             }
-            field.set(obj, BeanUtil.simpleTypeConvertIfNecessary(value, field.getType()));
+            field.set(obj, getArgs(field, JsonUtil.toStrNotExc(value)));
         } catch (Exception ignored) {
         }
+    }
+
+
+    private static Object getArgs(Field field, String value) {
+        Object obj = null;
+        if (BeanUtil.isSimpleProperty(field.getType())) {
+            obj = LambdaUtil.runNotExc(() -> BeanUtil.simpleTypeConvertIfNecessary(value, field.getType()));
+        }
+        if (obj == null) {
+            obj = LambdaUtil.runNotExc(() -> JsonUtil.toJavaBean(value, ResolvableType.forField(field).getType()));
+        }
+        if (obj == null && field.getType().isInterface() && (value.contains("->") || value.contains("::"))) {
+            obj = LambdaUtil.runNotExc(() -> LambdaUtil.compileExpression(value, field.getGenericType()));
+        }
+        if (obj == null) {
+            obj = LambdaUtil.runNotExc(() -> BeanUtil.toBean(field.getType(), value));
+        }
+        return obj;
     }
 
     public static boolean isSimpleProperty(Class<?> type) {

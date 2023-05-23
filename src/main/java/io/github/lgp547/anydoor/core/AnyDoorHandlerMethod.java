@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 
 public class AnyDoorHandlerMethod extends HandlerMethod {
 
@@ -128,7 +127,6 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
 
     /**
      * simpleTypeConvert
-     * 函数式检查
      * json序列化
      * 反射构造并尝试set进去 （转Map然后塞进去）
      * null
@@ -138,11 +136,11 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         if (BeanUtil.isSimpleProperty(parameter.getParameterType())) {
             obj = LambdaUtil.runNotExc(() -> BeanUtil.simpleTypeConvertIfNecessary(parameter, value));
         }
-        if (obj == null && parameter.getParameterType().isInterface() && (value.contains("->") || value.contains("::"))) {
-            obj = LambdaUtil.runNotExc(() -> LambdaUtil.compileExpression(value, parameter.getNestedGenericParameterType()));
-        }
         if (obj == null) {
             obj = LambdaUtil.runNotExc(() -> JsonUtil.toJavaBean(value, ResolvableType.forMethodParameter(parameter).getType()));
+        }
+        if (obj == null && parameter.getParameterType().isInterface() && (value.contains("->") || value.contains("::"))) {
+            obj = LambdaUtil.runNotExc(() -> LambdaUtil.compileExpression(value, parameter.getNestedGenericParameterType()));
         }
         if (obj == null) {
             obj = LambdaUtil.runNotExc(() -> BeanUtil.toBean(parameter.getParameterType(), value));

@@ -32,7 +32,7 @@ public class FileUtil {
                     String entryName = entry.getName();
 
                     // 如果该文件是需要提取的资源文件
-                    if (entryName.equals(child)) {
+                    if (pathEquals(entryName, child)) {
                         return getTmpLibFile(jarFile.getInputStream(entry));
                     }
                 }
@@ -68,4 +68,9 @@ public class FileUtil {
             out.write(buffer, 0, len);
         }
     }
+
+    public static boolean pathEquals(String path1, String path2) {
+        return StringUtils.pathEquals(path1, path2);
+    }
+
 }

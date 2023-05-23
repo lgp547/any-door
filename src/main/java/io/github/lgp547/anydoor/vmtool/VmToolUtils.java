@@ -28,12 +28,14 @@ public class VmToolUtils {
         }
 
         CodeSource codeSource = VmToolUtils.class.getProtectionDomain().getCodeSource();
+        String libPath = null;
         if (codeSource != null) {
             try {
                 File bootJarPath = new File(codeSource.getLocation().toURI().getSchemeSpecificPart());
                 log.info("load vmtool from {}", bootJarPath.getAbsolutePath());
 
-                String libPath = FileUtil.copyChildFile(bootJarPath, "vmlib/" + libName);
+                libPath = FileUtil.copyChildFile(bootJarPath, "vmlib/" + libName);
+                log.info("load vmtool libPath {}", libPath);
                 instance = VmTool.getInstance(libPath);
             } catch (Throwable e) {
                 log.error("VmToolUtils init fail", e);
@@ -41,7 +43,7 @@ public class VmToolUtils {
         }
 
         if (instance == null) {
-            throw new IllegalStateException("VmToolUtils init fail. codeSource: " + codeSource);
+            throw new IllegalStateException("VmToolUtils init fail. codeSource: " + codeSource + " libPath: " + libPath);
         }
     }
 

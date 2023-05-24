@@ -26,7 +26,7 @@ public class ContentPanel extends JBPanel<ContentPanel> {
 
     public ContentPanel(Component textArea) {
         super(new GridBagLayout());
-        setPreferredSize(new JBDimension(600, 500));
+        setPreferredSize(new JBDimension(670, 500));
 
 
         GridBagConstraints constraints1 = new GridBagConstraints();

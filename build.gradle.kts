@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github.lgp547"
-version = "1.2.0"
+version = "1.3.1"
 
 repositories {
     mavenCentral()
@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.lgp547:any-door:1.0.2")
+    implementation("io.github.lgp547:any-door:1.3.1")
 
 }
 
@@ -35,7 +35,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("203.*")
-        untilBuild.set("231.*")
+        untilBuild.set("232.*")
     }
 
 //    signPlugin {

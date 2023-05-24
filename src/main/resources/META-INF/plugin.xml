@@ -4,18 +4,17 @@
     <name>AnyDoor</name>
     <vendor email="lgp547279@163.com" url="https://github.com/lgp547">lgp</vendor>
     <description><![CDATA[
-        执行 Spring boot 项目的任意方法，无论是 App 层还是 Dao 层方法都可以直接运行<br>
+        执行 Spring 项目的任意方法，无论是 App 层还是 Dao 层方法都可以直接运行<br>
         快速开始：<br>
         <ul>
             <li>启动项目</li>
             <li>选择要执行的方法，右键选择 Open AnyDoor (control/command+shift+D)</li>
             <li>填充参数点击ok，即可调用到当前方法</li>
         </ul>
-        注意：首次使用AnyDoor插件请保证网络能访问Maven中央仓库，需要获取Jar包到本地的仓库<br>
         详情说明见插件的 <a href="https://github.com/lgp547/any-door-plugin#readme">readme</a><br>
         QQ讨论群: 421880294<br><br>
 
-        Any method to execute a Spring boot project,Either the 'App' layer or the 'Dao' layer can execution directly.<br>
+        Any method to execute a Spring project,Either the 'App' layer or the 'Dao' layer can execution directly.<br>
         Getting Started:<br>
         <ul>
             <li>fill 'Preferences.Other Settings.Setting Any Door' text box (command+,)</li>

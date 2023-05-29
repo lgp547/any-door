@@ -1,0 +1,71 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin require-restart="false">
+    <id>io.github.lgp547.any-door-plugin</id>
+    <name>AnyDoor</name>
+    <vendor email="lgp547279@163.com" url="https://github.com/lgp547">lgp</vendor>
+    <description><![CDATA[
+        执行 Spring 项目的任意方法，无论是 App 层还是 Dao 层方法都可以直接运行<br>
+        快速开始：<br>
+        <ul>
+            <li>启动项目</li>
+            <li>选择要执行的方法，右键选择 Open AnyDoor (control/command+shift+D)</li>
+            <li>填充参数点击ok，即可调用到当前方法</li>
+        </ul>
+        详情说明见插件的 <a href="https://github.com/lgp547/any-door-plugin#readme">readme</a><br>
+        QQ讨论群: 421880294<br><br>
+
+        Any method to execute a Spring project,Either the 'App' layer or the 'Dao' layer can execution directly.<br>
+        Getting Started:<br>
+        <ul>
+            <li>fill 'Preferences.Other Settings.Setting Any Door' text box (command+,)</li>
+            <li>select method and 'Open AnyDoor' (control/command+shift+D)</li>
+            <li>fill json param before run</li>
+        </ul>
+        <a href="https://github.com/lgp547/any-door">any-door</a><br>
+        <a href="https://github.com/lgp547/any-door-plugin.git">any-door-plugin</a>
+    ]]></description>
+
+
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+
+        <!-- setting -->
+        <projectConfigurable instance="io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsConfigurable"
+                             id="io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsConfigurable"
+                             displayName="Any Door" nonDefaultProject="true"/>
+        <projectService serviceImplementation="io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState"/>
+
+        <!-- notice -->
+        <applicationService serviceImplementation="io.github.lgp547.anydoorplugin.util.NotifierUtil"/>
+        <notificationGroup id="AnyDoor" displayType="BALLOON"/>
+
+    </extensions>
+
+    <actions>
+        <action id="AnyDoorPlugin.AnyDoorOpenAction"
+                class="io.github.lgp547.anydoorplugin.action.AnyDoorOpenAction"
+                text="Open AnyDoor"
+                description="The method will be called"
+                icon="io.github.lgp547.anydoorplugin.util.AnyDoorIcons.default_icon">
+            <keyboard-shortcut keymap="$default" first-keystroke="control shift D"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+        </action>
+        <action id="AnyDoorPlugin.AnyDoorAgainOpenAction"
+                class="io.github.lgp547.anydoorplugin.action.AnyDoorAgainOpenAction"
+                text="Again Open AnyDoor"
+                description="The last method will be called"
+                icon="io.github.lgp547.anydoorplugin.util.AnyDoorIcons.default_icon">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt control shift S"/>
+            <add-to-group group-id="EditorPopupMenu"/>
+        </action>
+    </actions>
+
+    <applicationListeners>
+        <listener topic="com.intellij.execution.ExecutionListener"
+                  class="io.github.lgp547.anydoorplugin.listener.ExecutionListenerImpl"/>
+    </applicationListeners>
+
+</idea-plugin>

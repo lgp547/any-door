@@ -1,4 +1,4 @@
-//package io.github.lgp547.anydoorplugin.util;
+package io.github.lgp547.anydoorplugin.util;//package io.github.lgp547.anydoorplugin.util;
 //
 //import com.intellij.execution.configurations.RunProfile;
 //import com.intellij.execution.runners.ExecutionEnvironment;

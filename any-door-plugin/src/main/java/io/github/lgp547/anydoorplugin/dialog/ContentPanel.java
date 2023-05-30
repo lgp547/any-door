@@ -22,7 +22,7 @@ public class ContentPanel extends JBPanel<ContentPanel> {
     private final JButton queryToJsonButton = new JButton("query to json");
 
     private final JBTextField runNum = new JBTextField( "1", 10);
-    private final JBTextField pid = new JBTextField( "-1", 5);
+    private final JBTextField pid = new JBTextField( "-1", 6);
     private long initPid;
     private final JBCheckBox isConcurrent = new JBCheckBox("Concurrent run", true);
 
@@ -46,20 +46,14 @@ public class ContentPanel extends JBPanel<ContentPanel> {
         constraints2.anchor = GridBagConstraints.EAST;
         constraints2.gridx = 0;
         constraints2.gridy = 1;
+        constraints2.ipadx = 90; // 组件内部填充空间，即给组件的最小宽度添加多大的空间
         JPanel functionPanel1 = new JPanel();
+        functionPanel1.add(new JBLabel("Pid"));
+        functionPanel1.add(pid);
         functionPanel1.add(new JBLabel("Run num"));
         functionPanel1.add(runNum);
         functionPanel1.add(isConcurrent);
         add(functionPanel1, constraints2);
-
-        GridBagConstraints constraints3 = new GridBagConstraints();
-        constraints3.anchor = GridBagConstraints.WEST;
-        constraints3.gridx = 0;
-        constraints3.gridy = 1;
-        JPanel functionPanel3 = new JPanel();
-        functionPanel3.add(new JBLabel("Pid"));
-        functionPanel3.add(pid);
-        add(functionPanel3, constraints3);
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;

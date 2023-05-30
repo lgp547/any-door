@@ -66,4 +66,7 @@ public class TextAreaDialog extends DialogWrapper {
         return contentPanel;
     }
 
+    public boolean isChangePid() {
+        return contentPanel.isChangePid();
+    }
 }

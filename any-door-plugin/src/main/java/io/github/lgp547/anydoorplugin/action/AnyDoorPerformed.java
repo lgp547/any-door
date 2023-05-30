@@ -57,7 +57,9 @@ public class AnyDoorPerformed {
             TextAreaDialog dialog = new TextAreaDialog(project, String.format("fill method(%s) param", methodName), method.getParameterList(), service.getCache(cacheKey), service);
             dialog.setOkAction(() -> {
                 okAction.run();
-                service.pid = dialog.getPid();
+                if (dialog.isChangePid()) {
+                    service.pid = dialog.getPid();
+                }
                 String text = dialog.getText();
                 ParamCacheDto paramCacheDto = new ParamCacheDto(dialog.getRunNum(), dialog.getIsConcurrent(), text);
                 service.putCache(cacheKey, paramCacheDto);

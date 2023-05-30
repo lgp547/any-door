@@ -10,6 +10,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class ContentPanel extends JBPanel<ContentPanel> {
@@ -22,6 +23,7 @@ public class ContentPanel extends JBPanel<ContentPanel> {
 
     private final JBTextField runNum = new JBTextField( "1", 10);
     private final JBTextField pid = new JBTextField( "-1", 5);
+    private long initPid;
     private final JBCheckBox isConcurrent = new JBCheckBox("Concurrent run", true);
 
     public ContentPanel(Component textArea) {
@@ -78,6 +80,7 @@ public class ContentPanel extends JBPanel<ContentPanel> {
     }
 
     public void initPid(long pid) {
+        this.initPid = pid;
         this.pid.setText(String.valueOf(pid));
     }
 
@@ -114,4 +117,7 @@ public class ContentPanel extends JBPanel<ContentPanel> {
     }
 
 
+    public boolean isChangePid() {
+        return !Objects.equals(getPid(), this.initPid);
+    }
 }

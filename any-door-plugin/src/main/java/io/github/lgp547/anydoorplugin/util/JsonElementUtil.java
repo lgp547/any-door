@@ -32,7 +32,7 @@ public class JsonElementUtil {
 
     public static JsonElement toJson(PsiType type, Integer num) {
         if (num > 5) {
-            return new JsonPrimitive("");
+            return JsonNull.INSTANCE;
         }
         if (type.isAssignableFrom(PsiType.INT)) {
             return new JsonPrimitive(0);
@@ -62,7 +62,7 @@ public class JsonElementUtil {
             PsiClass psiClass = ((PsiClassType) type).resolve();
             if (null != psiClass) {
                 if (isNoSupportType(psiClass)) {
-                    return new JsonPrimitive("");
+                    return JsonNull.INSTANCE;
                 } else {
                     try {
                         Class<?> aClass = Class.forName(psiClass.getQualifiedName());
@@ -87,7 +87,7 @@ public class JsonElementUtil {
                     } catch (Exception ignored) {
                     }
                     if (psiClass.isInterface()) {
-                        return new JsonPrimitive("");
+                        return JsonNull.INSTANCE;
                     }
                     JsonObject jsonObject1 = new JsonObject();
                     Arrays.stream(psiClass.getFields()).forEach(field -> {

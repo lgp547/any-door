@@ -1,8 +1,6 @@
 package io.github.lgp547.anydoor.util;
 
 import arthas.VmTool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -17,12 +15,10 @@ import java.util.jar.JarFile;
 
 public class FileUtil {
 
-    private static final Logger log = LoggerFactory.getLogger(FileUtil.class);
-
     /**
      * @return tmp file absolute path
      */
-    public static String copyChildFile(File file, String child) {
+    public static String copyChildFile(File file, String child) throws IOException {
         if (StringUtils.endsWithIgnoreCase(file.getPath(), ".jar")) {
             try (JarFile jarFile = new JarFile(file)) {
                 // 获取Jar包中所有的文件
@@ -36,20 +32,13 @@ public class FileUtil {
                         return getTmpLibFile(jarFile.getInputStream(entry));
                     }
                 }
-            } catch (IOException e) {
-                log.error("copy jar file child error", e);
             }
             return "";
         }
         if (file.isDirectory()) {
             file = new File(file.getAbsolutePath(), child);
         }
-        try {
-            return getTmpLibFile(Files.newInputStream(file.toPath()));
-        } catch (IOException e) {
-            log.error("copy file child error", e);
-        }
-        return "";
+        return getTmpLibFile(Files.newInputStream(file.toPath()));
     }
 
     public static String getTmpLibFile(InputStream inputStream) throws IOException {

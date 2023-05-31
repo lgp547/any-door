@@ -35,10 +35,9 @@ public class VmToolUtils {
                 log.info("load vmtool from {}", bootJarPath.getAbsolutePath());
 
                 libPath = FileUtil.copyChildFile(bootJarPath, "vmlib/" + libName);
-                log.info("load vmtool libPath {}", libPath);
                 instance = VmTool.getInstance(libPath);
             } catch (Throwable e) {
-                log.error("VmToolUtils init fail", e);
+                throw new IllegalStateException(e);
             }
         }
 

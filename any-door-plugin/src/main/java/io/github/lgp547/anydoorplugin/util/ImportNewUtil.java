@@ -155,8 +155,8 @@ public class ImportNewUtil {
         try {
             Module module = getMainModule(project, Optional.ofNullable(moduleName));
             removeModuleLibraryIfExist(module, AnyDoorInfo.ANY_DOOR_NAME);
-            File file = fillModuleLibrary(module, AnyDoorInfo.ANY_DOOR_NAME + "-" + AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION,
-                    ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_NAME, AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION));
+            File file = fillModuleLibrary(module, AnyDoorInfo.ANY_DOOR_JAR + "-" + AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION,
+                    ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_JAR, AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION));
             NotifierUtil.notifyInfo(project, module.getName() + " fill ModuleLibrary success " + file.getPath());
         } catch (Exception e) {
             NotifierUtil.notifyError(project, "fill ModuleLibrary fail: " + e.getMessage());

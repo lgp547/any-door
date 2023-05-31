@@ -24,7 +24,7 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
 
     public Boolean enableAsyncExecute = true;
 
-    public String dependenceName = AnyDoorInfo.ANY_DOOR_NAME;
+    public String dependenceName = AnyDoorInfo.ANY_DOOR_JAR;
 
     public String dependenceVersion = AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION;
 
@@ -95,7 +95,7 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
 
     public boolean updateDependence(String newName, String newVersion) {
         dependenceName = newName;
-        if (!Objects.equals(newName, AnyDoorInfo.ANY_DOOR_NAME)) {
+        if (!Objects.equals(newName, AnyDoorInfo.ANY_DOOR_JAR)) {
             dependenceVersion = newVersion;
             return true;
         }

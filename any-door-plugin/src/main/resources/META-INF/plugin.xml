@@ -11,7 +11,7 @@
             <li>选择要执行的方法，右键选择 Open AnyDoor (control/command+shift+D)</li>
             <li>填充参数点击ok，即可调用到当前方法</li>
         </ul>
-        详情说明见插件的 <a href="https://github.com/lgp547/any-door-plugin#readme">readme</a><br>
+        详情说明见 <a href="https://github.com/lgp547/any-door#readme">readme</a><br>
         QQ讨论群: 421880294<br><br>
 
         Any method to execute a Spring project,Either the 'App' layer or the 'Dao' layer can execution directly.<br>
@@ -22,7 +22,6 @@
             <li>fill json param before run</li>
         </ul>
         <a href="https://github.com/lgp547/any-door">any-door</a><br>
-        <a href="https://github.com/lgp547/any-door-plugin.git">any-door-plugin</a>
     ]]></description>
 
 

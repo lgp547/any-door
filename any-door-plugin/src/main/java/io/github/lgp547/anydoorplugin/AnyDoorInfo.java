@@ -6,9 +6,11 @@ import java.util.function.UnaryOperator;
 public interface AnyDoorInfo {
     String ANY_DOOR_NAME = "any-door";
 
-    String ANY_DOOR_JAR = "any-door-core";
+    String ANY_DOOR_JAR_MIN_VERSION = "1.3.2-SNAPSHOT";
 
-    String ANY_DOOR_JAR_MIN_VERSION = "1.3.2";
+    String ANY_DOOR_ATTACH_JAR = "any-door-attach-" + ANY_DOOR_JAR_MIN_VERSION + ".jar";
+
+    String ANY_DOOR_JAR = "any-door-core-" + ANY_DOOR_JAR_MIN_VERSION + ".jar";
 
     String ANY_DOOR_ALL_DEPENDENCE_JAR = "any-door-all-dependence.jar";
 

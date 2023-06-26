@@ -1,7 +1,5 @@
 package io.github.lgp547.anydoor.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -17,8 +15,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class SpringUtil {
-
-    private static final Logger log = LoggerFactory.getLogger(SpringUtil.class);
 
     private static List<ApplicationContext> applicationContextList;
 
@@ -42,7 +38,6 @@ public class SpringUtil {
         List<ApplicationContext> curApplicationContextList = updateApplicationContextList();
 
         if (curApplicationContextList.size() != 1) {
-            log.info("project has multiple spring contexts. " + curApplicationContextList.stream().map(ApplicationContext::getDisplayName).collect(Collectors.toList()));
 
             String contextName = System.getProperty("anydoor.spring.core.context.name");
             if (StringUtils.hasLength(contextName)) {
@@ -61,7 +56,7 @@ public class SpringUtil {
             }
         }
         BuildProperties instance = BuildProperties.getInstance();
-        log.info(String.format("mmmmmmmmmmmmmmmmmmm any-door %s springUtil init end mmmmmmmmmmmmmmmmmmm",instance.getVersion()));
+        System.out.println("mmmmmmmmmmmmmmmmmmm any-door " + instance.getVersion() + " init end mmmmmmmmmmmmmmmmmmm");
     }
 
     private static int comparingSort(List<String> sort, String name1, String name2) {
@@ -87,7 +82,6 @@ public class SpringUtil {
         try {
             return doGetBean(requiredType, applicationContextList);
         } catch (IllegalStateException illegalStateException) {
-            log.warn("Update and try again. applicationContext getBean IllegalStateException {}", illegalStateException.getMessage());
             return doGetBean(requiredType, updateApplicationContextList());
         }
     }

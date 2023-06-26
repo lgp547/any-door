@@ -46,7 +46,8 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
-        return !mySettingsComponent.getDependenceVersion().equals(settings.dependenceVersion) ||
+        return
+//                !mySettingsComponent.getDependenceVersion().equals(settings.dependenceVersion) ||
                 !mySettingsComponent.getEnableAsyncExecute().equals(settings.enableAsyncExecute) ||
                 !mySettingsComponent.getProjectPid().equals(String.valueOf(settings.pid)) ||
                 !mySettingsComponent.isSelectJavaAttach().equals(settings.isSelectJavaAttach()) ||
@@ -61,9 +62,9 @@ public class AnyDoorSettingsConfigurable implements Configurable {
         AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
         settings.pid = NumberUtils.toLong(mySettingsComponent.getProjectPid(), settings.pid);
         settings.enableAsyncExecute = mySettingsComponent.getEnableAsyncExecute();
-        if (!settings.updateDependence(mySettingsComponent.getDependenceNames(), mySettingsComponent.getDependenceVersion())) {
-            mySettingsComponent.setDependenceVersion(settings.dependenceVersion);
-        }
+//        if (!settings.updateDependence(mySettingsComponent.getDependenceNames(), mySettingsComponent.getDependenceVersion())) {
+//            mySettingsComponent.setDependenceVersion(settings.dependenceVersion);
+//        }
         settings.updateRunProjectEnum(mySettingsComponent.isSelectJavaAttach());
         settings.mvcAddress = mySettingsComponent.getMvcAddress();
         settings.mvcPort = mySettingsComponent.getMvcPort();
@@ -74,8 +75,8 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     public void reset() {
         AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
         mySettingsComponent.setEnableAsyncExecute(settings.enableAsyncExecute);
-        mySettingsComponent.setDependenceVersion(settings.dependenceVersion);
-        mySettingsComponent.setDependenceNames(settings.dependenceName);
+//        mySettingsComponent.setDependenceVersion(settings.dependenceVersion);
+//        mySettingsComponent.setDependenceNames(settings.dependenceName);
         mySettingsComponent.setProjectPid(String.valueOf(settings.pid));
         mySettingsComponent.updateSelectJavaAttach(settings.isSelectJavaAttach());
         mySettingsComponent.setMvcAddressText(settings.mvcAddress);

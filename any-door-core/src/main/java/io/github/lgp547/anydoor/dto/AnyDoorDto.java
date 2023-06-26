@@ -1,6 +1,5 @@
 package io.github.lgp547.anydoor.dto;
 
-import io.github.lgp547.anydoor.util.ClassUtil;
 import io.github.lgp547.anydoor.util.JsonUtil;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
@@ -36,10 +35,6 @@ public class AnyDoorDto {
 
     public String getClassName() {
         return className;
-    }
-
-    public Class<?> getClazz() {
-        return ClassUtil.forName(className);
     }
 
     public void setClassName(String className) {
@@ -106,8 +101,8 @@ public class AnyDoorDto {
                 ", content=" + content +
                 ", parameterTypes=" + parameterTypes +
                 ", isSync=" + isSync +
-                ", runNum=" + num +
-                ", isConcurrent=" + concurrent +
+                ", num=" + num +
+                ", concurrent=" + concurrent +
                 '}';
     }
 

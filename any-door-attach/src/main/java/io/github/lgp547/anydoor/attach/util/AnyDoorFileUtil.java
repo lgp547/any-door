@@ -1,10 +1,11 @@
-package io.github.lgp547.anydoor.util;
+package io.github.lgp547.anydoor.attach.util;
 
 import arthas.VmTool;
-import org.springframework.util.StringUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,13 +14,13 @@ import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class FileUtil {
+public class AnyDoorFileUtil {
 
     /**
      * @return tmp file absolute path
      */
     public static String copyChildFile(File file, String child) throws IOException {
-        if (StringUtils.endsWithIgnoreCase(file.getPath(), ".jar")) {
+        if (AnyDoorStringUtils.endsWithIgnoreCase(file.getPath(), ".jar")) {
             try (JarFile jarFile = new JarFile(file)) {
                 // 获取Jar包中所有的文件
                 Enumeration<JarEntry> entries = jarFile.entries();
@@ -28,7 +29,7 @@ public class FileUtil {
                     String entryName = entry.getName();
 
                     // 如果该文件是需要提取的资源文件
-                    if (pathEquals(entryName, child)) {
+                    if (AnyDoorStringUtils.pathEquals(entryName, child)) {
                         return getTmpLibFile(jarFile.getInputStream(entry));
                     }
                 }
@@ -58,8 +59,15 @@ public class FileUtil {
         }
     }
 
-    public static boolean pathEquals(String path1, String path2) {
-        return StringUtils.pathEquals(path1, path2);
+    public static String getTextFileAsString(File file) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String temp;
+            while ((temp = br.readLine()) != null) {
+                sb.append(temp);
+            }
+            return sb.toString();
+        }
     }
 
 }

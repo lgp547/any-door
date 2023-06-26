@@ -1,7 +1,5 @@
 package io.github.lgp547.anydoor.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.aop.SpringProxy;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.aop.framework.Advised;
@@ -13,7 +11,6 @@ import java.lang.reflect.Proxy;
 
 public class AopUtil {
 
-    private static final Logger log = LoggerFactory.getLogger(AopUtil.class);
 
     public static Class<?> getTargetClass(Object candidate) {
         Assert.notNull(candidate, "Candidate object must not be null");
@@ -48,7 +45,8 @@ public class AopUtil {
                 }
             }
         } catch (Exception ex) {
-            log.error("Failed to unwrap proxied object", ex);
+            System.err.println("Failed to unwrap proxied object");
+            ex.printStackTrace();
         }
         return (T) candidate;
     }

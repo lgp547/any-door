@@ -4,17 +4,18 @@ plugins {
 }
 
 group = "io.github.lgp547"
-version = "1.3.2"
+version = "1.3.2-SNAPSHOT"
 
 repositories {
     mavenCentral()
-//    mavenLocal {
-//        url = uri("/Users/lgp/.m2/repository")
-//    }
+    mavenLocal {
+        url = uri("/Users/lgp/.m2/repository")
+    }
 }
 
 dependencies {
-    implementation("io.github.lgp547:any-door-core:1.3.2")
+    implementation("io.github.lgp547:any-door-core:1.3.2-SNAPSHOT")
+    implementation("io.github.lgp547:any-door-attach:1.3.2-SNAPSHOT")
 
 }
 

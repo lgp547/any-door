@@ -55,9 +55,9 @@ public class Controller implements ApplicationRunner {
                 anyDoorDto.setConcurrent(true);
             }
 
-            AnyDoorService anyDoorService = new AnyDoorService(false);
+            AnyDoorService anyDoorService = new AnyDoorService();
             try {
-                anyDoorService.doRun(anyDoorDto);
+                anyDoorService.run(anyDoorDto);
             } catch (Exception e) {
                 if (method.getName().equals("exception")) {
                     continue;

@@ -1,4 +1,4 @@
-package io.github.lgp547.anydoor.util;
+package io.github.lgp547.anydoor.attach.util;
 
 
 import java.lang.reflect.Method;
@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.lang.Nullable;
 
-public class ClassUtil {
+public class AnyDoorClassUtil {
 
     public static Class<?> forName(String className) {
         try {
@@ -19,7 +18,7 @@ public class ClassUtil {
         }
     }
 
-    public static Method getMethod(Class<?> clazz, String methodName, @Nullable List<String> parameterTypes) {
+    public static Method getMethod(Class<?> clazz, String methodName, List<String> parameterTypes) {
         Method method;
         List<Method> methods = new ArrayList<>();
         for (Method clazzMethod : clazz.getDeclaredMethods()) {
@@ -32,7 +31,7 @@ public class ClassUtil {
         } else if (methods.size() == 1) {
             method = methods.get(0);
         } else {
-            Optional<Class<?>[]> classes = Optional.ofNullable(parameterTypes).map(item -> item.stream().map(ClassUtil::forName).toArray(Class[]::new));
+            Optional<Class<?>[]> classes = Optional.ofNullable(parameterTypes).map(item -> item.stream().map(AnyDoorClassUtil::forName).toArray(Class[]::new));
             try {
                 method = clazz.getDeclaredMethod(methodName, classes.orElse(null));
             } catch (NoSuchMethodException e) {

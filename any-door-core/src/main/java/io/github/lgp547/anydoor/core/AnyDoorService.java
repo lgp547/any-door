@@ -6,75 +6,70 @@ import io.github.lgp547.anydoor.util.BeanUtil;
 import io.github.lgp547.anydoor.util.ClassUtil;
 import io.github.lgp547.anydoor.util.JsonUtil;
 import io.github.lgp547.anydoor.util.SpringUtil;
-import io.github.lgp547.anydoor.vmtool.VmToolUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public class AnyDoorService {
 
-    private static final Logger log = LoggerFactory.getLogger(AnyDoorService.class);
-
     private static final String ANY_DOOR_RUN_MARK = "any-door run ";
 
-    private static volatile boolean isInit = false;
-
-    public AnyDoorService(boolean isMvc) {
-        if (isMvc) {
-            return;
-        }
-        if (!isInit) {
-            synchronized (AnyDoorService.class) {
-                if (!isInit) {
-                    VmToolUtils.init();
-                    SpringUtil.initApplicationContexts(() -> VmToolUtils.getInstances(ApplicationContext.class));
-                    isInit = true;
-                }
-            }
-        }
+    public AnyDoorService() {
     }
 
-    /**
-     * 只允许 illegalArgumentException 抛出
-     */
     public Object run(AnyDoorDto anyDoorDto) {
         try {
-            return doRun(anyDoorDto);
+            anyDoorDto.verify();
+            Class<?> clazz = Class.forName(anyDoorDto.getClassName());
+            Method method = ClassUtil.getMethod(clazz, anyDoorDto.getMethodName(), anyDoorDto.getParameterTypes());
+
+            boolean containsBean = SpringUtil.containsBean(clazz);
+            Object bean;
+            if (!containsBean) {
+                bean = BeanUtil.instantiate(clazz);
+            } else {
+                bean = SpringUtil.getBean(clazz);
+                if (!Modifier.isPublic(method.getModifiers())) {
+                    bean = AopUtil.getTargetObject(bean);
+                }
+            }
+            return doRun(anyDoorDto, method, bean);
         } catch (Exception e) {
-            log.error("run exception ", e);
+            System.err.println("anyDoorService run exception. param [" + anyDoorDto + "]");
+            e.printStackTrace();
             return null;
         }
     }
 
-    public Object doRun(AnyDoorDto anyDoorDto) {
-        anyDoorDto.verify();
 
-        Class<?> clazz = anyDoorDto.getClazz();
-        String methodName = anyDoorDto.getMethodName();
-        Map<String, Object> contentMap = anyDoorDto.getContentMap();
-        List<String> parameterTypes = anyDoorDto.getParameterTypes();
-
-        boolean containsBean = SpringUtil.containsBean(clazz);
-        Object bean;
-        Method method;
-        if (!containsBean) {
-            bean = BeanUtil.instantiate(clazz);
-            method = ClassUtil.getMethod(clazz, methodName, parameterTypes);
-        } else {
-            bean = SpringUtil.getBean(clazz);
-            method = ClassUtil.getMethod(AopUtil.getTargetClass(bean), methodName, parameterTypes);
-            if (!Modifier.isPublic(method.getModifiers())) {
-                bean = AopUtil.getTargetObject(bean);
-            }
+    /**
+     * {@code  io.github.lgp547.anydoor.attach.AnyDoorAttach#AnyDoorRun(String)}
+     */
+    public Object run(String anyDoorDtoStr, Method method, Object bean) {
+        if (null == anyDoorDtoStr || anyDoorDtoStr.isEmpty()) {
+            System.err.println("anyDoorService run exception. anyDoorDtoStr is empty");
+            return null;
+        }
+        if (null == method || null == bean) {
+            System.err.println("anyDoorService run exception. method or bean is null");
+            return null;
         }
 
+        try {
+            return doRun(JsonUtil.toJavaBean(anyDoorDtoStr, AnyDoorDto.class), method, bean);
+        } catch (Throwable e) {
+            System.err.println("anyDoorService run exception. param [" + anyDoorDtoStr + "]");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Object doRun(AnyDoorDto anyDoorDto, Method method, Object bean) {
+        String methodName = method.getName();
+        Map<String, Object> contentMap = anyDoorDto.getContentMap();
 
         AnyDoorHandlerMethod handlerMethod = new AnyDoorHandlerMethod(bean, method);
         Object result = null;
@@ -99,25 +94,25 @@ public class AnyDoorService {
             }
         }
         if (result != null) {
-            log.info(ANY_DOOR_RUN_MARK + methodName + " return: {}", JsonUtil.toStrNotExc(result));
+            System.out.println(ANY_DOOR_RUN_MARK + methodName + " return: " + JsonUtil.toStrNotExc(result));
         }
         return result;
     }
 
     private BiConsumer<Integer, Object> resultLogConsumer(String methodName) {
-        return (num, result) -> log.info(ANY_DOOR_RUN_MARK + methodName + " " + num + " return: {}", JsonUtil.toStrNotExc(result));
+        return (num, result) -> System.out.println(ANY_DOOR_RUN_MARK + methodName + " " + num + " return: " + JsonUtil.toStrNotExc(result));
     }
 
     private BiConsumer<Integer, Throwable> excLogConsumer(String methodName) {
-        return (num, throwable) -> log.info(ANY_DOOR_RUN_MARK + methodName + " " + num + " exception: ", throwable);
+        return (num, throwable) -> System.out.println(ANY_DOOR_RUN_MARK + methodName + " " + num + " exception: " + throwable.getMessage());
     }
 
     private BiConsumer<Object, Throwable> futureResultLogConsumer(String methodName) {
         return (result, throwable) -> {
             if (throwable != null) {
-                log.info(ANY_DOOR_RUN_MARK + methodName + " exception: ", throwable);
+                System.out.println(ANY_DOOR_RUN_MARK + methodName + " exception: " + throwable.getMessage());
             } else {
-                log.info(ANY_DOOR_RUN_MARK + methodName + " return: {}", JsonUtil.toStrNotExc(result));
+                System.out.println(ANY_DOOR_RUN_MARK + methodName + " return: " + JsonUtil.toStrNotExc(result));
             }
         };
     }

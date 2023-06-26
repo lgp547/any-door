@@ -17,7 +17,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
@@ -33,64 +32,68 @@ public class ImportNewUtil {
         return PathManager.getPluginsPath() + File.separator + "any-door-plugin" + File.separator + "lib";
     }
 
-    public static String getPluginLibPath(String libraryName, String libraryVersion) {
-        return getPluginBasePath() + File.separator + libraryName + "-" + libraryVersion + ".jar";
+//    public static String getPluginLibPath(String libraryName, String libraryVersion) {
+//        return getPluginBasePath() + File.separator + libraryName + "-" + libraryVersion + ".jar";
+//    }
+
+    public static String getPluginLibPath(String libraryName) {
+        return getPluginBasePath() + File.separator + libraryName;
     }
 
-    public static void fillAnyDoorJar(Project project, String libName, String libVersion) {
+//    public static void fillAnyDoorJar(Project project, String libName, String libVersion) {
+//        try {
+//            // First check that the base path exists, then check from the maven path, and then download from the remote end
+//            removeLibraryIfExist(libName);
+//            String filePath = fillLibrary(libName, libVersion);
+//            NotifierUtil.notifyInfo(project, "fill " + libName + " library success: " + filePath);
+//        } catch (Exception e) {
+//            NotifierUtil.notifyError(project, "fill " + libName + "library fail: " + e.getMessage());
+//        }
+//    }
+
+//    /**
+//     * todo: async remote download. lib pata from settings
+//     */
+//    private static String fillLibrary(String libName, String libVersion) throws IOException {
+//        File file = new File(getPluginLibPath(libName, libVersion));
+//        if (!file.exists()) {
+//            String httpPath = "https://s01.oss.sonatype.org/content/repositories/releases" + AnyDoorInfo.ANY_DOOR_JAR_PATH.apply(libVersion);
+//            FileUtils.copyURLToFile(new URL(httpPath), file);
+//            if (!file.isFile()) {
+//                throw new RuntimeException("down jar file fail");
+//            }
+//        }
+//        return file.getPath();
+//    }
+
+//    private static void removeLibraryIfExist(String libName) {
+//        File file = new File(getPluginBasePath());
+//        if (file.exists()) {
+//            File[] files = file.listFiles();
+//            if (null != files) {
+//                for (File f : files) {
+//                    if (f.getName().startsWith(libName)) {
+//                        f.delete();
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+    public static void checkAndGenJar(@NotNull Project project, String anyDoorAllDependenceJar) {
         try {
-            // First check that the base path exists, then check from the maven path, and then download from the remote end
-            removeLibraryIfExist(libName);
-            String filePath = fillLibrary(libName, libVersion);
-            NotifierUtil.notifyInfo(project, "fill " + libName + " library success: " + filePath);
-        } catch (Exception e) {
-            NotifierUtil.notifyError(project, "fill " + libName + "library fail: " + e.getMessage());
-        }
-    }
-
-    /**
-     * todo: async remote download. lib pata from settings
-     */
-    private static String fillLibrary(String libName, String libVersion) throws IOException {
-        File file = new File(getPluginLibPath(libName, libVersion));
-        if (!file.exists()) {
-            String httpPath = "https://s01.oss.sonatype.org/content/repositories/releases" + AnyDoorInfo.ANY_DOOR_JAR_PATH.apply(libVersion);
-            FileUtils.copyURLToFile(new URL(httpPath), file);
-            if (!file.isFile()) {
-                throw new RuntimeException("down jar file fail");
-            }
-        }
-        return file.getPath();
-    }
-
-    private static void removeLibraryIfExist(String libName) {
-        File file = new File(getPluginBasePath());
-        if (file.exists()) {
-            File[] files = file.listFiles();
-            if (null != files) {
-                for (File f : files) {
-                    if (f.getName().startsWith(libName)) {
-                        f.delete();
-                    }
-                }
-            }
-        }
-    }
-
-    public static void checkAndGenAnyDoorJarAllDependence(@NotNull Project project) {
-        try {
-            String dependenceJarFilePath = getPluginBasePath() + "/" + AnyDoorInfo.ANY_DOOR_ALL_DEPENDENCE_JAR;
+            String dependenceJarFilePath = getPluginLibPath(anyDoorAllDependenceJar);
             if (new File(dependenceJarFilePath).exists()) {
                 return;
             }
-
-            File[] dependenceJars = new File(getPluginBasePath()).listFiles(curFile -> !curFile.getName().startsWith(AnyDoorInfo.ANY_DOOR_NAME) && curFile.getName().endsWith(".jar"));
+            File[] dependenceJars = new File(getPluginBasePath()).listFiles(curFile ->
+                    !StringUtils.startsWithAny(curFile.getName(), AnyDoorInfo.ANY_DOOR_NAME, "arthas") && StringUtils.endsWith(curFile.getName(), ".jar"));
             if (dependenceJars != null && dependenceJars.length != 0) {
                 genAllDependenceFile(dependenceJars, dependenceJarFilePath);
             }
             NotifierUtil.notifyInfo(project, String.format("%s dependence gen %s", Optional.ofNullable(dependenceJars).map(i -> i.length), dependenceJarFilePath));
         } catch (Exception e) {
-            NotifierUtil.notifyError(project, AnyDoorInfo.ANY_DOOR_ALL_DEPENDENCE_JAR + " does not exist. errMsg:" + e.getMessage());
+            NotifierUtil.notifyError(project, anyDoorAllDependenceJar + " does not exist. errMsg:" + e.getMessage());
         }
     }
 
@@ -155,8 +158,7 @@ public class ImportNewUtil {
         try {
             Module module = getMainModule(project, Optional.ofNullable(moduleName));
             removeModuleLibraryIfExist(module, AnyDoorInfo.ANY_DOOR_NAME);
-            File file = fillModuleLibrary(module, AnyDoorInfo.ANY_DOOR_JAR + "-" + AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION,
-                    ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_JAR, AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION));
+            File file = fillModuleLibrary(module, AnyDoorInfo.ANY_DOOR_JAR);
             NotifierUtil.notifyInfo(project, module.getName() + " fill ModuleLibrary success " + file.getPath());
         } catch (Exception e) {
             NotifierUtil.notifyError(project, "fill ModuleLibrary fail: " + e.getMessage());
@@ -199,10 +201,10 @@ public class ImportNewUtil {
         NotifierUtil.notifyInfo(project, "Remove module success");
     }
 
-    public static File fillModuleLibrary(Module module, String libraryName, String filePath) throws IOException {
-        File file = new File(filePath);
+    public static File fillModuleLibrary(Module module, String libraryName) throws IOException {
+        File file = new File(ImportNewUtil.getPluginLibPath(libraryName));
         if (!file.isFile()) {
-            throw new FileNotFoundException("File not found [" + filePath + "]");
+            throw new FileNotFoundException("File not found [" + libraryName + "]");
         }
         ModuleRootModificationUtil.addModuleLibrary(module, libraryName, List.of("file://" + file.getPath()), List.of());
         return file;

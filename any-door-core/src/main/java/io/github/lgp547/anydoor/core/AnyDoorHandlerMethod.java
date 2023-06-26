@@ -4,13 +4,10 @@ import io.github.lgp547.anydoor.support.HandlerMethod;
 import io.github.lgp547.anydoor.util.BeanUtil;
 import io.github.lgp547.anydoor.util.JsonUtil;
 import io.github.lgp547.anydoor.util.LambdaUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxy;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
-import org.springframework.util.ObjectUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -23,14 +20,13 @@ import java.util.function.BiConsumer;
 
 public class AnyDoorHandlerMethod extends HandlerMethod {
 
-    private static final Logger log = LoggerFactory.getLogger(AnyDoorHandlerMethod.class);
-
     public AnyDoorHandlerMethod(Object bean, Method method) {
         super(bean, method);
     }
 
     public CompletableFuture<Object> invokeAsync(Map<String, Object> contentMap) {
-        return CompletableFuture.supplyAsync(() -> invokeSync(contentMap));
+        Object[] args = getArgs(contentMap);
+        return CompletableFuture.supplyAsync(() -> doInvoke(args));
     }
 
     /**
@@ -79,16 +75,16 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         }
     }
 
-    private Object doInvoke(Object[] args) {
+    public Object doInvoke(Object[] args) {
         Object bean = getBean();
         if (bean instanceof Proxy) {
             InvocationHandler invocationHandler = Proxy.getInvocationHandler(bean);
-            if (invocationHandler instanceof AopProxy) {
-                try {
+            try {
+                if (invocationHandler instanceof AopProxy) {
                     return invocationHandler.invoke(bean, getBridgedMethod(), args);
-                } catch (Throwable e) {
-                    log.error("invoke exception ", e);
                 }
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
         }
         try {
@@ -100,7 +96,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
 
     protected Object[] getArgs(Map<String, Object> contentMap) {
         MethodParameter[] parameters = getMethodParameters();
-        if (ObjectUtils.isEmpty(parameters)) {
+        if (parameters == null || parameters.length == 0) {
             return new Object[0];
         }
 

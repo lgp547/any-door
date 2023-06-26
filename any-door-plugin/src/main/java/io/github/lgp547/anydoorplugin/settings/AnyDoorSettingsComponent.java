@@ -32,9 +32,9 @@ public class AnyDoorSettingsComponent {
 
     private final JBTextField projectPid = new JBTextField();
 
-    private final ComboBox<String> dependenceNames = new ComboBox<>();
-
-    private final JBTextField dependenceVersion = new JBTextField();
+//    private final ComboBox<String> dependenceNames = new ComboBox<>();
+//
+//    private final JBTextField dependenceVersion = new JBTextField();
 
     private final JButton button = new JButton("Idea plugins base path");
 
@@ -128,7 +128,7 @@ public class AnyDoorSettingsComponent {
     }
 
     public JComponent getPreferredFocusedComponent() {
-        return dependenceVersion;
+        return projectPid;
     }
 
     public Boolean getEnableAsyncExecute() {
@@ -139,22 +139,22 @@ public class AnyDoorSettingsComponent {
         enableAsyncExecute.setSelected(newStatus);
     }
 
-    @NotNull
-    public String getDependenceVersion() {
-        return dependenceVersion.getText();
-    }
-
-    public void setDependenceVersion(@NotNull String newText) {
-        dependenceVersion.setText(newText);
-    }
-
-    public void setDependenceNames(String text) {
-        dependenceNames.setItem(text);
-    }
-
-    public String getDependenceNames() {
-        return dependenceNames.getItem();
-    }
+//    @NotNull
+//    public String getDependenceVersion() {
+//        return dependenceVersion.getText();
+//    }
+//
+//    public void setDependenceVersion(@NotNull String newText) {
+//        dependenceVersion.setText(newText);
+//    }
+//
+//    public void setDependenceNames(String text) {
+//        dependenceNames.setItem(text);
+//    }
+//
+//    public String getDependenceNames() {
+//        return dependenceNames.getItem();
+//    }
 
     public String getProjectPid() {
         return projectPid.getText();

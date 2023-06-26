@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,7 @@ public class AnyDoorPerformed {
         if (paramTypeNameList.isEmpty()) {
             String jsonDtoStr = getJsonDtoStr(className, methodName, paramTypeNameList, "{}", !service.enableAsyncExecute, null);
             openAnyDoor(project, jsonDtoStr, service, openExcConsumer);
+            okAction.run();
         } else {
             String cacheKey = getCacheKey(className, methodName, paramTypeNameList);
 
@@ -77,7 +79,7 @@ public class AnyDoorPerformed {
 
     private static void openAnyDoor(Project project, String jsonDtoStr, AnyDoorSettingsState service, BiConsumer<String, Exception> errHandle) {
         if (service.isSelectJavaAttach()) {
-            String anyDoorJarPath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_JAR, service.dependenceVersion);
+            String anyDoorJarPath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_ATTACH_JAR);
             String paramPath = project.getBasePath() + "/.idea/AnyDoorParam.json";
             VmUtil.attachAsync(String.valueOf(service.pid), anyDoorJarPath, jsonDtoStr, paramPath, errHandle);
         } else {
@@ -97,6 +99,10 @@ public class AnyDoorPerformed {
             jsonObjectReq.addProperty("concurrent", paramCacheDto.getConcurrent());
         }
         jsonObjectReq.add("parameterTypes", JsonUtil.toJsonArray(paramTypeNameList));
+
+        String anyDoorJarPath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_JAR);
+        String dependenceJarFilePath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_ALL_DEPENDENCE_JAR);
+        jsonObjectReq.add("jarPaths", JsonUtil.toJsonArray(List.of(anyDoorJarPath, dependenceJarFilePath)));
         return jsonObjectReq.toString();
     }
 

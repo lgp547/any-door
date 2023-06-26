@@ -27,14 +27,21 @@ public class BeanUtil {
         if (clazz.isInterface()) {
             throw new IllegalArgumentException("Specified class is an interface. " + clazz);
         }
-        Optional<Constructor<?>> noArgConstructorOpt = Arrays.stream(clazz.getConstructors())
+        Optional<Constructor<?>> noArgConstructorOpt = Arrays.stream(clazz.getDeclaredConstructors())
                 .filter(constructor -> constructor.getParameterCount() == 0).findFirst();
         Object obj;
         try {
             if (noArgConstructorOpt.isPresent()) {
-                obj = noArgConstructorOpt.get().newInstance();
+                Constructor<?> constructor = noArgConstructorOpt.get();
+                if (!constructor.isAccessible()) {
+                    constructor.setAccessible(true);
+                }
+                obj = constructor.newInstance();
             } else {
-                Constructor<?> constructor = clazz.getConstructors()[0];
+                Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
+                if (!constructor.isAccessible()) {
+                    constructor.setAccessible(true);
+                }
                 Object[] objects = IntStream.range(0, constructor.getParameterCount()).mapToObj(i -> null).toArray();
                 obj = constructor.newInstance(objects);
             }

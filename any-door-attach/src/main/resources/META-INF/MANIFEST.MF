@@ -1,0 +1,2 @@
+Agent-Class: io.github.lgp547.anydoor.attach.AnyDoorAttach
+Class-Path: arthas-common-3.6.7.jar arthas-vmtool-3.6.7.jar

@@ -24,9 +24,9 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
 
     public Boolean enableAsyncExecute = true;
 
-    public String dependenceName = AnyDoorInfo.ANY_DOOR_JAR;
+//    public String dependenceName = AnyDoorInfo.ANY_DOOR_JAR;
 
-    public String dependenceVersion = AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION;
+//    public String dependenceVersion = AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION;
 
     public Long pid = -1L;
 
@@ -49,7 +49,7 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
     @Override
     public void loadState(@NotNull AnyDoorSettingsState state) {
         XmlSerializerUtil.copyBean(state, this);
-        updateDependence(dependenceName, dependenceVersion);
+//        updateDependence(dependenceName, dependenceVersion);
     }
 
     public void putCache(String key, ParamCacheDto value) {
@@ -93,23 +93,23 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
         runProjectStrategy = selectJavaAttach ? 100 : 200;
     }
 
-    public boolean updateDependence(String newName, String newVersion) {
-        dependenceName = newName;
-        if (!Objects.equals(newName, AnyDoorInfo.ANY_DOOR_JAR)) {
-            dependenceVersion = newVersion;
-            return true;
-        }
-
-        if (StringUtils.contains(newVersion, "SNAPSHOT")) {
-            dependenceVersion = newVersion;
-            return true;
-        }
-
-        // min version check
-        int newVersionNum = NumberUtils.toInt(StringUtils.replace(newVersion, ".", ""));
-        int minVersionNum = NumberUtils.toInt(StringUtils.replace(AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION, ".", ""));
-        boolean b = newVersionNum > minVersionNum;
-        dependenceVersion = b ? newVersion : AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION;
-        return b;
-    }
+//    public boolean updateDependence(String newName, String newVersion) {
+//        dependenceName = newName;
+//        if (!Objects.equals(newName, AnyDoorInfo.ANY_DOOR_JAR)) {
+//            dependenceVersion = newVersion;
+//            return true;
+//        }
+//
+//        if (StringUtils.contains(newVersion, "SNAPSHOT")) {
+//            dependenceVersion = newVersion;
+//            return true;
+//        }
+//
+//        // min version check
+//        int newVersionNum = NumberUtils.toInt(StringUtils.replace(newVersion, ".", ""));
+//        int minVersionNum = NumberUtils.toInt(StringUtils.replace(AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION, ".", ""));
+//        boolean b = newVersionNum > minVersionNum;
+//        dependenceVersion = b ? newVersion : AnyDoorInfo.ANY_DOOR_JAR_MIN_VERSION;
+//        return b;
+//    }
 }

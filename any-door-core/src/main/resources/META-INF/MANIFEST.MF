@@ -1,1 +1,1 @@
-Class-Path: any-door-all-dependence.jar
+Class-Path: any-door-all-dependence.jar any-door-common-1.3.3-SNAPSHOT.jar

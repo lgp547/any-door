@@ -1,4 +1,4 @@
-package io.github.lgp547.anydoor.attach.util;
+package io.github.lgp547.anydoor.common.util;
 
 
 import java.lang.reflect.Method;

@@ -1,11 +1,11 @@
 package io.github.lgp547.anydoor.core;
 
-import io.github.lgp547.anydoor.dto.AnyDoorDto;
+import io.github.lgp547.anydoor.common.dto.AnyDoorRunDto;
+import io.github.lgp547.anydoor.common.util.AnyDoorBeanUtil;
+import io.github.lgp547.anydoor.common.util.AnyDoorClassUtil;
+import io.github.lgp547.anydoor.common.util.AnyDoorSpringUtil;
 import io.github.lgp547.anydoor.util.AopUtil;
-import io.github.lgp547.anydoor.util.BeanUtil;
-import io.github.lgp547.anydoor.util.ClassUtil;
 import io.github.lgp547.anydoor.util.JsonUtil;
-import io.github.lgp547.anydoor.util.SpringUtil;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -20,18 +20,18 @@ public class AnyDoorService {
     public AnyDoorService() {
     }
 
-    public Object run(AnyDoorDto anyDoorDto) {
+    public Object run(AnyDoorRunDto anyDoorDto) {
         try {
             anyDoorDto.verify();
             Class<?> clazz = Class.forName(anyDoorDto.getClassName());
-            Method method = ClassUtil.getMethod(clazz, anyDoorDto.getMethodName(), anyDoorDto.getParameterTypes());
+            Method method = AnyDoorClassUtil.getMethod(clazz, anyDoorDto.getMethodName(), anyDoorDto.getParameterTypes());
 
-            boolean containsBean = SpringUtil.containsBean(clazz);
+            boolean containsBean = AnyDoorSpringUtil.containsBean(clazz);
             Object bean;
             if (!containsBean) {
-                bean = BeanUtil.instantiate(clazz);
+                bean = AnyDoorBeanUtil.instantiate(clazz);
             } else {
-                bean = SpringUtil.getBean(clazz);
+                bean = AnyDoorSpringUtil.getBean(clazz);
                 if (!Modifier.isPublic(method.getModifiers())) {
                     bean = AopUtil.getTargetObject(bean);
                 }
@@ -39,8 +39,7 @@ public class AnyDoorService {
             return doRun(anyDoorDto, method, bean);
         } catch (Exception e) {
             System.err.println("anyDoorService run exception. param [" + anyDoorDto + "]");
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
@@ -59,7 +58,7 @@ public class AnyDoorService {
         }
 
         try {
-            return doRun(JsonUtil.toJavaBean(anyDoorDtoStr, AnyDoorDto.class), method, bean);
+            return doRun(JsonUtil.toJavaBean(anyDoorDtoStr, AnyDoorRunDto.class), method, bean);
         } catch (Throwable e) {
             System.err.println("anyDoorService run exception. param [" + anyDoorDtoStr + "]");
             e.printStackTrace();
@@ -67,9 +66,9 @@ public class AnyDoorService {
         }
     }
 
-    public Object doRun(AnyDoorDto anyDoorDto, Method method, Object bean) {
+    public Object doRun(AnyDoorRunDto anyDoorDto, Method method, Object bean) {
         String methodName = method.getName();
-        Map<String, Object> contentMap = anyDoorDto.getContentMap();
+        Map<String, Object> contentMap = JsonUtil.toMap(JsonUtil.toStrNotExc(anyDoorDto.getContent()));
 
         AnyDoorHandlerMethod handlerMethod = new AnyDoorHandlerMethod(bean, method);
         Object result = null;

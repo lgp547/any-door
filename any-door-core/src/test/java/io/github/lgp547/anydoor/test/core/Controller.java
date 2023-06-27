@@ -1,8 +1,8 @@
 package io.github.lgp547.anydoor.test.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.github.lgp547.anydoor.common.dto.AnyDoorRunDto;
 import io.github.lgp547.anydoor.core.AnyDoorService;
-import io.github.lgp547.anydoor.dto.AnyDoorDto;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +38,7 @@ public class Controller implements ApplicationRunner {
         for (Method method : clazz.getDeclaredMethods()) {
             System.out.println("调用方法 " + clazz.getSimpleName() + " " + method.getName());
 
-            AnyDoorDto anyDoorDto = new AnyDoorDto();
+            AnyDoorRunDto anyDoorDto = new AnyDoorRunDto();
             anyDoorDto.setClassName(clazz.getName());
             anyDoorDto.setMethodName(method.getName());
             anyDoorDto.setContent(jsonNode.toString());

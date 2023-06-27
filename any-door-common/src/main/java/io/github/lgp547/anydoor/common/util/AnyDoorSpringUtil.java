@@ -1,4 +1,4 @@
-package io.github.lgp547.anydoor.attach.util;
+package io.github.lgp547.anydoor.common.util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;

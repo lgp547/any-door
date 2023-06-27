@@ -1,7 +1,20 @@
-package io.github.lgp547.anydoor.attach.util;
+package io.github.lgp547.anydoor.common.util;
+
+import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.core.MethodParameter;
+import org.springframework.core.ResolvableType;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URL;
+import java.time.temporal.Temporal;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -18,13 +31,13 @@ public class AnyDoorBeanUtil {
         try {
             if (noArgConstructorOpt.isPresent()) {
                 Constructor<?> constructor = noArgConstructorOpt.get();
-                if (!constructor.canAccess(null)) {
+                if (!constructor.isAccessible()) {
                     constructor.setAccessible(true);
                 }
                 obj = constructor.newInstance();
             } else {
                 Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
-                if (!constructor.canAccess(null)) {
+                if (!constructor.isAccessible()) {
                     constructor.setAccessible(true);
                 }
                 Object[] objects = IntStream.range(0, constructor.getParameterCount()).mapToObj(i -> null).toArray();
@@ -35,5 +48,6 @@ public class AnyDoorBeanUtil {
         }
         return (T) obj;
     }
+
 
 }

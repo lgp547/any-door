@@ -1,6 +1,4 @@
-package io.github.lgp547.anydoor.attach.util;
-
-import arthas.VmTool;
+package io.github.lgp547.anydoor.common.util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -43,7 +41,7 @@ public class AnyDoorFileUtil {
     }
 
     public static String getTmpLibFile(InputStream inputStream) throws IOException {
-        File tmpLibFile = File.createTempFile(VmTool.JNI_LIBRARY_NAME, null);
+        File tmpLibFile = File.createTempFile("AnyDoorJniLibrary", null);
         try (FileOutputStream tmpLibOutputStream = new FileOutputStream(tmpLibFile);
              InputStream inputStreamNew = inputStream) {
             copy(inputStreamNew, tmpLibOutputStream);

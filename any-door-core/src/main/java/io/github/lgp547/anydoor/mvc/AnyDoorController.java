@@ -1,7 +1,7 @@
 package io.github.lgp547.anydoor.mvc;
 
+import io.github.lgp547.anydoor.common.dto.AnyDoorRunDto;
 import io.github.lgp547.anydoor.core.AnyDoorService;
-import io.github.lgp547.anydoor.dto.AnyDoorDto;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +15,7 @@ public class AnyDoorController {
      */
     @RequestMapping("/any_door/run")
     @ResponseBody
-    public Object run(@RequestBody AnyDoorDto anyDoorDto) {
+    public Object run(@RequestBody AnyDoorRunDto anyDoorDto) {
         AnyDoorService anyDoorService = new AnyDoorService();
         return anyDoorService.run(anyDoorDto);
     }

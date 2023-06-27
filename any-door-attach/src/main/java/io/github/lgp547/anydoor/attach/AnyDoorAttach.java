@@ -1,12 +1,12 @@
 package io.github.lgp547.anydoor.attach;
 
-import io.github.lgp547.anydoor.attach.dto.AnyDoorAttachDto;
-import io.github.lgp547.anydoor.attach.util.AnyDoorBeanUtil;
-import io.github.lgp547.anydoor.attach.util.AnyDoorClassUtil;
-import io.github.lgp547.anydoor.attach.util.AnyDoorClassloader;
-import io.github.lgp547.anydoor.attach.util.AnyDoorFileUtil;
-import io.github.lgp547.anydoor.attach.util.AnyDoorSpringUtil;
 import io.github.lgp547.anydoor.attach.vmtool.AnyDoorVmToolUtils;
+import io.github.lgp547.anydoor.common.dto.AnyDoorRunDto;
+import io.github.lgp547.anydoor.common.util.AnyDoorBeanUtil;
+import io.github.lgp547.anydoor.common.util.AnyDoorClassUtil;
+import io.github.lgp547.anydoor.common.util.AnyDoorClassloader;
+import io.github.lgp547.anydoor.common.util.AnyDoorFileUtil;
+import io.github.lgp547.anydoor.common.util.AnyDoorSpringUtil;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
@@ -41,8 +41,8 @@ public class AnyDoorAttach {
      */
     @SuppressWarnings("JavadocReference")
     public static void AnyDoorRun(String anyDoorDtoStr) {
-        AnyDoorAttachDto anyDoorAttachDto = AnyDoorAttachDto.parseObj(anyDoorDtoStr);
-        if (!anyDoorAttachDto.verifyPass()) {
+        AnyDoorRunDto anyDoorRunDto = AnyDoorRunDto.parseObj(anyDoorDtoStr);
+        if (!anyDoorRunDto.verifyPassByAttach()) {
             System.err.println("any_door agentmain error. anyDoorDtoStr[" + anyDoorDtoStr + "]");
             return;
         }
@@ -50,9 +50,9 @@ public class AnyDoorAttach {
         AnyDoorVmToolUtils.init();
 
 
-        try (AnyDoorClassloader anyDoorClassloader = new AnyDoorClassloader(anyDoorAttachDto.getJarPaths())) {
-            Class<?> clazz = AnyDoorClassUtil.forName(anyDoorAttachDto.getClassName());
-            Method method = AnyDoorClassUtil.getMethod(clazz, anyDoorAttachDto.getMethodName(), anyDoorAttachDto.getParameterTypes());
+        try (AnyDoorClassloader anyDoorClassloader = new AnyDoorClassloader(anyDoorRunDto.getJarPaths())) {
+            Class<?> clazz = AnyDoorClassUtil.forName(anyDoorRunDto.getClassName());
+            Method method = AnyDoorClassUtil.getMethod(clazz, anyDoorRunDto.getMethodName(), anyDoorRunDto.getParameterTypes());
             Object instance = getInstance(clazz);
 
             Class<?> anyDoorServiceClass = anyDoorClassloader.loadClass("io.github.lgp547.anydoor.core.AnyDoorService");

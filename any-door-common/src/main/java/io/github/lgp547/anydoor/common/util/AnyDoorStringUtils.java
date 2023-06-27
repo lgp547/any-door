@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.lgp547.anydoor.attach.util;
+package io.github.lgp547.anydoor.common.util;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

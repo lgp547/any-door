@@ -1,4 +1,7 @@
-package io.github.lgp547.anydoor.attach.dto;
+package io.github.lgp547.anydoor.common.dto;
+
+
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,13 +16,20 @@ import java.util.stream.Collectors;
  * isSync         是否同步（默认异步）
  * jarPaths       任意门core-jar包相关路径(用于加载类)
  */
-public class AnyDoorAttachDto {
-
+public class AnyDoorRunDto {
     private String className;
 
     private String methodName;
 
+    private Object content;
+
     private List<String> parameterTypes;
+
+    private Boolean isSync;
+
+    private Integer num;
+
+    private Boolean concurrent;
 
     private List<String> jarPaths;
 
@@ -39,6 +49,14 @@ public class AnyDoorAttachDto {
         this.methodName = methodName;
     }
 
+    public Object getContent() {
+        return content;
+    }
+
+    public void setContent(Object content) {
+        this.content = content;
+    }
+
     public List<String> getParameterTypes() {
         return parameterTypes;
     }
@@ -47,6 +65,29 @@ public class AnyDoorAttachDto {
         this.parameterTypes = parameterTypes;
     }
 
+    public Boolean getSync() {
+        return isSync;
+    }
+
+    public void setSync(Boolean sync) {
+        isSync = sync;
+    }
+
+    public Integer getNum() {
+        return num == null || num < 1 ? 1 : num;
+    }
+
+    public void setNum(Integer num) {
+        this.num = num;
+    }
+
+    public Boolean getConcurrent() {
+        return concurrent;
+    }
+
+    public void setConcurrent(Boolean concurrent) {
+        this.concurrent = concurrent;
+    }
 
     public List<String> getJarPaths() {
         return jarPaths;
@@ -56,32 +97,41 @@ public class AnyDoorAttachDto {
         this.jarPaths = jarPaths;
     }
 
+    public void verify() {
+        Assert.notNull(className, "className is required");
+        Assert.notNull(methodName, "methodName is required");
+    }
+
+    public boolean verifyPassByAttach() {
+        return className != null && methodName != null && jarPaths != null;
+    }
+
     @Override
     public String toString() {
-        return "AnyDoorAttachDto{" +
+        return "AnyDoorRunDto{" +
                 "className='" + className + '\'' +
                 ", methodName='" + methodName + '\'' +
+                ", content=" + content +
                 ", parameterTypes=" + parameterTypes +
+                ", isSync=" + isSync +
+                ", num=" + num +
+                ", concurrent=" + concurrent +
                 ", jarPaths=" + jarPaths +
                 '}';
     }
 
-    public boolean verifyPass() {
-        return className != null && methodName != null && jarPaths != null;
-    }
-
-    public static AnyDoorAttachDto parseObj(String anyDoorDtoStr) {
+    public static AnyDoorRunDto parseObj(String anyDoorDtoStr) {
         String className = substringBetween(anyDoorDtoStr, "\"className\":\"", "\"");
         String methodName = substringBetween(anyDoorDtoStr, "\"methodName\":\"", "\"");
         List<String> parameterTypes = parseList(anyDoorDtoStr, "parameterTypes");
         List<String> jarPaths = parseList(anyDoorDtoStr, "jarPaths");
 
-        AnyDoorAttachDto anyDoorAttachDto = new AnyDoorAttachDto();
-        anyDoorAttachDto.setClassName(className);
-        anyDoorAttachDto.setMethodName(methodName);
-        anyDoorAttachDto.setParameterTypes(parameterTypes);
-        anyDoorAttachDto.setJarPaths(jarPaths);
-        return anyDoorAttachDto;
+        AnyDoorRunDto anyDoorRunDto = new AnyDoorRunDto();
+        anyDoorRunDto.setClassName(className);
+        anyDoorRunDto.setMethodName(methodName);
+        anyDoorRunDto.setParameterTypes(parameterTypes);
+        anyDoorRunDto.setJarPaths(jarPaths);
+        return anyDoorRunDto;
     }
 
 
@@ -130,5 +180,6 @@ public class AnyDoorAttachDto {
     public static boolean isEmpty(final CharSequence cs) {
         return cs == null || cs.length() == 0;
     }
+
 
 }

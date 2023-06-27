@@ -2,8 +2,8 @@ package io.github.lgp547.anydoor.attach.vmtool;
 
 import arthas.VmTool;
 import com.taobao.arthas.common.OSUtils;
-import io.github.lgp547.anydoor.attach.util.AnyDoorBeanUtil;
-import io.github.lgp547.anydoor.attach.util.AnyDoorFileUtil;
+import io.github.lgp547.anydoor.common.util.AnyDoorBeanUtil;
+import io.github.lgp547.anydoor.common.util.AnyDoorFileUtil;
 
 import java.io.File;
 import java.security.CodeSource;

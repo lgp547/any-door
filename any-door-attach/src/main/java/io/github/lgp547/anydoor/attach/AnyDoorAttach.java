@@ -1,10 +1,13 @@
 package io.github.lgp547.anydoor.attach;
 
 import io.github.lgp547.anydoor.attach.dto.AnyDoorAttachDto;
-import io.github.lgp547.anydoor.attach.util.AnyDoorClassloader;
+import io.github.lgp547.anydoor.attach.util.AnyDoorBeanUtil;
 import io.github.lgp547.anydoor.attach.util.AnyDoorClassUtil;
+import io.github.lgp547.anydoor.attach.util.AnyDoorClassloader;
 import io.github.lgp547.anydoor.attach.util.AnyDoorFileUtil;
+import io.github.lgp547.anydoor.attach.util.AnyDoorSpringUtil;
 import io.github.lgp547.anydoor.attach.vmtool.AnyDoorVmToolUtils;
+import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +53,7 @@ public class AnyDoorAttach {
         try (AnyDoorClassloader anyDoorClassloader = new AnyDoorClassloader(anyDoorAttachDto.getJarPaths())) {
             Class<?> clazz = AnyDoorClassUtil.forName(anyDoorAttachDto.getClassName());
             Method method = AnyDoorClassUtil.getMethod(clazz, anyDoorAttachDto.getMethodName(), anyDoorAttachDto.getParameterTypes());
-            Object instance = AnyDoorVmToolUtils.getOrGenInstance(clazz);
+            Object instance = getInstance(clazz);
 
             Class<?> anyDoorServiceClass = anyDoorClassloader.loadClass("io.github.lgp547.anydoor.core.AnyDoorService");
             Object anyDoorService = anyDoorServiceClass.getConstructor().newInstance();
@@ -59,6 +62,21 @@ public class AnyDoorAttach {
         } catch (Exception e) {
             System.err.println("any_door agentmain error. anyDoorDtoStr[" + anyDoorDtoStr + "]");
             e.printStackTrace();
+        }
+    }
+
+    private static Object getInstance(Class<?> clazz) {
+        Object[] instances = AnyDoorVmToolUtils.getInstances(clazz);
+        if (instances.length == 0) {
+            // 尝试使用spring上下文获取
+            AnyDoorSpringUtil.initApplicationContexts(() -> AnyDoorVmToolUtils.getInstances(ApplicationContext.class));
+            if (AnyDoorSpringUtil.containsBean(clazz)) {
+                return AnyDoorSpringUtil.getBean(clazz);
+            } else {
+                return AnyDoorBeanUtil.instantiate(clazz);
+            }
+        } else {
+            return instances[0];
         }
     }
 

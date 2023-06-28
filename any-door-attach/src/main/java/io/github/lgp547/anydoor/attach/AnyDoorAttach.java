@@ -65,18 +65,20 @@ public class AnyDoorAttach {
         }
     }
 
+    /**
+     * 优先通过spring 上下文获取
+     */
     private static Object getInstance(Class<?> clazz) {
-        Object[] instances = AnyDoorVmToolUtils.getInstances(clazz);
-        if (instances.length == 0) {
-            // 尝试使用spring上下文获取
-            AnyDoorSpringUtil.initApplicationContexts(() -> AnyDoorVmToolUtils.getInstances(ApplicationContext.class));
-            if (AnyDoorSpringUtil.containsBean(clazz)) {
-                return AnyDoorSpringUtil.getBean(clazz);
-            } else {
-                return AnyDoorBeanUtil.instantiate(clazz);
-            }
+        AnyDoorSpringUtil.initApplicationContexts(() -> AnyDoorVmToolUtils.getInstances(ApplicationContext.class));
+        if (AnyDoorSpringUtil.containsBean(clazz)) {
+            return AnyDoorSpringUtil.getBean(clazz);
         } else {
-            return instances[0];
+            Object[] instances = AnyDoorVmToolUtils.getInstances(clazz);
+            if (instances.length == 0) {
+                return AnyDoorBeanUtil.instantiate(clazz);
+            } else {
+                return instances[0];
+            }
         }
     }
 

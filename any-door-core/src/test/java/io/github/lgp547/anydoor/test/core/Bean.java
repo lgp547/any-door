@@ -1,6 +1,7 @@
 package io.github.lgp547.anydoor.test.core;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -45,7 +46,7 @@ public class Bean {
     public static final String[] strArray = new String[]{"a", "b", "c"};
 
     public static final List<User> users = new ArrayList<User>() {{
-        add(new User(2, "2"));
+        add(new User(2, "2", LocalDateTime.now(), LocalDate.now()));
         add(new User(3, "3"));
     }};
 
@@ -197,8 +198,8 @@ public class Bean {
     }
 
     public void exception() {
-        System.out.println("exception");
-        throw new RuntimeException("test exception");
+        System.out.println("bean test exception");
+        throw new RuntimeException("bean test exception");
     }
 
     public void role(Role role) {

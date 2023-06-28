@@ -7,9 +7,10 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.github.lgp547.anydoor.util.jackson.AnyDoorJavaTimeModule;
+import io.github.lgp547.anydoor.util.jackson.AnyDoorTimeDeserializer;
 
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
 import java.time.temporal.Temporal;
 import java.util.Map;
 
@@ -27,8 +28,9 @@ public class JsonUtil {
         //单引号处理
         objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
         //时间处理
-        objectMapper.registerModule(new AnyDoorJavaTimeModule());
-        objectMapper.registerModule(new JavaTimeModule());
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        javaTimeModule.addDeserializer(LocalDateTime.class, new AnyDoorTimeDeserializer());
+        objectMapper.registerModule(javaTimeModule);
     }
 
     public static <T> T toJavaBean(String content, Type valueType) {

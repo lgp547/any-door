@@ -1,6 +1,8 @@
 package io.github.lgp547.anydoor.test.dto;
 
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class User {
@@ -17,12 +19,23 @@ public class User {
 
     private String name;
 
+    private LocalDateTime createTime;
+
+    private LocalDate localDate;
+
     public User() {
     }
 
     public User(Integer id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public User(Integer id, String name, LocalDateTime createTime, LocalDate localDate) {
+        this.id = id;
+        this.name = name;
+        this.createTime = createTime;
+        this.localDate = localDate;
     }
 
     public Integer getId() {
@@ -41,11 +54,29 @@ public class User {
         this.name = name;
     }
 
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
+
+    public LocalDate getLocalDate() {
+        return localDate;
+    }
+
+    public void setLocalDate(LocalDate localDate) {
+        this.localDate = localDate;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", createTime=" + createTime +
+                ", localDate=" + localDate +
                 '}';
     }
 
@@ -54,12 +85,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) &&
-                Objects.equals(name, user.name);
+        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(createTime, user.createTime) && Objects.equals(localDate, user.localDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id, name, createTime, localDate);
     }
 }

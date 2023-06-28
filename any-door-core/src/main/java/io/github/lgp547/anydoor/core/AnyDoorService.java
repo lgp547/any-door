@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 public class AnyDoorService {
@@ -49,19 +50,19 @@ public class AnyDoorService {
      */
     public Object run(String anyDoorDtoStr, Method method, Object bean) {
         if (null == anyDoorDtoStr || anyDoorDtoStr.isEmpty()) {
-            System.err.println("anyDoorService run exception. anyDoorDtoStr is empty");
+            System.err.println("anyDoorService run param exception. anyDoorDtoStr is empty");
             return null;
         }
         if (null == method || null == bean) {
-            System.err.println("anyDoorService run exception. method or bean is null");
+            System.err.println("anyDoorService run param exception. method or bean is null");
             return null;
         }
 
         try {
             return doRun(JsonUtil.toJavaBean(anyDoorDtoStr, AnyDoorRunDto.class), method, bean);
-        } catch (Throwable e) {
+        } catch (Throwable throwable) {
             System.err.println("anyDoorService run exception. param [" + anyDoorDtoStr + "]");
-            e.printStackTrace();
+            Optional.ofNullable(throwable.getCause()).map(Throwable::getCause).orElse(throwable).printStackTrace();
             return null;
         }
     }
@@ -103,13 +104,17 @@ public class AnyDoorService {
     }
 
     private BiConsumer<Integer, Throwable> excLogConsumer(String methodName) {
-        return (num, throwable) -> System.out.println(ANY_DOOR_RUN_MARK + methodName + " " + num + " exception: " + throwable.getMessage());
+        return (num, throwable) -> {
+            System.err.println(ANY_DOOR_RUN_MARK + methodName + " " + num + " exception: " + throwable.getMessage());
+            Optional.ofNullable(throwable.getCause()).map(Throwable::getCause).orElse(throwable).printStackTrace();
+        };
     }
 
     private BiConsumer<Object, Throwable> futureResultLogConsumer(String methodName) {
         return (result, throwable) -> {
             if (throwable != null) {
-                System.out.println(ANY_DOOR_RUN_MARK + methodName + " exception: " + throwable.getMessage());
+                System.err.println(ANY_DOOR_RUN_MARK + methodName + " exception: " + throwable.getMessage());
+                Optional.ofNullable(throwable.getCause()).map(Throwable::getCause).orElse(throwable).printStackTrace();
             } else {
                 System.out.println(ANY_DOOR_RUN_MARK + methodName + " return: " + JsonUtil.toStrNotExc(result));
             }

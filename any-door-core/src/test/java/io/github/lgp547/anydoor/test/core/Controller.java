@@ -3,6 +3,7 @@ package io.github.lgp547.anydoor.test.core;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.github.lgp547.anydoor.common.dto.AnyDoorRunDto;
 import io.github.lgp547.anydoor.core.AnyDoorService;
+import io.github.lgp547.anydoor.util.JsonUtil;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +42,8 @@ public class Controller implements ApplicationRunner {
             AnyDoorRunDto anyDoorDto = new AnyDoorRunDto();
             anyDoorDto.setClassName(clazz.getName());
             anyDoorDto.setMethodName(method.getName());
-            anyDoorDto.setContent(jsonNode.toString());
+            String content = JsonUtil.toStrNotExc(jsonNode);
+            anyDoorDto.setContent(Objects.requireNonNull(content));
             List<String> parameterTypes = Arrays.stream(method.getParameterTypes()).map(Class::getName).collect(Collectors.toList());
             anyDoorDto.setParameterTypes(parameterTypes);
             anyDoorDto.setSync(true);

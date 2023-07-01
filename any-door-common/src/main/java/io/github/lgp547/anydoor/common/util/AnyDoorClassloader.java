@@ -1,12 +1,15 @@
 package io.github.lgp547.anydoor.common.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 
 public class AnyDoorClassloader extends URLClassLoader {
+
+    private boolean end = false;
 
     public AnyDoorClassloader(List<String> urls) throws Exception {
         super(getUrls(urls), ClassLoader.getSystemClassLoader().getParent());
@@ -48,4 +51,29 @@ public class AnyDoorClassloader extends URLClassLoader {
         }
         return super.loadClass(name, resolve);
     }
+
+    /**
+     * 由于存在异步执行，若事先关闭了会导致异步里面涉及当前加载器的类加载失败
+     */
+    @Override
+    public void close() throws IOException {
+        if (end) {
+            super.close();
+        }
+    }
+
+    public void forceClose() {
+        end = true;
+        try {
+            super.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setEnd(boolean end) {
+        this.end = end;
+    }
+
+
 }

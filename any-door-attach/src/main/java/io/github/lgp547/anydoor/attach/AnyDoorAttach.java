@@ -37,7 +37,7 @@ public class AnyDoorAttach {
 
 
     /**
-     * {@link io.github.lgp547.anydoor.core.AnyDoorService#run(String, Method, Object)}
+     * {@link io.github.lgp547.anydoor.core.AnyDoorService#run(String, Method, Object, Runnable)}
      */
     @SuppressWarnings("JavadocReference")
     public static void AnyDoorRun(String anyDoorDtoStr) {
@@ -57,8 +57,9 @@ public class AnyDoorAttach {
 
             Class<?> anyDoorServiceClass = anyDoorClassloader.loadClass("io.github.lgp547.anydoor.core.AnyDoorService");
             Object anyDoorService = anyDoorServiceClass.getConstructor().newInstance();
-            Method run = anyDoorServiceClass.getMethod("run", String.class, Method.class, Object.class);
-            run.invoke(anyDoorService, anyDoorDtoStr, method, instance);
+            Method run = anyDoorServiceClass.getMethod("run", String.class, Method.class, Object.class, Runnable.class);
+            Runnable endRun = anyDoorClassloader::forceClose;
+            run.invoke(anyDoorService, anyDoorDtoStr, method, instance, endRun);
         } catch (Exception e) {
             System.err.println("any_door agentmain error. anyDoorDtoStr[" + anyDoorDtoStr + "]");
             e.printStackTrace();

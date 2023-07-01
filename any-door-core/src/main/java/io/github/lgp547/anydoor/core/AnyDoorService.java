@@ -9,9 +9,11 @@ import io.github.lgp547.anydoor.util.JsonUtil;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 public class AnyDoorService {
@@ -37,7 +39,7 @@ public class AnyDoorService {
                     bean = AopUtil.getTargetObject(bean);
                 }
             }
-            return doRun(anyDoorDto, method, bean);
+            return doRun(anyDoorDto, method, bean, () -> {});
         } catch (Exception e) {
             System.err.println("anyDoorService run exception. param [" + anyDoorDto + "]");
             throw new RuntimeException(e);
@@ -48,7 +50,7 @@ public class AnyDoorService {
     /**
      * {@code  io.github.lgp547.anydoor.attach.AnyDoorAttach#AnyDoorRun(String)}
      */
-    public Object run(String anyDoorDtoStr, Method method, Object bean) {
+    public Object run(String anyDoorDtoStr, Method method, Object bean, Runnable endRun) {
         if (null == anyDoorDtoStr || anyDoorDtoStr.isEmpty()) {
             System.err.println("anyDoorService run param exception. anyDoorDtoStr is empty");
             return null;
@@ -59,62 +61,64 @@ public class AnyDoorService {
         }
 
         try {
-            return doRun(JsonUtil.toJavaBean(anyDoorDtoStr, AnyDoorRunDto.class), method, bean);
+            Thread.currentThread().setContextClassLoader(AnyDoorService.class.getClassLoader());
+            return doRun(JsonUtil.toJavaBean(anyDoorDtoStr, AnyDoorRunDto.class), method, bean, endRun);
         } catch (Throwable throwable) {
             System.err.println("anyDoorService run exception. param [" + anyDoorDtoStr + "]");
-            Optional.ofNullable(throwable.getCause()).map(Throwable::getCause).orElse(throwable).printStackTrace();
+            Optional.ofNullable(throwable.getCause()).map(Throwable::getCause).map(Throwable::getCause).orElse(throwable).printStackTrace();
             return null;
         }
     }
 
-    public Object doRun(AnyDoorRunDto anyDoorDto, Method method, Object bean) {
+    public Object doRun(AnyDoorRunDto anyDoorDto, Method method, Object bean, Runnable endRun) {
         String methodName = method.getName();
         Map<String, Object> contentMap = JsonUtil.toMap(JsonUtil.toStrNotExc(anyDoorDto.getContent()));
 
         AnyDoorHandlerMethod handlerMethod = new AnyDoorHandlerMethod(bean, method);
-        Object result = null;
-        if (Objects.equals(anyDoorDto.getSync(), true)) {
-            if (anyDoorDto.getNum() == 1) {
-                result = handlerMethod.invokeSync(contentMap);
+        if (anyDoorDto.getNum() == 1) {
+            if (Objects.equals(anyDoorDto.getSync(), true)) {
+                Object result = handlerMethod.invokeSync(contentMap);
+                System.out.println(ANY_DOOR_RUN_MARK + methodName + " return: " + JsonUtil.toStrNotExc(result));
+                endRun.run();
+                return result;
             } else {
-                if (anyDoorDto.getConcurrent()) {
-                    throw new IllegalArgumentException("Concurrent calls do not support sync");
-                }
-                handlerMethod.parallelInvokeSync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName));
+                handlerMethod.invokeAsync(contentMap).whenComplete(futureResultLogConsumer(methodName)).whenComplete((result, throwable) -> endRun.run());
+                return null;
             }
         } else {
-            if (anyDoorDto.getNum() == 1) {
-                handlerMethod.invokeAsync(contentMap).whenComplete(futureResultLogConsumer(methodName));
+            if (anyDoorDto.getConcurrent()) {
+                List<CompletableFuture<Object>> completableFutures =
+                        handlerMethod.concurrentInvokeAsync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName), excLogConsumer(methodName));
+                CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0])).whenComplete((result, throwable) -> endRun.run());
             } else {
-                if (anyDoorDto.getConcurrent()) {
-                    handlerMethod.concurrentInvokeAsync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName), excLogConsumer(methodName));
+                if (Objects.equals(anyDoorDto.getSync(), true)) {
+                    handlerMethod.parallelInvokeSync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName));
+                    endRun.run();
                 } else {
-                    handlerMethod.parallelInvokeAsync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName));
+                    CompletableFuture<Void> voidCompletableFuture = handlerMethod.parallelInvokeAsync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName));
+                    voidCompletableFuture.whenComplete((result, throwable) -> endRun.run());
                 }
             }
+            return null;
         }
-        if (result != null) {
-            System.out.println(ANY_DOOR_RUN_MARK + methodName + " return: " + JsonUtil.toStrNotExc(result));
-        }
-        return result;
     }
 
-    private BiConsumer<Integer, Object> resultLogConsumer(String methodName) {
+    private static BiConsumer<Integer, Object> resultLogConsumer(String methodName) {
         return (num, result) -> System.out.println(ANY_DOOR_RUN_MARK + methodName + " " + num + " return: " + JsonUtil.toStrNotExc(result));
     }
 
-    private BiConsumer<Integer, Throwable> excLogConsumer(String methodName) {
+    private static BiConsumer<Integer, Throwable> excLogConsumer(String methodName) {
         return (num, throwable) -> {
             System.err.println(ANY_DOOR_RUN_MARK + methodName + " " + num + " exception: " + throwable.getMessage());
-            Optional.ofNullable(throwable.getCause()).map(Throwable::getCause).orElse(throwable).printStackTrace();
+            Optional.ofNullable(throwable.getCause()).map(Throwable::getCause).map(Throwable::getCause).orElse(throwable).printStackTrace();
         };
     }
 
-    private BiConsumer<Object, Throwable> futureResultLogConsumer(String methodName) {
+    private static BiConsumer<Object, Throwable> futureResultLogConsumer(String methodName) {
         return (result, throwable) -> {
             if (throwable != null) {
                 System.err.println(ANY_DOOR_RUN_MARK + methodName + " exception: " + throwable.getMessage());
-                Optional.ofNullable(throwable.getCause()).map(Throwable::getCause).orElse(throwable).printStackTrace();
+                Optional.ofNullable(throwable.getCause()).map(Throwable::getCause).map(Throwable::getCause).orElse(throwable).printStackTrace();
             } else {
                 System.out.println(ANY_DOOR_RUN_MARK + methodName + " return: " + JsonUtil.toStrNotExc(result));
             }

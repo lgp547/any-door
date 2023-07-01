@@ -61,7 +61,7 @@ public class JsonUtil {
         } else {
             try {
                 return objectMapper.writeValueAsString(value);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 return null;
             }
         }

@@ -13,6 +13,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -49,9 +51,9 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
     /**
      * 并行，不阻塞调度进程
      */
-    public void parallelInvokeAsync(Map<String, Object> contentMap, int num, BiConsumer<Integer, Object> resultLogConsumer) {
+    public CompletableFuture<Void> parallelInvokeAsync(Map<String, Object> contentMap, int num, BiConsumer<Integer, Object> resultLogConsumer) {
         Object[] args = getArgs(contentMap);
-        CompletableFuture.runAsync(() -> {
+        return CompletableFuture.runAsync(() -> {
             for (int i = 0; i < num; i++) {
                 resultLogConsumer.accept(i, doInvoke(args));
             }
@@ -61,18 +63,21 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
     /**
      * 并发，不阻塞调度进程
      */
-    public void concurrentInvokeAsync(Map<String, Object> contentMap, int num, BiConsumer<Integer, Object> resultLogConsumer, BiConsumer<Integer, Throwable> excLogConsumer) {
+    public List<CompletableFuture<Object>> concurrentInvokeAsync(Map<String, Object> contentMap, int num, BiConsumer<Integer, Object> resultLogConsumer, BiConsumer<Integer, Throwable> excLogConsumer) {
         Object[] args = getArgs(contentMap);
+        List<CompletableFuture<Object>> completableFutures = new ArrayList<>(num);
         for (int i = 0; i < num; i++) {
             final int i1 = i;
-            CompletableFuture.supplyAsync(() -> doInvoke(args)).whenComplete(((o, throwable) -> {
+            CompletableFuture<Object> objectCompletableFuture = CompletableFuture.supplyAsync(() -> doInvoke(args)).whenComplete(((o, throwable) -> {
                 if (throwable != null) {
                     excLogConsumer.accept(i1, throwable);
                 } else {
                     resultLogConsumer.accept(i1, o);
                 }
             }));
+            completableFutures.add(objectCompletableFuture);
         }
+        return completableFutures;
     }
 
     public Object doInvoke(Object[] args) {

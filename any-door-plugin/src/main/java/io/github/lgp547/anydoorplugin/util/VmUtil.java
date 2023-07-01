@@ -21,7 +21,7 @@ public class VmUtil {
         CompletableFuture.runAsync(() -> {
             // Exceed attach limit, go file transfer. file://paramPath
             String agentParam = param;
-            if (agentParam.length() > 950 && flushFile(paramPath, agentParam)) {
+            if (agentParam.length() > 600 && flushFile(paramPath, agentParam)) {
                 agentParam = "file://" + paramPath;
             }
 

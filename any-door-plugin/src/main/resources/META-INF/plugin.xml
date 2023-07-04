@@ -4,7 +4,7 @@
     <name>AnyDoor</name>
     <vendor email="lgp547279@163.com" url="https://github.com/lgp547">lgp</vendor>
     <description><![CDATA[
-        执行 Spring 项目的任意方法，无论是 App 层还是 Dao 层方法都可以直接运行<br>
+        执行 Java 项目的任意方法，无论是 App 层还是 Dao 层方法都可以直接运行<br>
         快速开始：<br>
         <ul>
             <li>启动项目</li>
@@ -23,6 +23,17 @@
         </ul>
         <a href="https://github.com/lgp547/any-door">any-door</a><br>
     ]]></description>
+
+    <change-notes><![CDATA[
+        <strong>1.4.0</strong>
+        <ul>
+            <li>类加载隔离，和运行项目不做耦合，无依赖冲突问题</li>
+            <li>支持没有 Spring 依赖的 Java 项目，插件运行无需使用方提供 Spring 依赖</li>
+            <li>一个类多实例将会随机取一个实例</li>
+            <li>[fix]无参方法无记录上一次调用</li>
+        </ul>
+    ]]>
+    </change-notes>
 
 
 

@@ -37,9 +37,8 @@ public class AnyDoorAttach {
 
 
     /**
-     * {@link io.github.lgp547.anydoor.core.AnyDoorService#run(String, Method, Object, Runnable)}
+     * {@code  io.github.lgp547.anydoor.core.AnyDoorService#run(String, Method, Object, Runnable)}
      */
-    @SuppressWarnings("JavadocReference")
     public static void AnyDoorRun(String anyDoorDtoStr) {
         AnyDoorRunDto anyDoorRunDto = AnyDoorRunDto.parseObj(anyDoorDtoStr);
         if (!anyDoorRunDto.verifyPassByAttach()) {

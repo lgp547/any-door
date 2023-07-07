@@ -6,16 +6,15 @@ package io.github.lgp547.anydoorplugin.data.domain;
  * @date: 2023-06-30 11:50
  **/
 public class CacheData<T extends DataItem> {
-    private String key;
-    private String qualifiedName;
+
+    private String identity;
     private Data<T> data;
 
     public CacheData() {
     }
 
-    public CacheData(String key, String qualifiedName, Data<T> data) {
-        this.key = key;
-        this.qualifiedName = qualifiedName;
+    public CacheData(String identity, Data<T> data) {
+        this.identity = identity;
         this.data = data;
     }
 

@@ -1,6 +1,7 @@
 package io.github.lgp547.anydoorplugin.data;
 
-import com.intellij.openapi.project.Project;
+import java.util.concurrent.Future;
+
 import io.github.lgp547.anydoorplugin.data.domain.Data;
 import io.github.lgp547.anydoorplugin.data.domain.DataItem;
 
@@ -11,6 +12,11 @@ import io.github.lgp547.anydoorplugin.data.domain.DataItem;
  **/
 public interface DataPersistent<T extends DataItem> {
 
-    Data<T> load(Project project, String identity);
+    Future<?> saveAsync(Data<T> data);
+
+    Data<T> load(String identity);
+
+    Data<T> load(String identity, boolean shareable);
+    Data<T> load(String identity, boolean shareable, boolean useCache);
 
 }

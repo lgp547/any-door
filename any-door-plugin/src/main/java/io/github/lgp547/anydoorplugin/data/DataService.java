@@ -10,7 +10,7 @@ import io.github.lgp547.anydoorplugin.data.domain.DataItem;
  **/
 public interface DataService<T extends DataItem> {
 
-    Data<T> read(String identity);
+    Data<T> find(String identity);
 
-    void write(Data<T> data);
+    void save(Data<T> data);
 }

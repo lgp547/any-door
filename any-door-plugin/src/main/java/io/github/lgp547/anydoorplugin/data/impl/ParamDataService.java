@@ -29,12 +29,12 @@ public final class ParamDataService implements DataService<ParamDataItem> {
     }
 
     @Override
-    public Data<ParamDataItem> read(String identity) {
+    public Data<ParamDataItem> find(String identity) {
         return paramDataReaderWriter.load(identity);
     }
 
     @Override
-    public void write(Data<ParamDataItem> data) {
+    public void save(Data<ParamDataItem> data) {
 
         paramDataReaderWriter.saveAsync(data);
     }

@@ -18,6 +18,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
@@ -61,7 +62,7 @@ public class ParamListUI extends JPanel {
         this.project = project;
         dataService = project.getService(ParamDataService.class);
 
-        toolBar = new ParamListToolBar();
+        toolBar = initToolBar();
         tableModel = new ParamListTableModel();
         table = new ParamListTable(tableModel);
         contentPanel = new JBScrollPane(table);
@@ -72,6 +73,54 @@ public class ParamListUI extends JPanel {
         registerListener();
 
         initLoadData();
+    }
+
+    private JToolBar initToolBar() {
+        ParamListToolBar toolBar = new ParamListToolBar();
+        toolBar.addToolButton("Delete", AnyDoorIcons.delete_icon, AnyDoorIcons.delete_hover_icon, e -> deleteAction());
+
+        toolBar.addToolButton("刷新", AnyDoorIcons.refresh_icon, AnyDoorIcons.refresh_hover_icon, e -> {
+            doReadAndRefresh(data.getIdentity());
+        });
+
+        toolBar.addToolButton("查找", AnyDoorIcons.search_icon, AnyDoorIcons.search_icon, e -> {
+            System.out.println("查找");
+        });
+
+        return toolBar;
+    }
+
+    private void deleteAction() {
+        List<ParamDataItem> dataItems = tableModel.getItems()
+                .stream()
+                .filter(v -> !v.isSelected())
+                .map(ViewData::getDataItem)
+                .collect(Collectors.toList());
+        if (Objects.equals(dataItems.size(), tableModel.getItems().size())) {
+            return;
+        }
+        new DialogWrapper(project, true, DialogWrapper.IdeModalityType.IDE) {
+            {
+                init();
+            }
+
+            @Override
+            protected @Nullable JComponent createCenterPanel() {
+                return new JLabel("Are you sure to delete the selected data？");
+            }
+
+            @Override
+            protected void doOKAction() {
+                updateItemsAndRefresh(dataItems);
+                super.doOKAction();
+            }
+        }.show();
+    }
+
+    private void updateItemsAndRefresh(List<ParamDataItem> dataItems) {
+        data.setDataList(dataItems);
+        dataService.save(data);
+        tableModel.refreshAll(ViewData.toViewData(data));
     }
 
     private void initLoadData() {
@@ -124,10 +173,14 @@ public class ParamListUI extends JPanel {
         if (Objects.nonNull(file)) {
             String qualifiedName = getQualifiedName(file);
             if (qualifiedName != null) {
-                data = dataService.read(qualifiedName);
-                tableModel.refreshAll(ViewData.toViewData(data));
+                doReadAndRefresh(qualifiedName);
             }
         }
+    }
+
+    private void doReadAndRefresh(String qualifiedName) {
+        data = dataService.find(qualifiedName);
+        tableModel.refreshAll(ViewData.toViewData(data));
     }
 
     private String getQualifiedName(VirtualFile file) {
@@ -176,18 +229,6 @@ public class ParamListUI extends JPanel {
             super();
             this.setFloatable(false);
 
-            this.addToolButton("新增", AnyDoorIcons.add_icon, AnyDoorIcons.add_hover_icon, e -> {
-                System.out.println("新增");
-            });
-            this.addToolButton("删除", AnyDoorIcons.delete_icon, AnyDoorIcons.delete_hover_icon, e -> {
-                System.out.println("删除");
-            });
-            this.addToolButton("刷新", AnyDoorIcons.refresh_icon, AnyDoorIcons.refresh_hover_icon, e -> {
-                System.out.println("刷新");
-            });
-            this.addToolButton("查找", AnyDoorIcons.search_icon, AnyDoorIcons.search_icon, e -> {
-                System.out.println("查找");
-            });
         }
 
     }
@@ -228,6 +269,14 @@ public class ParamListUI extends JPanel {
 
         public ViewData(ParamDataItem item) {
             this(false, item);
+        }
+
+        public ParamDataItem getDataItem() {
+            return dataItem;
+        }
+
+        public boolean isSelected() {
+            return selected;
         }
 
         public static List<ViewData> toViewData(Data<ParamDataItem> data) {

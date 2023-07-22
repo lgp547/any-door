@@ -93,7 +93,7 @@ public class DataContext extends Multicaster implements Listener {
     }
 
     public void flush() {
-        dataService.write(data);
+        dataService.save(data);
     }
 
     public void removeItem(Long id) {

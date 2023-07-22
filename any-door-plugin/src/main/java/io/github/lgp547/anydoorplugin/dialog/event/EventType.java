@@ -7,7 +7,6 @@ package io.github.lgp547.anydoorplugin.dialog.event;
  **/
 public enum EventType {
     IMPORT_EXPORT("IMPORT_EXPORT"),
-    IMPORT_COMPLETED("IMPORT_COMPLETED"),
     DISPLAY_DATA_CHANGE("DISPLAY_DATA_CHANGE"),
     ADD_DATA_ITEM("ADD_DATA_ITEM"),
     ADD_SIMPLE_PARAM_ITEM("ADD_SIMPLE_PARAM_ITEM"),
@@ -16,6 +15,8 @@ public enum EventType {
     SELECT_ITEM_CHANGED("SELECT_ITEM_CHANGED"),
     UPDATE_DATA_ITEM("UPDATE_DATA_ITEM"),
     UPDATE_ITEM_NAME("UPDATE_ITEM_NAME"),
+    GLOBAL_DATA_CHANGE("GLOBAL_DATA_CHANGE"),
+    DATA_SYNC("DATA_SYNC"),
     ;
     private String name;
     EventType(String name) {

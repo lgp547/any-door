@@ -13,6 +13,7 @@ import com.intellij.util.ui.JBDimension;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
 import io.github.lgp547.anydoorplugin.dialog.DataContext;
 import io.github.lgp547.anydoorplugin.dialog.JSONEditor;
+import io.github.lgp547.anydoorplugin.dialog.MethodDataContext;
 import io.github.lgp547.anydoorplugin.dialog.event.Event;
 import io.github.lgp547.anydoorplugin.dialog.event.EventType;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.ImportExportEvent;
@@ -31,9 +32,9 @@ public class MainPanel extends JBPanel<MainPanel> implements Listener {
     private final MyToolBar toolBar;
     private final MyEditor editor;
     private final MyComboBox comboBox;
-    private final DataContext context;
+    private final MethodDataContext context;
 
-    public MainPanel(Project project, DataContext context) {
+    public MainPanel(Project project, MethodDataContext context) {
         super(new GridBagLayout());
         setPreferredSize(new JBDimension(670, 500));
 
@@ -48,7 +49,7 @@ public class MainPanel extends JBPanel<MainPanel> implements Listener {
         this.context.addListener(comboBox);
         this.context.addListener(editor);
 
-        context.fireEvent(EventHelper.createDisplayDataChangeEvent(context.listDisplayData(), context.getSelectedDataItem()));
+        context.fireEvent(EventHelper.createDisplayDataChangeEvent(context.listDisplayData(), context.getSelectedItem()));
 
         componentLayout();
     }
@@ -104,7 +105,7 @@ public class MainPanel extends JBPanel<MainPanel> implements Listener {
                 ParamDataItem dataItem;
                 if (Objects.equals(ImportExportPanel.EXPORT, title)) {
                     setTitle("Export");
-                    dataItem = context.getSelectedDataItem();
+                    dataItem = context.getSelectedItem();
                 } else {
                     setTitle("Import");
                     dataItem = new ParamDataItem();

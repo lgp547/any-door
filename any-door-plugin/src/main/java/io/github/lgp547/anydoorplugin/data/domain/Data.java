@@ -1,6 +1,7 @@
 package io.github.lgp547.anydoorplugin.data.domain;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -46,5 +47,25 @@ public class Data<T extends DataItem> {
 
     public void setDataList(List<T> dataList) {
         this.dataList = dataList;
+    }
+
+    public void removeItems(Collection<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+
+        List<T> dataList = getDataList();
+        if (dataList == null || dataList.isEmpty()) {
+            return;
+        }
+
+        List<T> removeList = new ArrayList<>();
+        for (T dataItem : dataList) {
+            if (ids.contains(dataItem.getId())) {
+                removeList.add(dataItem);
+            }
+        }
+
+        dataList.removeAll(removeList);
     }
 }

@@ -78,9 +78,7 @@ public class AnyDoorPerformed {
 //                openAnyDoor(project, jsonDtoStr, service, openExcConsumer);
 //            });
 //            dialog.show();
-            ParamDataService dataService = project.getService(ParamDataService.class);
-            Data<ParamDataItem> data = dataService.find(psiClass.getQualifiedName());
-            new MainUI(project, new DataContext(project.getService(ParamDataService.class), psiClass, ParamIdentityHelper.getMethodQualifiedName(method), data)).show();
+            new MainUI(project, DataContext.instance(project).getExecuteDataContext(psiClass.getQualifiedName(), ParamIdentityHelper.getMethodQualifiedName(method))).show();
         }
     }
 

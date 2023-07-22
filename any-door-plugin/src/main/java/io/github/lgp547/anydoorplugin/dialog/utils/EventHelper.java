@@ -6,9 +6,10 @@ import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
 import io.github.lgp547.anydoorplugin.dialog.event.Event;
 import io.github.lgp547.anydoorplugin.dialog.event.EventType;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.AddDataItemEvent;
+import io.github.lgp547.anydoorplugin.dialog.event.impl.DataSyncEvent;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.DisplayDataChangeEvent;
+import io.github.lgp547.anydoorplugin.dialog.event.impl.GlobalDataChangeEvent;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.ImportExportEvent;
-import io.github.lgp547.anydoorplugin.dialog.event.impl.RemoveDataItemEvent;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.SelectItemChangedEvent;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.UpdateDataItemEvent;
 
@@ -35,10 +36,6 @@ public class EventHelper {
         return new AddDataItemEvent(EventType.ADD_ALL_PARAM_ITEM, null);
     }
 
-    public static Event createRemoveDataItemEvent(Long id) {
-        return new RemoveDataItemEvent(id);
-    }
-
     public static Event createUpdateDataItemEvent(ParamDataItem dataItem) {
         return new UpdateDataItemEvent(dataItem);
     }
@@ -53,5 +50,13 @@ public class EventHelper {
 
     public static Event createDisplayDataChangeEvent(List<ParamDataItem> displayList, ParamDataItem selectedItem) {
         return new DisplayDataChangeEvent(displayList, selectedItem);
+    }
+
+    public static Event createGlobalDataChangeEvent(String qualifiedClassName, String qualifiedMethodName, List<ParamDataItem> dataItems) {
+        return new GlobalDataChangeEvent(qualifiedClassName, qualifiedMethodName, dataItems);
+    }
+
+    public static Event createDataSyncEvent(String qualifiedMethodName, List<ParamDataItem> dataItems) {
+        return new DataSyncEvent(qualifiedMethodName, dataItems);
     }
 }

@@ -11,8 +11,8 @@ import java.util.Objects;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiParameterList;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
-import io.github.lgp547.anydoorplugin.dialog.DataContext;
 import io.github.lgp547.anydoorplugin.dialog.JSONEditor;
+import io.github.lgp547.anydoorplugin.dialog.MethodDataContext;
 import io.github.lgp547.anydoorplugin.dialog.event.Event;
 import io.github.lgp547.anydoorplugin.dialog.event.EventType;
 import io.github.lgp547.anydoorplugin.dialog.event.Listener;
@@ -21,9 +21,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class MyEditor extends JSONEditor implements Listener {
 
-    private final DataContext context;
+    private final MethodDataContext context;
 
-    public MyEditor(DataContext context, String cacheText, @Nullable PsiParameterList psiParameterList, Project project) {
+    public MyEditor(MethodDataContext context, String cacheText, @Nullable PsiParameterList psiParameterList, Project project) {
         super(cacheText, psiParameterList, project);
         this.context = context;
 

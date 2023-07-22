@@ -4,9 +4,11 @@ package io.github.lgp547.anydoorplugin.dialog;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.*;
@@ -34,7 +36,9 @@ import com.intellij.util.ui.ListTableModel;
 import io.github.lgp547.anydoorplugin.data.DataService;
 import io.github.lgp547.anydoorplugin.data.domain.Data;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
+import io.github.lgp547.anydoorplugin.data.domain.ParamIndexData;
 import io.github.lgp547.anydoorplugin.data.impl.ParamDataService;
+import io.github.lgp547.anydoorplugin.data.impl.ParamIndexService;
 import io.github.lgp547.anydoorplugin.dialog.components.CustomToolbar;
 import io.github.lgp547.anydoorplugin.util.AnyDoorIcons;
 import org.jetbrains.annotations.NotNull;
@@ -55,12 +59,16 @@ public class ParamListUI extends JPanel {
 
     private final Project project;
     private final DataService<ParamDataItem> dataService;
+    private final DataService<ParamIndexData> indexService;
 
+    private Data<ParamIndexData> indexData;
     private Data<ParamDataItem> data;
 
     public ParamListUI(Project project) {
         this.project = project;
+
         dataService = project.getService(ParamDataService.class);
+        indexService = project.getService(ParamIndexService.class);
 
         toolBar = initToolBar();
         tableModel = new ParamListTableModel();
@@ -72,18 +80,23 @@ public class ParamListUI extends JPanel {
 
         registerListener();
 
+        initIndexData();
         initLoadData();
+    }
+
+    private void initIndexData() {
+        indexData = indexService.find(project.getName());
     }
 
     private JToolBar initToolBar() {
         ParamListToolBar toolBar = new ParamListToolBar();
         toolBar.addToolButton("Delete", AnyDoorIcons.delete_icon, AnyDoorIcons.delete_hover_icon, e -> deleteAction());
 
-        toolBar.addToolButton("刷新", AnyDoorIcons.refresh_icon, AnyDoorIcons.refresh_hover_icon, e -> {
+        toolBar.addToolButton("Refresh", AnyDoorIcons.refresh_icon, AnyDoorIcons.refresh_hover_icon, e -> {
             doReadAndRefresh(data.getIdentity());
         });
 
-        toolBar.addToolButton("查找", AnyDoorIcons.search_icon, AnyDoorIcons.search_icon, e -> {
+        toolBar.addToolButton("Find", AnyDoorIcons.search_icon, AnyDoorIcons.search_icon, e -> {
             System.out.println("查找");
         });
 
@@ -99,6 +112,9 @@ public class ParamListUI extends JPanel {
         if (Objects.equals(dataItems.size(), tableModel.getItems().size())) {
             return;
         }
+
+        Set<Long> removeIds = tableModel.getItems().stream().filter(ViewData::isSelected).map(v -> v.getDataItem().getId()).collect(Collectors.toSet());
+
         new DialogWrapper(project, true, DialogWrapper.IdeModalityType.IDE) {
             {
                 init();
@@ -112,9 +128,15 @@ public class ParamListUI extends JPanel {
             @Override
             protected void doOKAction() {
                 updateItemsAndRefresh(dataItems);
+                removeIndex(removeIds);
                 super.doOKAction();
             }
         }.show();
+    }
+
+    private void removeIndex(Collection<Long> ids) {
+        indexData.removeItems(ids);
+        indexService.save(indexData);
     }
 
     private void updateItemsAndRefresh(List<ParamDataItem> dataItems) {
@@ -148,11 +170,8 @@ public class ParamListUI extends JPanel {
 
                     int index = qName.lastIndexOf("#");
                     String className = qName.substring(0, index);
-//                    String methodName = qName.substring(index + 1);
 
-                    PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(className, GlobalSearchScope.allScope(project));
-
-                    new MainUI(project, new DataContext(dataService, psiClass, value.dataItem.getQualifiedName(), data, value.dataItem)).show();
+                    new MainUI(project, DataContext.instance(project).getExecuteDataContext(className, value.dataItem.getQualifiedName(), value.dataItem.getId())).show();
                 }
             }
         });

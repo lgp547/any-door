@@ -15,6 +15,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.intellij.ide.structureView.newStructureView.StructureViewComponent;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
 import io.github.lgp547.anydoorplugin.data.domain.CacheData;
 import io.github.lgp547.anydoorplugin.data.domain.Data;
@@ -27,6 +29,8 @@ import io.github.lgp547.anydoorplugin.util.JsonUtil;
  * @date: 2023-06-29 11:11
  **/
 public abstract class AbstractDataReaderWriter<T extends DataItem> {
+
+    protected static final Logger LOG = Logger.getInstance(AbstractDataReaderWriter.class);
 
     protected final String DATA_BASE_DIR = "/.idea";
     protected final Map<String, CacheData<T>> dataCache = new ConcurrentHashMap<>();
@@ -66,8 +70,8 @@ public abstract class AbstractDataReaderWriter<T extends DataItem> {
 
     protected Data<T> doReadFileSync(String key, String filePath) {
         try {
-            return doReadFileAsync(key, filePath).get(15, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            return new Reader(key, filePath).call();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -101,9 +105,9 @@ public abstract class AbstractDataReaderWriter<T extends DataItem> {
             this.filePath = filePath;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Data<T> call() throws Exception {
+            LOG.info(String.format("read data. key [%s] filePath [%s]", key, filePath));
 
             ReentrantReadWriteLock.ReadLock readLock = lockMap.computeIfAbsent(key, k -> new ReentrantReadWriteLock()).readLock();
             try {
@@ -117,9 +121,11 @@ public abstract class AbstractDataReaderWriter<T extends DataItem> {
                     return new Data<>(key);
                 }
             } catch (Exception e) {
+                LOG.error(String.format("data read fail. key [%s] filePath [%s]", key, filePath), e);
                 throw new RuntimeException(e);
             } finally {
                 readLock.unlock();
+                LOG.info(String.format("read data finish. key [%s] filePath [%s] unlock", key, filePath));
             }
             return null;
         }
@@ -143,8 +149,13 @@ public abstract class AbstractDataReaderWriter<T extends DataItem> {
 
         @Override
         public void run() {
+            LOG.info(String.format("write data. key [%s] filePath [%s]", key, filePath));
+            String fileName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
+
             String newFile = filePath + "." + data.getTimestamp();
             File file = new File(newFile);
+
+            LOG.info(String.format("write data. key [%s] actualPath [%s] ", key, newFile));
 
             ReentrantReadWriteLock.WriteLock writeLock = lockMap.computeIfAbsent(data.getIdentity(), k -> new ReentrantReadWriteLock()).writeLock();
             try {
@@ -153,16 +164,26 @@ public abstract class AbstractDataReaderWriter<T extends DataItem> {
 
                 boolean lock = writeLock.tryLock(15, TimeUnit.SECONDS);
                 if (lock) {
+                    LOG.info("write data override lock");
+
                     CacheData<T> cacheData = dataCache.get(key);
                     if (Objects.isNull(cacheData) || Objects.isNull(cacheData.data()) || cacheData.data().getTimestamp() <= data.getTimestamp()) {
-                        FileUtil.rename(file, filePath);
+                        LOG.info(String.format("write data override file. key [%s] src [%s] dst [%s] ", key, newFile, filePath));
+                        FileUtil.rename(file, fileName);
                     }
                 }
             } catch (Exception e) {
+                LOG.error(String.format("data write fail. key [%s] filePath [%s]", key, filePath), e);
                 throw new RuntimeException(e);
             } finally {
-                FileUtil.delete(file);
                 writeLock.unlock();
+
+                File writeFile = new File(newFile);
+                if (writeFile.exists()) {
+                    FileUtil.delete(writeFile);
+                }
+
+                LOG.info(String.format("write data finish. key [%s] filePath [%s] unlock", key, filePath));
             }
         }
     }

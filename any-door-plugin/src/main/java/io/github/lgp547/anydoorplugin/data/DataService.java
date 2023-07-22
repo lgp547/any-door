@@ -12,4 +12,5 @@ public interface DataService<T extends DataItem> {
 
     Data<T> read(String identity);
 
+    void write(Data<T> data);
 }

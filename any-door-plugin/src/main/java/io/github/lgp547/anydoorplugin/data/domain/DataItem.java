@@ -1,10 +1,20 @@
 package io.github.lgp547.anydoorplugin.data.domain;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 /**
  * @description:
  * @author: zhouh
  * @date: 2023-06-28 19:55
  **/
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ParamDataItem.class, name = "param")
+})
 public abstract class DataItem {
     protected Long id;
     protected long updateTime;

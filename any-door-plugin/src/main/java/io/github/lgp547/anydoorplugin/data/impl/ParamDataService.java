@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project;
 import io.github.lgp547.anydoorplugin.data.DataService;
 import io.github.lgp547.anydoorplugin.data.domain.Data;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
+import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 
 /**
  * @description:
@@ -22,11 +23,21 @@ public final class ParamDataService implements DataService<ParamDataItem> {
 
     public ParamDataService(Project project) {
         this.project = project;
-        this.paramDataReaderWriter = new ParamDataReaderWriter(project);
+
+        AnyDoorSettingsState state = project.getService(AnyDoorSettingsState.class);
+        this.paramDataReaderWriter = new ParamDataReaderWriter(project, ParamDataIdGenerator.INSTANCE.init(state));
     }
 
     @Override
     public Data<ParamDataItem> read(String identity) {
         return paramDataReaderWriter.load(identity);
     }
+
+    @Override
+    public void write(Data<ParamDataItem> data) {
+
+        paramDataReaderWriter.saveAsync(data);
+    }
+
+
 }

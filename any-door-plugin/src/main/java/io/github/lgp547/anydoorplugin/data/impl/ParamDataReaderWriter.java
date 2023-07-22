@@ -3,11 +3,15 @@ package io.github.lgp547.anydoorplugin.data.impl;
 import java.util.Objects;
 import java.util.concurrent.Future;
 
+import com.esotericsoftware.minlog.Log;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import io.github.lgp547.anydoorplugin.data.AbstractDataReaderWriter;
 import io.github.lgp547.anydoorplugin.data.DataPersistent;
+import io.github.lgp547.anydoorplugin.data.IdGenerator;
 import io.github.lgp547.anydoorplugin.data.domain.Data;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
+import io.github.lgp547.anydoorplugin.util.JsonUtil;
 
 /**
  * @description:
@@ -16,18 +20,26 @@ import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
  **/
 public class ParamDataReaderWriter extends AbstractDataReaderWriter<ParamDataItem> implements DataPersistent<ParamDataItem> {
 
+//    private static final Logger LOG = Logger.getInstance(ParamDataReaderWriter.class);
     private static final String SHAREABLE_SUFFIX = "&shareable";
     private static final String FILE_SEPARATOR = System.getProperty("file.separator");
     private final Project project;
-
+    private final IdGenerator idGenerator;
 
     public ParamDataReaderWriter(Project project) {
+        this(project, new DefaultIdGenerator());
+    }
+
+    public ParamDataReaderWriter(Project project, IdGenerator idGenerator) {
         Objects.requireNonNull(project);
         this.project = project;
+        this.idGenerator = idGenerator;
     }
 
     @Override
     public Future<?> saveAsync(Data<ParamDataItem> data) {
+        Log.info("saveOrUpdate " + data.getIdentity());
+        Log.debug("saveOrUpdate " + JsonUtil.toStrNotExc(data));
         return write(data);
     }
 
@@ -43,6 +55,7 @@ public class ParamDataReaderWriter extends AbstractDataReaderWriter<ParamDataIte
 
     @Override
     public Data<ParamDataItem> load(String identity, boolean shareable, boolean useCache) {
+        LOG.info(String.format("load %s, shareable: %s, useCache: %s", identity, shareable, useCache));
         return read(identity, shareable, useCache);
     }
 
@@ -53,7 +66,7 @@ public class ParamDataReaderWriter extends AbstractDataReaderWriter<ParamDataIte
         String filePath = genFilePath(key);
 
         if (useCache) {
-            return readAndCache(key, filePath).data();
+            return readAndCache(key, filePath).cloneData();
         }
 
         return doRead(key, filePath);
@@ -64,7 +77,26 @@ public class ParamDataReaderWriter extends AbstractDataReaderWriter<ParamDataIte
         Objects.requireNonNull(data);
         Objects.requireNonNull(data.getIdentity());
 
+        autoGenerateIdIfNecessary(data);
+        autoUpdateLastModifiedTime(data);
+
         return doWrite(data.getIdentity(), genFilePath(data.getIdentity()), data);
+    }
+
+    private void autoUpdateLastModifiedTime(Data<ParamDataItem> data) {
+        long millis = System.currentTimeMillis();
+        data.setTimestamp(millis);
+        data.getDataList()
+                .forEach(item -> item.setUpdateTime(millis));
+    }
+
+    private void autoGenerateIdIfNecessary(Data<ParamDataItem> data) {
+        data.getDataList()
+                .forEach(item -> {
+                    if (Objects.isNull(item.getId())) {
+                        item.setId(idGenerator.nextId());
+                    }
+                });
     }
 
     private String genFilePath(String key) {

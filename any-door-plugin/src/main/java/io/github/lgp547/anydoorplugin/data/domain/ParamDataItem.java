@@ -1,8 +1,6 @@
 package io.github.lgp547.anydoorplugin.data.domain;
 
-import java.util.Vector;
-
-import io.github.lgp547.anydoorplugin.dialog.ParamListTest;
+import java.util.Objects;
 
 /**
  * @description:
@@ -11,11 +9,20 @@ import io.github.lgp547.anydoorplugin.dialog.ParamListTest;
  **/
 public class ParamDataItem extends DataItem {
 
-    private String name;
+    protected String name;
 
-    private String qualifiedName;
+    protected String qualifiedName;
 
-    private String param;
+    protected String param;
+
+    public ParamDataItem() {
+    }
+
+    public ParamDataItem(String name, String qualifiedName, String param) {
+        this.name = name;
+        this.qualifiedName = qualifiedName;
+        this.param = param;
+    }
 
     public String getName() {
         return name;
@@ -41,17 +48,8 @@ public class ParamDataItem extends DataItem {
         this.param = param;
     }
 
-    public Vector<?> convert2Vector() {
-        return new Vector<>() {{
-            add(false);
-            add(id);
-            add(name);
-            add(qualifiedName);
-            add(param);
-        }};
-    }
 
-    public ParamListTest.ViewData toViewData() {
-        return new ParamListTest.ViewData(false, id, name, qualifiedName);
+    public String methodName() {
+        return Objects.isNull(qualifiedName) ? null : qualifiedName.substring(qualifiedName.lastIndexOf("#") + 1);
     }
 }

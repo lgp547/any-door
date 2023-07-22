@@ -15,12 +15,17 @@ public class Data<T extends DataItem> {
     protected List<T> dataList;
 
     public Data() {
+        this.dataList = new ArrayList<>();
     }
 
     public Data(String identity) {
+        this();
         this.identity = identity;
         this.timestamp = System.currentTimeMillis();
-        this.dataList = new ArrayList<>();
+    }
+
+    public void setIdentity(String identity) {
+        this.identity = identity;
     }
 
     public String getIdentity() {

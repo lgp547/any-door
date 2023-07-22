@@ -16,4 +16,14 @@ public class AnyDoorIcons {
   public static final Icon refresh_icon = IconLoader.getIcon("/icon/refresh.svg", AnyDoorIcons.class);
   public static final Icon refresh_hover_icon = IconLoader.getIcon("/icon/refreshHover.svg", AnyDoorIcons.class);
 
+  public static final Icon import_icon = IconLoader.getIcon("/icon/import.svg", AnyDoorIcons.class);
+  public static final Icon import_hover_icon = IconLoader.getIcon("/icon/importHover.svg", AnyDoorIcons.class);
+  public static final Icon export_icon = IconLoader.getIcon("/icon/export.svg", AnyDoorIcons.class);
+
+  public static final Icon example_icon = IconLoader.getIcon("/icon/example.svg", AnyDoorIcons.class);
+  public static final Icon last_call_icon = IconLoader.getIcon("/icon/lastCall.svg", AnyDoorIcons.class);
+
+  public static final Icon edit_icon = IconLoader.getIcon("/icon/edit.svg", AnyDoorIcons.class);
+  public static final Icon edit_hover_icon = IconLoader.getIcon("/icon/editHover.svg", AnyDoorIcons.class);
+
 }

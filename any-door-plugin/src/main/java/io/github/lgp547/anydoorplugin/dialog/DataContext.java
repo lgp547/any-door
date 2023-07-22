@@ -127,6 +127,7 @@ public class DataContext extends Multicaster implements Listener {
                 select.setParam(dataItem.getParam());
                 selectItem(select);
             } else {
+                dataItem.setQualifiedName(qualifiedMethodName);
                 addAndSelectItem(dataItem);
             }
         } else if (Objects.equals(event.getType(), EventType.SELECT_ITEM_CHANGED)) {

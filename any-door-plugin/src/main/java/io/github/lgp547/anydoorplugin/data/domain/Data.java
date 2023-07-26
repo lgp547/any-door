@@ -2,6 +2,7 @@ package io.github.lgp547.anydoorplugin.data.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ public class Data<T extends DataItem> {
     protected List<T> dataList;
 
     public Data() {
-        this.dataList = new ArrayList<>();
+        this.dataList = Collections.synchronizedList(new ArrayList<>());
     }
 
     public Data(String identity) {
@@ -46,7 +47,8 @@ public class Data<T extends DataItem> {
     }
 
     public void setDataList(List<T> dataList) {
-        this.dataList = dataList;
+        this.dataList.clear();
+        this.dataList.addAll(dataList);
     }
 
     public void removeItems(Collection<Long> ids) {

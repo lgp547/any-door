@@ -24,30 +24,29 @@ public class ClassDataContext {
         this.data = data;
     }
 
-    public void updateItems(String qualifiedMethodName, List<ParamDataItem> items) {
-        List<ParamDataItem> itemList = data.getDataList()
-                .stream()
-                .filter(item -> !Objects.equals(item.getQualifiedName(), qualifiedMethodName))
-                .collect(Collectors.toList());
-        itemList.addAll(items);
-        data.setDataList(itemList);
-    }
-
-    public PsiClass getClazz() {
-        return clazz;
-    }
-
     public MethodDataContext newMethodDataContext(String qualifiedMethodName, Long selectedId) {
-        List<ParamDataItem> dataItems = data.getDataList()
+
+        if (selectedId == null) {
+            return new MethodDataContext(this, qualifiedMethodName);
+        } else {
+            ParamDataItem dataItem = listMethodData(qualifiedMethodName).stream().filter(item -> Objects.equals(item.getId(), selectedId)).findAny().orElse(null);
+            return new MethodDataContext(this, qualifiedMethodName, dataItem);
+        }
+    }
+
+    protected List<ParamDataItem> listMethodData(String qualifiedMethodName) {
+        return data.getDataList()
                 .stream()
                 .filter(item -> Objects.equals(item.getQualifiedName(), qualifiedMethodName))
                 .collect(Collectors.toList());
-        if (selectedId == null) {
-            return new MethodDataContext(clazz, dataItems, qualifiedMethodName);
-        } else {
-            ParamDataItem dataItem = dataItems.stream().filter(item -> Objects.equals(item.getId(), selectedId)).findAny().orElse(null);
-            return new MethodDataContext(clazz, dataItems, qualifiedMethodName, dataItem);
-        }
+    }
+
+    public void addItems(List<ParamDataItem> dataItems) {
+        data.getDataList().addAll(dataItems);
+    }
+
+    public void removeItems(List<ParamDataItem> dataItems) {
+        data.getDataList().removeAll(dataItems);
     }
 
 //    public PsiMethod getMethod() {

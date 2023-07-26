@@ -52,4 +52,12 @@ public class ParamDataItem extends DataItem {
     public String methodName() {
         return Objects.isNull(qualifiedName) ? null : qualifiedName.substring(qualifiedName.lastIndexOf("#") + 1);
     }
+
+    public ParamIndexData toIndexData() {
+        ParamIndexData indexData = new ParamIndexData();
+        indexData.setId(this.id);
+        indexData.setName(this.name);
+        indexData.setQualifiedMethodName(this.qualifiedName);
+        return indexData;
+    }
 }

@@ -16,12 +16,19 @@ public class DisplayDataChangeEvent implements ComponentEvent {
     private List<ParamDataItem> displayList;
     private ParamDataItem selectedItem;
 
+    private boolean selectItemChanged;
+
     public DisplayDataChangeEvent() {
     }
 
     public DisplayDataChangeEvent(List<ParamDataItem> displayList, ParamDataItem selectedItem) {
+        this(displayList, selectedItem, false);
+    }
+
+    public DisplayDataChangeEvent(List<ParamDataItem> displayList, ParamDataItem selectedItem, boolean selectItemChanged) {
         this.displayList = displayList;
         this.selectedItem = selectedItem;
+        this.selectItemChanged = selectItemChanged;
     }
 
     @Override
@@ -35,5 +42,9 @@ public class DisplayDataChangeEvent implements ComponentEvent {
 
     public ParamDataItem getSelectedItem() {
         return selectedItem;
+    }
+
+    public boolean isSelectItemChanged() {
+        return selectItemChanged;
     }
 }

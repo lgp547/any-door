@@ -29,7 +29,7 @@ public abstract class AbstractDataReaderWriter<T extends DataItem> {
 
     protected static final Logger LOG = Logger.getInstance(AbstractDataReaderWriter.class);
 
-    protected final String DATA_BASE_DIR = "/.idea";
+    protected final String DATA_BASE_DIR = "/.idea/any-door-data/";
     protected final Map<String, CacheData<T>> dataCache = new ConcurrentHashMap<>();
     protected final Map<String, ReentrantReadWriteLock> lockMap = new ConcurrentHashMap<>();
     protected final Map<String, Future<?>> futureMap = new ConcurrentHashMap<>();

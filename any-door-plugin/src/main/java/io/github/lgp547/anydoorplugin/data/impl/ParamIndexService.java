@@ -32,6 +32,11 @@ public final class ParamIndexService implements DataService<ParamIndexData> {
     }
 
     @Override
+    public Data<ParamIndexData> findNoCache(String identity) {
+        return paramIndexReaderWriter.load(identity, false, false);
+    }
+
+    @Override
     public void save(Data<ParamIndexData> data) {
 
         paramIndexReaderWriter.saveAsync(data);

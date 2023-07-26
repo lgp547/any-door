@@ -1,8 +1,5 @@
 package io.github.lgp547.anydoorplugin.dialog.event.impl;
 
-import java.util.List;
-
-import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
 import io.github.lgp547.anydoorplugin.dialog.event.Event;
 import io.github.lgp547.anydoorplugin.dialog.event.EventType;
 
@@ -14,19 +11,13 @@ import io.github.lgp547.anydoorplugin.dialog.event.EventType;
 public class DataSyncEvent implements Event {
 
     private final String qualifiedMethodName;
-    private final List<ParamDataItem> dataItems;
 
-    public DataSyncEvent(String qualifiedMethodName, List<ParamDataItem> dataItems) {
+    public DataSyncEvent(String qualifiedMethodName) {
         this.qualifiedMethodName = qualifiedMethodName;
-        this.dataItems = dataItems;
     }
 
     public String getQualifiedMethodName() {
         return qualifiedMethodName;
-    }
-
-    public List<ParamDataItem> getDataItems() {
-        return dataItems;
     }
 
     @Override

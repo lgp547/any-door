@@ -4,14 +4,13 @@ package io.github.lgp547.anydoorplugin.dialog;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -19,27 +18,35 @@ import javax.swing.table.TableCellRenderer;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.popup.JBPopup;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.PsiMethod;
+import com.intellij.ui.DocumentAdapter;
+import com.intellij.ui.SearchTextField;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.TableView;
+import com.intellij.util.PsiNavigateUtil;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
-import io.github.lgp547.anydoorplugin.data.DataService;
 import io.github.lgp547.anydoorplugin.data.domain.Data;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
 import io.github.lgp547.anydoorplugin.data.domain.ParamIndexData;
-import io.github.lgp547.anydoorplugin.data.impl.ParamDataService;
-import io.github.lgp547.anydoorplugin.data.impl.ParamIndexService;
 import io.github.lgp547.anydoorplugin.dialog.components.CustomToolbar;
+import io.github.lgp547.anydoorplugin.dialog.event.Event;
+import io.github.lgp547.anydoorplugin.dialog.event.EventType;
+import io.github.lgp547.anydoorplugin.dialog.event.GlobalMulticaster;
+import io.github.lgp547.anydoorplugin.dialog.event.Listener;
+import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
+import io.github.lgp547.anydoorplugin.dialog.utils.IdeClassUtil;
 import io.github.lgp547.anydoorplugin.util.AnyDoorIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +56,7 @@ import org.jetbrains.annotations.Nullable;
  * @author: zhouh
  * @date: 2023-06-16 20:35
  **/
-public class ParamListUI extends JPanel {
+public class ParamListUI extends JPanel implements Listener {
 
     private final JBScrollPane contentPanel;
     private final JToolBar toolBar;
@@ -58,17 +65,14 @@ public class ParamListUI extends JPanel {
     private final TableView<ViewData> table;
 
     private final Project project;
-    private final DataService<ParamDataItem> dataService;
-    private final DataService<ParamIndexData> indexService;
 
-    private Data<ParamIndexData> indexData;
-    private Data<ParamDataItem> data;
+    private JBPopup myPopup;
+    private ClassDataContext context;
 
     public ParamListUI(Project project) {
         this.project = project;
+        GlobalMulticaster.INSTANCE.addListener(this);
 
-        dataService = project.getService(ParamDataService.class);
-        indexService = project.getService(ParamIndexService.class);
 
         toolBar = initToolBar();
         tableModel = new ParamListTableModel();
@@ -80,27 +84,74 @@ public class ParamListUI extends JPanel {
 
         registerListener();
 
-        initIndexData();
-        initLoadData();
+        DumbService.getInstance(project).runWhenSmart(this::initLoadData);
     }
 
-    private void initIndexData() {
-        indexData = indexService.find(project.getName());
-    }
 
     private JToolBar initToolBar() {
         ParamListToolBar toolBar = new ParamListToolBar();
         toolBar.addToolButton("Delete", AnyDoorIcons.delete_icon, AnyDoorIcons.delete_hover_icon, e -> deleteAction());
 
         toolBar.addToolButton("Refresh", AnyDoorIcons.refresh_icon, AnyDoorIcons.refresh_hover_icon, e -> {
-            doReadAndRefresh(data.getIdentity());
+            context = DataContext.instance(project).getClassDataContextNoCache(context.clazz.getQualifiedName());
+
+            tableModel.refreshAll(ViewData.toViewData(context.data));
         });
 
-        toolBar.addToolButton("Find", AnyDoorIcons.search_icon, AnyDoorIcons.search_icon, e -> {
-            System.out.println("查找");
-        });
+        toolBar.addToolButton("Find", AnyDoorIcons.search_icon, AnyDoorIcons.search_icon, e -> findAction());
 
         return toolBar;
+    }
+
+    private void findAction() {
+        SearchTextField searchTextField = new SearchTextField();
+        ListTableModel<ViewData> model = new ListTableModel<>(ViewData.SEARCH_COLUMN_NAMES);
+        TableView<ViewData> searchTable = new TableView<>(model);
+        searchTable.setShowGrid(false);
+        searchTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = searchTable.rowAtPoint(e.getPoint());
+                int col = searchTable.columnAtPoint(e.getPoint());
+                if (row >= 0 && col >= 0) {
+                    ViewData item = model.getItem(row);
+                    PsiMethod method = IdeClassUtil.findMethod(project, item.dataItem.getQualifiedName());
+                    if (Objects.nonNull(method)) {
+                        myPopup.cancel();
+                        PsiNavigateUtil.navigate(method);
+                    }
+                }
+            }
+        });
+
+        searchTextField.addDocumentListener(new DocumentAdapter() {
+            @Override
+            protected void textChanged(@NotNull DocumentEvent e) {
+                String text = searchTextField.getText();
+
+                List<ParamIndexData> searchResults = DataContext.instance(project).search(text);
+
+                model.setItems(ViewData.toViewData(searchResults));
+            }
+        });
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setPreferredSize(new Dimension(500, 300));
+        panel.add(searchTextField, BorderLayout.NORTH);
+        panel.add(new JBScrollPane(searchTable), BorderLayout.CENTER);
+
+
+        myPopup = JBPopupFactory.getInstance()
+                .createComponentPopupBuilder(panel, searchTextField)
+                .setFocusable(true)
+                .setRequestFocus(true)
+                .setCancelOnClickOutside(true)
+                .setCancelOnWindowDeactivation(true)
+                .createPopup();
+
+        Disposer.register(myPopup, () -> myPopup = null);
+
+        myPopup.showInFocusCenter();
     }
 
     private void deleteAction() {
@@ -113,7 +164,6 @@ public class ParamListUI extends JPanel {
             return;
         }
 
-        Set<Long> removeIds = tableModel.getItems().stream().filter(ViewData::isSelected).map(v -> v.getDataItem().getId()).collect(Collectors.toSet());
 
         new DialogWrapper(project, true, DialogWrapper.IdeModalityType.IDE) {
             {
@@ -127,22 +177,14 @@ public class ParamListUI extends JPanel {
 
             @Override
             protected void doOKAction() {
-                updateItemsAndRefresh(dataItems);
-                removeIndex(removeIds);
+                List<ParamDataItem> removeItems = tableModel.getItems().stream().filter(ViewData::isSelected).map(ViewData::getDataItem).collect(Collectors.toList());
+                if (removeItems.size() == 0) {
+                    return;
+                }
+                GlobalMulticaster.INSTANCE.fireEvent(EventHelper.createGlobalRemoveDataChangeEvent(context.clazz.getQualifiedName(), removeItems.get(0).getQualifiedName(), removeItems));
                 super.doOKAction();
             }
         }.show();
-    }
-
-    private void removeIndex(Collection<Long> ids) {
-        indexData.removeItems(ids);
-        indexService.save(indexData);
-    }
-
-    private void updateItemsAndRefresh(List<ParamDataItem> dataItems) {
-        data.setDataList(dataItems);
-        dataService.save(data);
-        tableModel.refreshAll(ViewData.toViewData(data));
     }
 
     private void initLoadData() {
@@ -198,8 +240,10 @@ public class ParamListUI extends JPanel {
     }
 
     private void doReadAndRefresh(String qualifiedName) {
-        data = dataService.find(qualifiedName);
-        tableModel.refreshAll(ViewData.toViewData(data));
+//        data = dataService.find(qualifiedName);
+        context = DataContext.instance(project).getClassDataContext(qualifiedName);
+
+        tableModel.refreshAll(ViewData.toViewData(context.data));
     }
 
     private String getQualifiedName(VirtualFile file) {
@@ -239,6 +283,13 @@ public class ParamListUI extends JPanel {
         gbc.gridwidth = 0;
         gbc.gridheight = -1;
         this.add(contentPanel, gbc);
+    }
+
+    @Override
+    public void onEvent(Event event) {
+        if (Objects.equals(event.getType(), EventType.DATA_SYNC)) {
+            doReadAndRefresh(context.clazz.getQualifiedName());
+        }
     }
 
 
@@ -290,6 +341,14 @@ public class ParamListUI extends JPanel {
             this(false, item);
         }
 
+        public ViewData(ParamIndexData item) {
+            ParamDataItem dataItem = new ParamDataItem();
+            dataItem.setId(item.getId());
+            dataItem.setName(item.getName());
+            dataItem.setQualifiedName(item.getQualifiedMethodName());
+            this.dataItem = dataItem;
+        }
+
         public ParamDataItem getDataItem() {
             return dataItem;
         }
@@ -304,6 +363,16 @@ public class ParamListUI extends JPanel {
             }
             return data
                     .getDataList()
+                    .stream()
+                    .map(ViewData::new)
+                    .collect(Collectors.toList());
+        }
+
+        public static List<ViewData> toViewData(List<ParamIndexData> data) {
+            if (Objects.isNull(data)) {
+                return Collections.emptyList();
+            }
+            return data
                     .stream()
                     .map(ViewData::new)
                     .collect(Collectors.toList());
@@ -420,6 +489,71 @@ public class ParamListUI extends JPanel {
                 }
         };
 
+        static final ColumnInfo<ViewData, ?>[] SEARCH_COLUMN_NAMES = new ColumnInfo[]{
+                new ColumnInfo<ViewData, String>("") {
+                    @Nullable
+                    @Override
+                    public String valueOf(ViewData viewData) {
+                        return viewData.dataItem.getName();
+                    }
+
+                    @Override
+                    public int getWidth(JTable table) {
+                        return 100;
+                    }
+
+                    @Override
+                    public @Nullable TableCellRenderer getRenderer(ViewData viewData) {
+                        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+                        renderer.setHorizontalAlignment(JLabel.CENTER);
+                        return renderer;
+                    }
+                },
+                new ColumnInfo<ViewData, String>("") {
+                    @Nullable
+                    @Override
+                    public String valueOf(ViewData viewData) {
+                        String qualifiedName = viewData.dataItem.getQualifiedName();
+                        if (Objects.nonNull(qualifiedName) && qualifiedName.contains("#")) {
+                            int index = qualifiedName.lastIndexOf("#");
+                            return qualifiedName.substring(index + 1);
+                        }
+                        return qualifiedName;
+                    }
+
+
+                    @Override
+                    public @Nullable TableCellRenderer getRenderer(ViewData viewData) {
+                        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+                        renderer.setHorizontalAlignment(JLabel.CENTER);
+                        return renderer;
+                    }
+                },
+                new ColumnInfo<ViewData, String>("") {
+                    @Nullable
+                    @Override
+                    public String valueOf(ViewData viewData) {
+                        String qualifiedName = viewData.dataItem.getQualifiedName();
+                        if (Objects.nonNull(qualifiedName) && qualifiedName.contains("#")) {
+                            int index = qualifiedName.lastIndexOf("#");
+                            return qualifiedName.substring(0, index);
+                        }
+                        return qualifiedName;
+                    }
+
+                    @Override
+                    public int getWidth(JTable table) {
+                        return 100;
+                    }
+
+                    @Override
+                    public @Nullable TableCellRenderer getRenderer(ViewData viewData) {
+                        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+                        renderer.setHorizontalAlignment(JLabel.CENTER);
+                        return renderer;
+                    }
+                }
+        };
 
     }
 

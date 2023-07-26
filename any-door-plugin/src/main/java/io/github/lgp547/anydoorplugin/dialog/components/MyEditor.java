@@ -17,6 +17,7 @@ import io.github.lgp547.anydoorplugin.dialog.event.Event;
 import io.github.lgp547.anydoorplugin.dialog.event.EventType;
 import io.github.lgp547.anydoorplugin.dialog.event.Listener;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.DisplayDataChangeEvent;
+import io.github.lgp547.anydoorplugin.dialog.event.impl.SelectItemChangedEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class MyEditor extends JSONEditor implements Listener {

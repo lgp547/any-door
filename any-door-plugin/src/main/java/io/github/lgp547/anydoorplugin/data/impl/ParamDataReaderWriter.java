@@ -6,6 +6,7 @@ import java.util.concurrent.Future;
 import com.intellij.openapi.project.Project;
 import io.github.lgp547.anydoorplugin.data.AbstractParamDataReaderWriter;
 import io.github.lgp547.anydoorplugin.data.IdGenerator;
+import io.github.lgp547.anydoorplugin.data.domain.CacheData;
 import io.github.lgp547.anydoorplugin.data.domain.Data;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
 
@@ -36,7 +37,9 @@ public class ParamDataReaderWriter extends AbstractParamDataReaderWriter<ParamDa
             return readAndCache(key, filePath).cloneData();
         }
 
-        return doRead(key, filePath);
+        Data<ParamDataItem> data = doRead(key, filePath);
+        dataCache.put(key, new CacheData<>(key, data));
+        return data;
     }
 
     @Override

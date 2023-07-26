@@ -1,5 +1,8 @@
 package io.github.lgp547.anydoorplugin.dialog.event.impl;
 
+import java.util.Collection;
+import java.util.Set;
+
 import io.github.lgp547.anydoorplugin.dialog.event.DataEvent;
 import io.github.lgp547.anydoorplugin.dialog.event.EventType;
 
@@ -10,17 +13,17 @@ import io.github.lgp547.anydoorplugin.dialog.event.EventType;
  **/
 public class RemoveDataItemEvent implements DataEvent {
 
-    private Long id;
+    private Set<Long> itemIds;
 
     public RemoveDataItemEvent() {
     }
 
-    public RemoveDataItemEvent(Long id) {
-        this.id = id;
+    public RemoveDataItemEvent(Collection<Long> itemIds) {
+        this.itemIds = Set.copyOf(itemIds);
     }
 
-    public Long getId() {
-        return id;
+    public Set<Long> getItemIds() {
+        return itemIds;
     }
 
     @Override

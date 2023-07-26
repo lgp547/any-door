@@ -52,11 +52,23 @@ public class EventHelper {
         return new DisplayDataChangeEvent(displayList, selectedItem);
     }
 
-    public static Event createGlobalDataChangeEvent(String qualifiedClassName, String qualifiedMethodName, List<ParamDataItem> dataItems) {
-        return new GlobalDataChangeEvent(qualifiedClassName, qualifiedMethodName, dataItems);
+    public static Event createDisplayDataChangeEvent(List<ParamDataItem> displayList, ParamDataItem selectedItem, boolean selectItemChanged) {
+        return new DisplayDataChangeEvent(displayList, selectedItem, selectItemChanged);
     }
 
-    public static Event createDataSyncEvent(String qualifiedMethodName, List<ParamDataItem> dataItems) {
-        return new DataSyncEvent(qualifiedMethodName, dataItems);
+    public static Event createGlobalSaveDataChangeEvent(String qualifiedClassName, String qualifiedMethodName, List<ParamDataItem> dataItems) {
+        return new GlobalDataChangeEvent(qualifiedClassName, qualifiedMethodName, dataItems, EventType.GLOBAL_SAVE_DATA_CHANGE);
+    }
+
+    public static Event createGlobalUpdateDataChangeEvent(String qualifiedClassName, String qualifiedMethodName) {
+        return new GlobalDataChangeEvent(qualifiedClassName, qualifiedMethodName, null, EventType.GLOBAL_UPDATE_DATA_CHANGE);
+    }
+
+    public static Event createGlobalRemoveDataChangeEvent(String qualifiedClassName, String qualifiedMethodName, List<ParamDataItem> dataItems) {
+        return new GlobalDataChangeEvent(qualifiedClassName, qualifiedMethodName, dataItems, EventType.GLOBAL_DELETE_DATA_CHANGE);
+    }
+
+    public static Event createDataSyncEvent(String qualifiedMethodName) {
+        return new DataSyncEvent(qualifiedMethodName);
     }
 }

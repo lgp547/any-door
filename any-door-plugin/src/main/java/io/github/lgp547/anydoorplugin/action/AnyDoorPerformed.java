@@ -15,12 +15,9 @@ import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import io.github.lgp547.anydoorplugin.AnyDoorInfo;
-import io.github.lgp547.anydoorplugin.data.domain.Data;
-import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
-import io.github.lgp547.anydoorplugin.data.impl.ParamDataService;
-import io.github.lgp547.anydoorplugin.data.utils.ParamIdentityHelper;
 import io.github.lgp547.anydoorplugin.dialog.DataContext;
 import io.github.lgp547.anydoorplugin.dialog.MainUI;
+import io.github.lgp547.anydoorplugin.dialog.utils.IdeClassUtil;
 import io.github.lgp547.anydoorplugin.dto.ParamCacheDto;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 import io.github.lgp547.anydoorplugin.util.HttpUtil;
@@ -78,7 +75,7 @@ public class AnyDoorPerformed {
 //                openAnyDoor(project, jsonDtoStr, service, openExcConsumer);
 //            });
 //            dialog.show();
-            new MainUI(project, DataContext.instance(project).getExecuteDataContext(psiClass.getQualifiedName(), ParamIdentityHelper.getMethodQualifiedName(method))).show();
+            new MainUI(project, DataContext.instance(project).getExecuteDataContext(psiClass.getQualifiedName(), IdeClassUtil.getMethodQualifiedName(method))).show();
         }
     }
 

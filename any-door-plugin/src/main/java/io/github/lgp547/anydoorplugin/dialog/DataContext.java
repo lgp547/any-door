@@ -1,8 +1,12 @@
 package io.github.lgp547.anydoorplugin.dialog;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
@@ -20,6 +24,7 @@ import io.github.lgp547.anydoorplugin.dialog.event.GlobalMulticaster;
 import io.github.lgp547.anydoorplugin.dialog.event.Listener;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.GlobalDataChangeEvent;
 import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
+import io.github.lgp547.anydoorplugin.dialog.utils.IdeClassUtil;
 
 /**
  * @description:
@@ -35,6 +40,7 @@ public class DataContext implements Listener {
 
 
     private Map<String, ClassDataContext> contextMap;
+    private Data<ParamIndexData> indexData;
 
     public static DataContext instance(Project project) {
         if (instance == null) {
@@ -53,6 +59,30 @@ public class DataContext implements Listener {
         this.dataService = project.getService(ParamDataService.class);
         this.contextMap = new ConcurrentHashMap<>();
         GlobalMulticaster.INSTANCE.setDataChangeListener(this);
+
+        indexData = indexService.find(project.getName());
+    }
+
+    public ClassDataContext getClassDataContext(String qualifiedClassName) {
+        Objects.requireNonNull(qualifiedClassName);
+
+        //TODO 暂时不考虑Shareable
+        contextMap.computeIfAbsent(qualifiedClassName, k -> {
+            Data<ParamDataItem> data = dataService.find(qualifiedClassName);
+            PsiClass psiClass = IdeClassUtil.findClass(project, qualifiedClassName);
+            return new ClassDataContext(psiClass, data);
+        });
+
+        return contextMap.get(qualifiedClassName);
+    }
+
+
+    public ClassDataContext getClassDataContextNoCache(String qualifiedClassName) {
+        Data<ParamDataItem> data = dataService.findNoCache(qualifiedClassName);
+        PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(qualifiedClassName, GlobalSearchScope.allScope(project));
+        ClassDataContext context = new ClassDataContext(psiClass, data);
+        contextMap.put(qualifiedClassName, context);
+        return context;
     }
 
     public MethodDataContext getExecuteDataContext(String qualifiedClassName, String qualifiedMethodName) {
@@ -63,29 +93,66 @@ public class DataContext implements Listener {
         Objects.requireNonNull(qualifiedClassName);
         Objects.requireNonNull(qualifiedMethodName);
 
-        contextMap.computeIfAbsent(qualifiedClassName, k -> {
-            Data<ParamDataItem> data = dataService.find(qualifiedClassName);
-            PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(qualifiedClassName, GlobalSearchScope.allScope(project));
-            return new ClassDataContext(psiClass, data);
-        });
-
-        ClassDataContext classDataContext = contextMap.get(qualifiedClassName);
+        ClassDataContext classDataContext = getClassDataContext(qualifiedClassName);
 
         return classDataContext.newMethodDataContext(qualifiedMethodName, selectedId);
     }
 
     @Override
     public void onEvent(Event event) {
-        if (Objects.equals(event.getType(), EventType.GLOBAL_DATA_CHANGE)) {
+        if (event instanceof GlobalDataChangeEvent) {
             GlobalDataChangeEvent changeEvent = (GlobalDataChangeEvent) event;
-            ClassDataContext context = contextMap.computeIfPresent(changeEvent.getQualifiedClassName(), (k, v) -> {
-                v.updateItems(changeEvent.getQualifiedMethodName(), changeEvent.getDataItems());
-                return v;
-            });
 
-            if (Objects.nonNull(context)) {
-                GlobalMulticaster.INSTANCE.fireEvent(EventHelper.createDataSyncEvent(changeEvent.getQualifiedMethodName(), changeEvent.getDataItems()));
+            if (Objects.equals(event.getType(), EventType.GLOBAL_SAVE_DATA_CHANGE)) {
+                contextMap.computeIfPresent(changeEvent.getQualifiedClassName(), (k, v) -> {
+                    v.addItems(changeEvent.getDataItems());
+                    dataService.save(v.data);
+
+                    List<ParamIndexData> dataList = changeEvent.getDataItems().stream().map(ParamDataItem::toIndexData).collect(Collectors.toList());
+                    indexData.getDataList().addAll(dataList);
+                    indexService.save(indexData);
+                    return v;
+                });
+
+
+            } else if (Objects.equals(event.getType(), EventType.GLOBAL_DELETE_DATA_CHANGE)) {
+                contextMap.computeIfPresent(changeEvent.getQualifiedClassName(), (k, v) -> {
+                    v.removeItems(changeEvent.getDataItems());
+                    dataService.save(v.data);
+
+                    Set<Long> idSet = changeEvent.getDataItems().stream().map(ParamDataItem::getId).collect(Collectors.toSet());
+                    indexData.setDataList(indexData.getDataList().stream().filter(item -> !idSet.contains(item.getId())).collect(Collectors.toList()));
+                    indexService.save(indexData);
+                    return v;
+                });
+
+            } else if (Objects.equals(event.getType(), EventType.GLOBAL_UPDATE_DATA_CHANGE)) {
+                contextMap.computeIfPresent(changeEvent.getQualifiedClassName(), (k, v) -> {
+
+                    List<ParamIndexData> dataList = v.data.getDataList().stream().map(ParamDataItem::toIndexData).collect(Collectors.toList());
+                    indexData.getDataList().removeIf(item -> Objects.equals(item.getQualifiedMethodName(), changeEvent.getQualifiedMethodName()));
+
+                    indexData.getDataList().addAll(dataList);
+                    indexService.save(indexData);
+                    return v;
+                });
             }
+            GlobalMulticaster.INSTANCE.fireEvent(EventHelper.createDataSyncEvent(changeEvent.getQualifiedMethodName()));
         }
+    }
+
+    public Long currentId() {
+        return indexData.getDataList().stream().map(ParamIndexData::getId).max(Long::compare).orElse(null);
+    }
+
+    public List<ParamIndexData> search(String text) {
+        if (text == null || text.isEmpty()) {
+            return List.of();
+        }
+        List<ParamIndexData> dataList = indexData.getDataList().stream()
+                .filter(item -> item.getName().toLowerCase().contains(text.toLowerCase())
+                        || item.getQualifiedMethodName().toLowerCase().contains(text.toLowerCase()))
+                .collect(Collectors.toList());
+        return dataList;
     }
 }

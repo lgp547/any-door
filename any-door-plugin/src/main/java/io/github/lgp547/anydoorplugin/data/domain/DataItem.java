@@ -13,7 +13,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
         use = JsonTypeInfo.Id.NAME,
         property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ParamDataItem.class, name = "param")
+        @JsonSubTypes.Type(value = ParamDataItem.class, name = "param"),
+        @JsonSubTypes.Type(value = ParamIndexData.class, name = "index")
 })
 public abstract class DataItem {
     protected Long id;

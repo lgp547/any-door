@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameterList;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
-import io.github.lgp547.anydoorplugin.data.utils.ParamIdentityHelper;
+import io.github.lgp547.anydoorplugin.dialog.event.ComponentEvent;
 import io.github.lgp547.anydoorplugin.dialog.event.DataEvent;
 import io.github.lgp547.anydoorplugin.dialog.event.Event;
 import io.github.lgp547.anydoorplugin.dialog.event.EventType;
@@ -22,6 +21,7 @@ import io.github.lgp547.anydoorplugin.dialog.event.impl.AddDataItemEvent;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.SelectItemChangedEvent;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.UpdateDataItemEvent;
 import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
+import io.github.lgp547.anydoorplugin.dialog.utils.IdeClassUtil;
 import io.github.lgp547.anydoorplugin.util.JsonElementUtil;
 
 /**
@@ -31,22 +31,22 @@ import io.github.lgp547.anydoorplugin.util.JsonElementUtil;
  **/
 public class MethodDataContext implements Multicaster, Listener {
 
-    private final PsiClass clazz;
-    private final List<ParamDataItem> dataItems;
+    private final ClassDataContext classDataContext;
     private final String qualifiedMethodName;
+    private List<ParamDataItem> dataItems;
     private ParamDataItem selectedItem;
     private ParamDataItem freeItem;
 
     private List<Listener> listeners = new ArrayList<>();
 
-    public MethodDataContext(PsiClass clazz, List<ParamDataItem> dataItems, String qualifiedMethodName) {
-        this(clazz, dataItems, qualifiedMethodName, null);
+    public MethodDataContext(ClassDataContext classDataContext, String qualifiedMethodName) {
+        this(classDataContext, qualifiedMethodName, null);
     }
 
-    public MethodDataContext(PsiClass clazz, List<ParamDataItem> dataItems, String qualifiedMethodName, ParamDataItem selectedItem) {
-        this.clazz = clazz;
-        this.dataItems = dataItems;
+    public MethodDataContext(ClassDataContext classDataContext, String qualifiedMethodName, ParamDataItem selectedItem) {
+        this.classDataContext = classDataContext;
         this.qualifiedMethodName = qualifiedMethodName;
+        this.dataItems = classDataContext.listMethodData(qualifiedMethodName);
         if (Objects.isNull(selectedItem)) {
             resetEmptyItem();
         } else {
@@ -63,19 +63,13 @@ public class MethodDataContext implements Multicaster, Listener {
     }
 
     public PsiClass getClazz() {
-        return clazz;
+        return classDataContext.clazz;
     }
 
-    public List<ParamDataItem> getDataItems() {
-        return dataItems;
-    }
 
-    public void sync(List<ParamDataItem> items) {
-        dataItems.clear();
-        dataItems.addAll(items);
-
-        boolean noneMatch = dataItems.stream().noneMatch(item -> Objects.equals(item.getId(), selectedItem.getId()));
-        if (noneMatch) {
+    public void sync() {
+        dataItems = classDataContext.listMethodData(qualifiedMethodName);
+        if (!Objects.equals(selectedItem, freeItem) && dataItems.stream().noneMatch(item -> Objects.equals(item, selectedItem))) {
             resetEmptyItemFillParam();
         }
     }
@@ -99,7 +93,12 @@ public class MethodDataContext implements Multicaster, Listener {
     public void fireEvent(Event event) {
         if (event instanceof DataEvent) {
             this.onEvent(event);
+        } else if (event instanceof ComponentEvent) {
+            for (Listener listener : listeners) {
+                listener.onEvent(event);
+            }
         } else {
+            this.onEvent(event);
             for (Listener listener : listeners) {
                 listener.onEvent(event);
             }
@@ -107,10 +106,7 @@ public class MethodDataContext implements Multicaster, Listener {
     }
 
     public List<ParamDataItem> listDisplayData() {
-        List<ParamDataItem> dataItemList = dataItems
-                .stream()
-                .filter(item -> Objects.equals(item.getQualifiedName(), qualifiedMethodName))
-                .collect(Collectors.toList());
+        List<ParamDataItem> dataItemList = new ArrayList<>(dataItems);
         if (Objects.nonNull(freeItem)) {
             dataItemList.add(freeItem);
         }
@@ -118,11 +114,11 @@ public class MethodDataContext implements Multicaster, Listener {
     }
 
     public PsiMethod getMethod() {
-        String simpleMethodName = ParamIdentityHelper.getSimpleMethodName(qualifiedMethodName);
-        if (Objects.nonNull(clazz)) {
-            PsiMethod[] methods = clazz.findMethodsByName(simpleMethodName, false);
+        String simpleMethodName = IdeClassUtil.getSimpleMethodName(qualifiedMethodName);
+        if (Objects.nonNull(classDataContext.clazz)) {
+            PsiMethod[] methods = classDataContext.clazz.findMethodsByName(simpleMethodName, false);
             for (PsiMethod method : methods) {
-                if (Objects.equals(qualifiedMethodName, ParamIdentityHelper.getMethodQualifiedName(method))) {
+                if (Objects.equals(qualifiedMethodName, IdeClassUtil.getMethodQualifiedName(method))) {
                     return method;
                 }
             }
@@ -140,7 +136,15 @@ public class MethodDataContext implements Multicaster, Listener {
 
     @Override
     public void onEvent(Event event) {
-        if (Objects.equals(event.getType(), EventType.ADD_DATA_ITEM)) {
+        if (Objects.equals(event.getType(), EventType.SELECT_ITEM_CHANGED)) {
+            Long id = ((SelectItemChangedEvent) event).getId();
+            findItem(id).ifPresent(this::selectItem);
+            if (Objects.nonNull(id)) {
+                clearEmptyItem();
+            }
+            fireDataChangeEvent(true);
+            return;
+        } else if (Objects.equals(event.getType(), EventType.ADD_DATA_ITEM)) {
             ParamDataItem dataItem = ((AddDataItemEvent) event).getDataItem();
 
             if (Objects.isNull(selectedItem.getId())) {
@@ -150,19 +154,13 @@ public class MethodDataContext implements Multicaster, Listener {
                 dataItem.setQualifiedName(qualifiedMethodName);
                 addAndSelectItem(dataItem);
             }
-        } else if (Objects.equals(event.getType(), EventType.SELECT_ITEM_CHANGED)) {
-            Long id = ((SelectItemChangedEvent) event).getId();
-            findItem(id).ifPresent(this::selectItem);
-            if (Objects.nonNull(id)) {
-                clearEmptyItem();
-            }
         } else if (Objects.equals(event.getType(), EventType.REMOVE_DATA_ITEM)) {
 //            Long id = ((RemoveDataItemEvent) event).getId();
 //            removeItem(id);
         } else if (Objects.equals(event.getType(), EventType.UPDATE_ITEM_NAME)) {
             ParamDataItem dataItem = ((UpdateDataItemEvent) event).getDataItem();
             updateItemName(dataItem);
-            GlobalMulticaster.INSTANCE.fireEvent(EventHelper.createGlobalDataChangeEvent(clazz.getQualifiedName(), qualifiedMethodName, dataItems));
+            flush();
         } else if (Objects.equals(event.getType(), EventType.ADD_SIMPLE_PARAM_ITEM)) {
             findItem(null)
                     .ifPresentOrElse(
@@ -180,8 +178,12 @@ public class MethodDataContext implements Multicaster, Listener {
                             },
                             this::resetEmptyItemFillParam);
         }
+        fireDataChangeEvent(false);
 
-        fireEvent(EventHelper.createDisplayDataChangeEvent(listDisplayData(), selectedItem));
+    }
+
+    private void fireDataChangeEvent(boolean selectItemChanged) {
+        fireEvent(EventHelper.createDisplayDataChangeEvent(listDisplayData(), selectedItem, selectItemChanged));
     }
 
     private void resetEmptyItemFillParam() {
@@ -212,9 +214,9 @@ public class MethodDataContext implements Multicaster, Listener {
         this.selectedItem = item;
     }
 
-    public void removeItem(Long id) {
-        findItem(id).ifPresent(dataItems::remove);
-    }
+//    public void removeItem(Long id) {
+//        findItem(id).ifPresent(dataItems::remove);
+//    }
 
     private void updateItemName(ParamDataItem dataItem) {
         findItem(dataItem.getId()).ifPresent(item -> item.setName(dataItem.getName()));
@@ -227,5 +229,17 @@ public class MethodDataContext implements Multicaster, Listener {
 
     public void clearEmptyItem() {
         this.freeItem = null;
+    }
+
+    public void flush() {
+        if (Objects.equals(selectedItem, freeItem)) {
+            clearEmptyItem();
+            ParamDataItem item = new ParamDataItem(selectedItem.getName(), selectedItem.getQualifiedName(), selectedItem.getParam());
+            selectedItem = item;
+
+            GlobalMulticaster.INSTANCE.fireEvent(EventHelper.createGlobalSaveDataChangeEvent(classDataContext.clazz.getQualifiedName(), qualifiedMethodName, List.of(item)));
+        } else {
+            GlobalMulticaster.INSTANCE.fireEvent(EventHelper.createGlobalUpdateDataChangeEvent(classDataContext.clazz.getQualifiedName(), qualifiedMethodName));
+        }
     }
 }

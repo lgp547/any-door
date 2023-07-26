@@ -1,15 +1,20 @@
-package io.github.lgp547.anydoorplugin.data.utils;
+package io.github.lgp547.anydoorplugin.dialog.utils;
 
+import java.util.Objects;
+
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameter;
+import com.intellij.psi.search.GlobalSearchScope;
 
 /**
  * @description:
  * @author: zhouh
- * @date: 2023-07-17 11:22
+ * @date: 2023-07-26 19:03
  **/
-public class ParamIdentityHelper {
+public class IdeClassUtil {
 
     public static String getMethodQualifiedName(PsiMethod psiMethod) {
         PsiClass containingClass = psiMethod.getContainingClass();
@@ -37,4 +42,20 @@ public class ParamIdentityHelper {
         return methodName.substring(0, methodName.indexOf("("));
     }
 
+    public static PsiClass findClass(Project project, String qualifiedClassName) {
+        return JavaPsiFacade.getInstance(project).findClass(qualifiedClassName, GlobalSearchScope.allScope(project));
+    }
+
+    public static PsiMethod findMethod(Project project, String qualifiedMethodName) {
+        PsiClass psiClass = findClass(project, qualifiedMethodName.substring(0, qualifiedMethodName.lastIndexOf("#")));
+        if (Objects.nonNull(psiClass)) {
+            PsiMethod[] methods = psiClass.findMethodsByName(getSimpleMethodName(qualifiedMethodName), false);
+            for (PsiMethod method : methods) {
+                if (Objects.equals(getMethodQualifiedName(method), qualifiedMethodName)) {
+                    return method;
+                }
+            }
+        }
+        return null;
+    }
 }

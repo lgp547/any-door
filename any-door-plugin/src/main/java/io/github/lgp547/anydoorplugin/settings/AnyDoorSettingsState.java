@@ -40,8 +40,6 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
 
     public String mvcWebPathPrefix = "";
 
-    public Long nextId = 0L;
-
     @Nullable
     @Override
     public AnyDoorSettingsState getState() {

@@ -24,13 +24,17 @@ public final class ParamDataService implements DataService<ParamDataItem> {
     public ParamDataService(Project project) {
         this.project = project;
 
-        AnyDoorSettingsState state = project.getService(AnyDoorSettingsState.class);
-        this.paramDataReaderWriter = new ParamDataReaderWriter(project, ParamDataIdGenerator.INSTANCE.init(state));
+        this.paramDataReaderWriter = new ParamDataReaderWriter(project, ParamDataIdGenerator.INSTANCE.init(project));
     }
 
     @Override
     public Data<ParamDataItem> find(String identity) {
         return paramDataReaderWriter.load(identity);
+    }
+
+    @Override
+    public Data<ParamDataItem> findNoCache(String identity) {
+        return paramDataReaderWriter.load(identity, false, false);
     }
 
     @Override

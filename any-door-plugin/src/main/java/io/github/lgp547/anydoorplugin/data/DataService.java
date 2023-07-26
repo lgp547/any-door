@@ -12,5 +12,7 @@ public interface DataService<T extends DataItem> {
 
     Data<T> find(String identity);
 
+    Data<T> findNoCache(String identity);
+
     void save(Data<T> data);
 }

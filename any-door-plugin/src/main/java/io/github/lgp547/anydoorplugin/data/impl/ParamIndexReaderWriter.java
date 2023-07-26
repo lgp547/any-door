@@ -48,6 +48,7 @@ public class ParamIndexReaderWriter extends AbstractParamDataReaderWriter<ParamI
         Objects.requireNonNull(data);
         Objects.requireNonNull(data.getIdentity());
 
+        data.setTimestamp(System.currentTimeMillis());
 
         return doWrite(data.getIdentity(), genFilePath(data.getIdentity()), data);
     }

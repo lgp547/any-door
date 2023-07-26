@@ -1,12 +1,15 @@
 package io.github.lgp547.anydoorplugin.dialog.components;
 
+
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Vector;
 
 import javax.swing.*;
 import javax.swing.plaf.ComboBoxUI;
@@ -59,25 +62,26 @@ public class MyComboBox extends JComboBox<ParamDataItem> implements Listener {
             }
         });
 
-        addItemListener(new ItemListener() {
+        addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
 
-            ParamDataItem oldItem;
+                ParamDataItem item = (ParamDataItem) e.getItem();
+                Objects.requireNonNull(item);
 
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.DESELECTED) {
-                    oldItem = (ParamDataItem) e.getItem();
-                } else if (e.getStateChange() == ItemEvent.SELECTED) {
-
-                    ParamDataItem item = (ParamDataItem) e.getItem();
-                    Objects.requireNonNull(item);
-
-
-                    if (Objects.equals(item, oldItem)) {
-                        return;
-                    }
-
-                    multicaster.fireEvent(EventHelper.createSelectItemChangedEvent(item.getId()));
+                multicaster.fireEvent(EventHelper.createSelectItemChangedEvent(item.getId()));
+            }
+        });
+//        addItemListener(new ItemListener() {
+//
+//            @Override
+//            public void itemStateChanged(ItemEvent e) {
+//                if (e.getStateChange() == ItemEvent.SELECTED) {
+//
+//                    ParamDataItem item = (ParamDataItem) e.getItem();
+//                    Objects.requireNonNull(item);
+//
+//                    setSelectedItem(item);
+//                    multicaster.fireEvent(EventHelper.createSelectItemChangedEvent(item.getId()));
 //                    int needDialog = 0;
 //                    if (Objects.nonNull(oldItem.getId())) {
 //                        if (context.paramChanged()) {
@@ -137,9 +141,9 @@ public class MyComboBox extends JComboBox<ParamDataItem> implements Listener {
 //                            model.setSelectedItem(oldItem);
 //                        }
 //                    }.show();
-                }
-            }
-        });
+//                }
+//            }
+//        });
     }
 
     @Override
@@ -224,16 +228,151 @@ public class MyComboBox extends JComboBox<ParamDataItem> implements Listener {
         if (Objects.equals(event.getType(), EventType.DISPLAY_DATA_CHANGE)) {
             DisplayDataChangeEvent changeEvent = (DisplayDataChangeEvent) event;
             MyComboBoxModel model = (MyComboBoxModel) getModel();
-            model.refreshAll(changeEvent.getDisplayList(), changeEvent.getSelectedItem());
+            if (changeEvent.isSelectItemChanged()) {
+                model.notChangeSelectedAndReplace(changeEvent.getDisplayList());
+            } else {
+                model.refreshAll(changeEvent.getDisplayList(), changeEvent.getSelectedItem());
+            }
         }
     }
 
 
-    static class MyComboBoxModel extends DefaultComboBoxModel<ParamDataItem> {
+    static class MyComboBoxModel extends AbstractListModel<ParamDataItem> implements MutableComboBoxModel<ParamDataItem>, Serializable {
+        Vector<ParamDataItem> objects;
+        Object selectedObject;
 
         public MyComboBoxModel() {
-            super();
+            objects = new Vector<>();
         }
+
+        /**
+         * Constructs a DefaultComboBoxModel object initialized with
+         * an array of objects.
+         *
+         * @param items an array of Object objects
+         */
+        public MyComboBoxModel(final ParamDataItem items[]) {
+            objects = new Vector<>(items.length);
+
+            int i, c;
+            for (i = 0, c = items.length; i < c; i++)
+                objects.addElement(items[i]);
+
+            if (getSize() > 0) {
+                selectedObject = getElementAt(0);
+            }
+        }
+
+        /**
+         * Constructs a DefaultComboBoxModel object initialized with
+         * a vector.
+         *
+         * @param v a Vector object ...
+         */
+        public MyComboBoxModel(Vector<ParamDataItem> v) {
+            objects = v;
+
+            if (getSize() > 0) {
+                selectedObject = getElementAt(0);
+            }
+        }
+
+        @Override
+        public void addElement(ParamDataItem item) {
+            objects.addElement(item);
+            fireIntervalAdded(this, objects.size() - 1, objects.size() - 1);
+            if (objects.size() == 1 && selectedObject == null && item != null) {
+                setSelectedItem(item);
+            }
+        }
+
+        @Override
+        public void removeElement(Object obj) {
+            int index = objects.indexOf(obj);
+            if (index != -1) {
+                removeElementAt(index);
+            }
+        }
+
+        @Override
+        public void insertElementAt(ParamDataItem item, int index) {
+            objects.insertElementAt(item, index);
+            fireIntervalAdded(this, index, index);
+        }
+
+        @Override
+        public void removeElementAt(int index) {
+            if (getElementAt(index) == selectedObject) {
+                if (index == 0) {
+                    setSelectedItem(getSize() == 1 ? null : getElementAt(index + 1));
+                } else {
+                    setSelectedItem(getElementAt(index - 1));
+                }
+            }
+
+            objects.removeElementAt(index);
+
+            fireIntervalRemoved(this, index, index);
+        }
+
+        @Override
+        public void setSelectedItem(Object anItem) {
+            if ((selectedObject != null && !selectedObject.equals(anItem)) ||
+                    selectedObject == null && anItem != null) {
+                selectedObject = anItem;
+                fireContentsChanged(this, -1, -1);
+            }
+        }
+
+        @Override
+        public Object getSelectedItem() {
+            return selectedObject;
+        }
+
+        @Override
+        public int getSize() {
+            return objects.size();
+        }
+
+        @Override
+        public ParamDataItem getElementAt(int index) {
+            if (index >= 0 && index < objects.size())
+                return objects.elementAt(index);
+            else
+                return null;
+        }
+
+        public void removeAllElements() {
+            if ( objects.size() > 0 ) {
+                int firstIndex = 0;
+                int lastIndex = objects.size() - 1;
+                objects.removeAllElements();
+                selectedObject = null;
+                fireIntervalRemoved(this, firstIndex, lastIndex);
+            } else {
+                selectedObject = null;
+            }
+        }
+
+        public void addAll(Collection<? extends ParamDataItem> c) {
+            if (c.isEmpty()) {
+                return;
+            }
+
+            int startIndex = getSize();
+
+            objects.addAll(c);
+            fireIntervalAdded(this, startIndex, getSize() - 1);
+        }
+
+        public void notChangeSelectedAndReplace(List<ParamDataItem> displayList) {
+            boolean anyMatch = displayList.stream().anyMatch(item -> Objects.equals(item, getSelectedItem()));
+            if (anyMatch) {
+                this.objects.removeAllElements();
+                this.objects.addAll(displayList);
+            }
+        }
+
 
         public void refreshAll(List<ParamDataItem> displayList, ParamDataItem selectedItem) {
             removeAllElements();

@@ -71,21 +71,14 @@ public class MainUI extends DialogWrapper implements Listener {
                     new SaveDialog(project, (dialog) -> {
                         String name = dialog.getName().trim();
                         selectedDataItem.setName(name);
-
-                        fireGlobalDataChangeEvent();
+                        context.flush();
                     }).show();
                 } else {
-                    fireGlobalDataChangeEvent();
+                    context.flush();
                 }
-
-                context.fireEvent(EventHelper.createDisplayDataChangeEvent(context.listDisplayData(), context.getSelectedItem()));
             }
         };
         return new Action[]{getOKAction(), getCancelAction(), saveAction};
-    }
-
-    private void fireGlobalDataChangeEvent() {
-        GlobalMulticaster.INSTANCE.fireEvent(EventHelper.createGlobalDataChangeEvent(context.getClazz().getQualifiedName(), context.getQualifiedMethodName(), context.getDataItems()));
     }
 
     @Override
@@ -99,9 +92,15 @@ public class MainUI extends DialogWrapper implements Listener {
         if (Objects.equals(EventType.DATA_SYNC, event.getType())) {
             DataSyncEvent syncEvent = (DataSyncEvent) event;
             if (Objects.equals(syncEvent.getQualifiedMethodName(), context.getQualifiedMethodName())) {
-                context.sync(syncEvent.getDataItems());
+                context.sync();
                 context.fireEvent(EventHelper.createDisplayDataChangeEvent(context.listDisplayData(), context.getSelectedItem()));
             }
         }
+    }
+
+    @Override
+    protected void dispose() {
+        GlobalMulticaster.INSTANCE.removeListener(this);
+        super.dispose();
     }
 }

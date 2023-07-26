@@ -2,6 +2,7 @@ package io.github.lgp547.anydoorplugin.dialog;
 
 import java.awt.event.ActionEvent;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.swing.*;
 
@@ -35,6 +36,8 @@ public class MainUI extends DialogWrapper implements Listener {
 
     private MainPanel panel;
 
+    private Consumer<String> okAction;
+
     public MainUI(@Nullable Project project, MethodDataContext context) {
         super(project, true, IdeModalityType.MODELESS);
 
@@ -50,6 +53,20 @@ public class MainUI extends DialogWrapper implements Listener {
     private void buttonSettings() {
         setOKButtonText("RUN");
         setOKButtonIcon(AllIcons.Actions.RunAll);
+    }
+
+    public void setOkAction(Consumer<String> runnable) {
+        this.okAction = runnable;
+    }
+
+    @Override
+    protected void doOKAction() {
+        if (Objects.nonNull(okAction)) {
+            JSONEditor editor = panel.getEditor();
+            String text = JsonUtil.compressJson(editor.getText());
+            okAction.accept(text);
+        }
+        super.doOKAction();
     }
 
     @Override

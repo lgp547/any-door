@@ -5,17 +5,13 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-import io.github.lgp547.anydoorplugin.AnyDoorInfo;
 import io.github.lgp547.anydoorplugin.dto.ParamCacheDto;
 import io.github.lgp547.anydoorplugin.util.JsonUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,6 +35,8 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
     public Integer mvcPort = 8080;
 
     public String mvcWebPathPrefix = "";
+
+    public boolean enableNewUI = false;
 
     @Nullable
     @Override

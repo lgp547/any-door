@@ -37,6 +37,7 @@ import com.intellij.util.PsiNavigateUtil;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
+import io.github.lgp547.anydoorplugin.action.AnyDoorPerformed;
 import io.github.lgp547.anydoorplugin.data.domain.Data;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
 import io.github.lgp547.anydoorplugin.data.domain.ParamIndexData;
@@ -47,6 +48,7 @@ import io.github.lgp547.anydoorplugin.dialog.event.GlobalMulticaster;
 import io.github.lgp547.anydoorplugin.dialog.event.Listener;
 import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
 import io.github.lgp547.anydoorplugin.dialog.utils.IdeClassUtil;
+import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 import io.github.lgp547.anydoorplugin.util.AnyDoorIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -213,7 +215,9 @@ public class ParamListUI extends JPanel implements Listener {
                     int index = qName.lastIndexOf("#");
                     String className = qName.substring(0, index);
 
-                    new MainUI(project, DataContext.instance(project).getExecuteDataContext(className, value.dataItem.getQualifiedName(), value.dataItem.getId())).show();
+//                    new MainUI(project, DataContext.instance(project).getExecuteDataContext(className, value.dataItem.getQualifiedName(), value.dataItem.getId())).show();
+                    AnyDoorSettingsState service = project.getService(AnyDoorSettingsState.class);
+                    new AnyDoorPerformed().useNewUI(service, project, className, qName);
                 }
             }
         });

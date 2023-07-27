@@ -100,6 +100,32 @@ public class AnyDoorPerformed {
         return false;
     }
 
+    public void useNewUI(AnyDoorSettingsState service, Project project, String qualifiedClassName, String qualifiedMethodName) {
+        MainUI mainUI = new MainUI(project, DataContext.instance(project).getExecuteDataContext(qualifiedClassName, qualifiedMethodName));
+
+        PsiClass psiClass = IdeClassUtil.findClass(project, qualifiedClassName);
+        PsiMethod psiMethod = IdeClassUtil.findMethod(project, qualifiedMethodName);
+        if (Objects.isNull(psiClass) || Objects.isNull(psiMethod)) {
+            mainUI.setOkAction((text) -> {
+                NotifierUtil.notifyError(project, "class or method not found");
+            });
+        }else {
+            mainUI.setOkAction((text) -> {
+                String cacheKey = getCacheKey(psiClass.getName(), psiMethod.getName(), toParamTypeNameList(psiMethod.getParameterList()));
+                ParamCacheDto paramCacheDto = new ParamCacheDto(-1L, false, text);
+                service.putCache(cacheKey, paramCacheDto);
+
+                if (psiClass.isInterface()) {
+                    text = JsonUtil.transformedKey(text, getParamTypeNameTransformer(psiMethod.getParameterList()));
+                }
+                String jsonDtoStr = getJsonDtoStr(psiClass.getName(), psiMethod.getName(), toParamTypeNameList(psiMethod.getParameterList()), text, !service.enableAsyncExecute, paramCacheDto);
+                openAnyDoor(project, jsonDtoStr, service, (url, e) -> NotifierUtil.notifyError(project, "call " + url + " error [ " + e.getMessage() + " ]"));
+            });
+        }
+        
+        mainUI.show();
+    }
+
     private static void openAnyDoor(Project project, String jsonDtoStr, AnyDoorSettingsState service, BiConsumer<String, Exception> errHandle) {
         if (service.isSelectJavaAttach()) {
             String anyDoorJarPath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_ATTACH_JAR);

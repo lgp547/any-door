@@ -1,15 +1,33 @@
 package io.github.lgp547.anydoor.common.util;
 
-
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
 public class AnyDoorClassUtil {
 
+    private static final Map<String, Class<?>> PRIMITIVE_TYPE_MAP = new HashMap<>();
+
+    static {
+        PRIMITIVE_TYPE_MAP.put("byte", byte.class);
+        PRIMITIVE_TYPE_MAP.put("short", short.class);
+        PRIMITIVE_TYPE_MAP.put("int", int.class);
+        PRIMITIVE_TYPE_MAP.put("long", long.class);
+        PRIMITIVE_TYPE_MAP.put("float", float.class);
+        PRIMITIVE_TYPE_MAP.put("double", double.class);
+        PRIMITIVE_TYPE_MAP.put("char", char.class);
+        PRIMITIVE_TYPE_MAP.put("boolean", boolean.class);
+    }
+
     public static Class<?> forName(String className) {
+        Class<?> clazz = PRIMITIVE_TYPE_MAP.get(className);
+        if (clazz != null) {
+            return clazz;
+        }
         try {
             return Class.forName(className);
         } catch (Exception e) {

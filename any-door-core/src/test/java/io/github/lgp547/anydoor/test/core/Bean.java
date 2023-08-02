@@ -72,6 +72,22 @@ public class Bean {
 
     public static final Permission permission = new Permission(1L, "permissionName");
 
+    public static final int intValue = 1;
+
+    public static final long longValue = 1L;
+
+    public static final float floatValue = 1.0f;
+
+    public static final double doubleValue = 1.0d;
+
+    public static final boolean booleanValue = true;
+
+    public static final char charValue = 'a';
+
+    public static final byte byteValue = 1;
+
+    public static final short shortValue = 1;
+
     public static JsonNode getContent() {
         ObjectNode jsonNode = new ObjectNode(JsonNodeFactory.instance);
         jsonNode.put("id", id);
@@ -94,6 +110,14 @@ public class Bean {
         jsonNode.put("dateTimeByCom1", dateTimeByCom1);
         jsonNode.putPOJO("longs", longs);
         jsonNode.putPOJO("permission", permission);
+        jsonNode.put("intValue", intValue);
+        jsonNode.put("longValue", longValue);
+        jsonNode.put("floatValue", floatValue);
+        jsonNode.put("doubleValue", doubleValue);
+        jsonNode.put("booleanValue", booleanValue);
+        jsonNode.put("charValue", charValue);
+        jsonNode.put("byteValue", byteValue);
+        jsonNode.put("shortValue", shortValue);
         return jsonNode;
     }
 
@@ -236,4 +260,21 @@ public class Bean {
     public void testBuilder(Permission permission) {
         assertIsEquals(Bean.permission, permission);
     }
+
+    public void testPrimitiveType(int intValue, long longValue, double doubleValue, float floatValue,
+                                  boolean booleanValue, char charValue, byte byteValue, short shortValue) {
+        assertIsEquals(intValue, Bean.intValue);
+        assertIsEquals(longValue, Bean.longValue);
+        assertIsEquals(doubleValue, Bean.doubleValue);
+        assertIsEquals(floatValue, Bean.floatValue);
+        assertIsEquals(booleanValue, Bean.booleanValue);
+        assertIsEquals(charValue, Bean.charValue);
+        assertIsEquals(byteValue, Bean.byteValue);
+        assertIsEquals(shortValue, Bean.shortValue);
+    }
+
+    public void testPrimitiveType(int intValue) {
+        assertIsEquals(intValue, Bean.intValue);
+    }
+
 }

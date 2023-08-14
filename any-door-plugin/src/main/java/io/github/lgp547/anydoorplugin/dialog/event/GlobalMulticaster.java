@@ -1,0 +1,52 @@
+package io.github.lgp547.anydoorplugin.dialog.event;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * @description:
+ * @author: zhouh
+ * @date: 2023-07-22 19:07
+ **/
+public class GlobalMulticaster implements Multicaster {
+
+    public static final GlobalMulticaster INSTANCE = new GlobalMulticaster();
+
+    private Listener dataChangeListener;
+    private final List<Listener> listeners = new ArrayList<>();
+
+    private GlobalMulticaster() {
+    }
+
+    public void setDataChangeListener(Listener dataChangeListener) {
+        this.dataChangeListener = dataChangeListener;
+    }
+
+    @Override
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(Listener listener) {
+        listeners.remove(listener);
+    }
+
+    @Override
+    public void removeAllListeners() {
+        listeners.clear();
+    }
+
+    @Override
+    public void fireEvent(Event event) {
+        if (event instanceof DataEvent) {
+            if (dataChangeListener != null) {
+                dataChangeListener.onEvent(event);
+            }
+        } else {
+            for (Listener listener : listeners) {
+                listener.onEvent(event);
+            }
+        }
+    }
+}

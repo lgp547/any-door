@@ -49,6 +49,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
         return
 //                !mySettingsComponent.getDependenceVersion().equals(settings.dependenceVersion) ||
                 !mySettingsComponent.getEnableAsyncExecute().equals(settings.enableAsyncExecute) ||
+                !mySettingsComponent.getEnableNewUI().equals(settings.enableNewUI) ||
                 !mySettingsComponent.getProjectPid().equals(String.valueOf(settings.pid)) ||
                 !mySettingsComponent.isSelectJavaAttach().equals(settings.isSelectJavaAttach()) ||
                 !mySettingsComponent.getMvcAddress().equals(settings.mvcAddress) ||
@@ -62,6 +63,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
         AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
         settings.pid = NumberUtils.toLong(mySettingsComponent.getProjectPid(), settings.pid);
         settings.enableAsyncExecute = mySettingsComponent.getEnableAsyncExecute();
+        settings.enableNewUI = mySettingsComponent.getEnableNewUI();
 //        if (!settings.updateDependence(mySettingsComponent.getDependenceNames(), mySettingsComponent.getDependenceVersion())) {
 //            mySettingsComponent.setDependenceVersion(settings.dependenceVersion);
 //        }
@@ -75,6 +77,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
     public void reset() {
         AnyDoorSettingsState settings = project.getService(AnyDoorSettingsState.class);
         mySettingsComponent.setEnableAsyncExecute(settings.enableAsyncExecute);
+        mySettingsComponent.setEnableNewUI(settings.enableNewUI);
 //        mySettingsComponent.setDependenceVersion(settings.dependenceVersion);
 //        mySettingsComponent.setDependenceNames(settings.dependenceName);
         mySettingsComponent.setProjectPid(String.valueOf(settings.pid));

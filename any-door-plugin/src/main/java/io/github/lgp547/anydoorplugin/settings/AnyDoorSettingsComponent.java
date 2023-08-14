@@ -30,6 +30,8 @@ public class AnyDoorSettingsComponent {
 
     private final JBCheckBox enableAsyncExecute = new JBCheckBox();
 
+    private final JBCheckBox enableNewUI= new JBCheckBox();
+
     private final JBTextField projectPid = new JBTextField();
 
 //    private final ComboBox<String> dependenceNames = new ComboBox<>();
@@ -78,6 +80,7 @@ public class AnyDoorSettingsComponent {
 
         myMainPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(new JBLabel("Enable async execute:"), enableAsyncExecute)
+                .addLabeledComponent(new JBLabel("Enable new UI:"), enableNewUI)
                 .addComponent(runProjectModePanel3)
                 .addSeparator()
                 .addLabeledComponent(new JBLabel("Execute `any-door` mode:"), runProjectModePanel)
@@ -139,7 +142,15 @@ public class AnyDoorSettingsComponent {
         enableAsyncExecute.setSelected(newStatus);
     }
 
-//    @NotNull
+    public Boolean getEnableNewUI() {
+        return enableNewUI.isSelected();
+    }
+
+    public void setEnableNewUI(boolean newStatus) {
+        enableNewUI.setSelected(newStatus);
+    }
+
+    //    @NotNull
 //    public String getDependenceVersion() {
 //        return dependenceVersion.getText();
 //    }

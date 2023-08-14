@@ -150,7 +150,7 @@ public class JsonElementUtil {
         for (int i = 0; i < parameterList.getParametersCount(); i++) {
             PsiParameter parameter = Objects.requireNonNull(parameterList.getParameter(i));
             String key = parameter.getName();
-            jsonObject.add(key, new JsonObject());
+            jsonObject.add(key, null);
         }
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         return gson.toJson(jsonObject);

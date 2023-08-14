@@ -58,7 +58,7 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
         String value = cache.get(key);
         try {
             ParamCacheDto obj = JsonUtil.toJavaBean(value, ParamCacheDto.class);
-            if (obj.getContent() != null) {
+            if (obj.content() != null) {
                 return obj;
             }
         } catch (Exception ignored) {

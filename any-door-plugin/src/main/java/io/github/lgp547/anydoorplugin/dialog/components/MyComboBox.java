@@ -182,13 +182,13 @@ public class MyComboBox extends JComboBox<ParamDataItem> implements Listener {
                     @Override
                     public void mouseEntered(MouseEvent e) {
                         button.setIcon(AnyDoorIcons.edit_hover_icon);
-                        button.setBackground(bg.brighter());
+                        repaint();
                     }
 
                     @Override
                     public void mouseExited(MouseEvent e) {
                         button.setIcon(AnyDoorIcons.edit_icon);
-                        button.setBackground(bg);
+                        repaint();
                     }
 
 

@@ -25,6 +25,7 @@ import io.github.lgp547.anydoorplugin.dialog.event.Listener;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.GlobalDataChangeEvent;
 import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
 import io.github.lgp547.anydoorplugin.dialog.utils.IdeClassUtil;
+import io.github.lgp547.anydoorplugin.dto.ParamCacheDto;
 
 /**
  * @description:
@@ -33,24 +34,21 @@ import io.github.lgp547.anydoorplugin.dialog.utils.IdeClassUtil;
  **/
 public class DataContext implements Listener {
 
-    private static DataContext instance;
-    private Project project;
-    private DataService<ParamIndexData> indexService;
-    private DataService<ParamDataItem> dataService;
+    private static final ConcurrentHashMap<String, DataContext> instanceMap = new ConcurrentHashMap<>();
+    private final Project project;
+    private final DataService<ParamIndexData> indexService;
+    private final DataService<ParamDataItem> dataService;
 
 
-    private Map<String, ClassDataContext> contextMap;
-    private Data<ParamIndexData> indexData;
+    private final Map<String, ClassDataContext> contextMap;
+    private final Data<ParamIndexData> indexData;
+
+    private static String getProjectKey(Project project) {
+        return project.getProjectFilePath() + project.getName();
+    }
 
     public static DataContext instance(Project project) {
-        if (instance == null) {
-            synchronized (DataContext.class) {
-                if (instance == null) {
-                    instance = new DataContext(project);
-                }
-            }
-        }
-        return instance;
+        return instanceMap.computeIfAbsent(getProjectKey(project), k -> new DataContext(project));
     }
 
     public DataContext(Project project) {
@@ -85,17 +83,17 @@ public class DataContext implements Listener {
         return context;
     }
 
-    public MethodDataContext getExecuteDataContext(String qualifiedClassName, String qualifiedMethodName) {
-        return getExecuteDataContext(qualifiedClassName, qualifiedMethodName, null);
+    public MethodDataContext getExecuteDataContext(String qualifiedClassName, String qualifiedMethodName, ParamCacheDto cache) {
+        return getExecuteDataContext(qualifiedClassName, qualifiedMethodName, null, cache.content());
     }
 
-    public MethodDataContext getExecuteDataContext(String qualifiedClassName, String qualifiedMethodName, Long selectedId) {
+    public MethodDataContext getExecuteDataContext(String qualifiedClassName, String qualifiedMethodName, Long selectedId, String cacheContent) {
         Objects.requireNonNull(qualifiedClassName);
         Objects.requireNonNull(qualifiedMethodName);
 
         ClassDataContext classDataContext = getClassDataContext(qualifiedClassName);
 
-        return classDataContext.newMethodDataContext(qualifiedMethodName, selectedId);
+        return classDataContext.newMethodDataContext(qualifiedMethodName, selectedId, cacheContent);
     }
 
     @Override

@@ -19,6 +19,7 @@ import io.github.lgp547.anydoorplugin.dialog.event.Listener;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.DataSyncEvent;
 import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
 import io.github.lgp547.anydoorplugin.util.JsonUtil;
+import jnr.ffi.annotations.In;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -71,31 +72,7 @@ public class MainUI extends DialogWrapper implements Listener {
 
     @Override
     protected Action @NotNull [] createActions() {
-        DialogWrapperAction saveAction = new DialogWrapperAction("Save") {
-            @Override
-            protected void doAction(ActionEvent e) {
-                if (Objects.isNull(context.getClazz())) {
-                    throw new RuntimeException("Current Class Not Exist");
-                }
-
-                JSONEditor editor = panel.getEditor();
-                String text = JsonUtil.compressJson(editor.getText());
-
-                ParamDataItem selectedDataItem = context.getSelectedItem();
-                selectedDataItem.setParam(text);
-
-                if (StringUtils.isBlank(selectedDataItem.getName())) {
-                    new SaveDialog(project, (dialog) -> {
-                        String name = dialog.getName().trim();
-                        selectedDataItem.setName(name);
-                        context.flush();
-                    }).show();
-                } else {
-                    context.flush();
-                }
-            }
-        };
-        return new Action[]{getOKAction(), getCancelAction(), saveAction};
+        return new Action[]{getOKAction(), getCancelAction()};
     }
 
     @Override
@@ -119,5 +96,21 @@ public class MainUI extends DialogWrapper implements Listener {
     protected void dispose() {
         GlobalMulticaster.INSTANCE.removeListener(this);
         super.dispose();
+    }
+
+    public Integer getRunNum() {
+        return panel.getRunNum();
+    }
+
+    public Boolean getIsConcurrent() {
+        return panel.getIsConcurrent();
+    }
+
+    public boolean isChangePid() {
+        return panel.isChangePid();
+    }
+
+    public Integer getPid() {
+        return panel.getPid();
     }
 }

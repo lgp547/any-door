@@ -36,19 +36,25 @@ public class MethodDataContext implements Multicaster, Listener {
     private List<ParamDataItem> dataItems;
     private ParamDataItem selectedItem;
     private ParamDataItem freeItem;
+    public final String cacheContent;
 
     private List<Listener> listeners = new ArrayList<>();
 
-    public MethodDataContext(ClassDataContext classDataContext, String qualifiedMethodName) {
-        this(classDataContext, qualifiedMethodName, null);
+    public MethodDataContext(ClassDataContext classDataContext, String qualifiedMethodName, String cacheContent) {
+        this(classDataContext, qualifiedMethodName, null, cacheContent);
     }
 
-    public MethodDataContext(ClassDataContext classDataContext, String qualifiedMethodName, ParamDataItem selectedItem) {
+    public MethodDataContext(ClassDataContext classDataContext, String qualifiedMethodName, ParamDataItem selectedItem, String cacheContent) {
+        this.cacheContent = cacheContent;
         this.classDataContext = classDataContext;
         this.qualifiedMethodName = qualifiedMethodName;
         this.dataItems = classDataContext.listMethodData(qualifiedMethodName);
         if (Objects.isNull(selectedItem)) {
-            resetEmptyItem();
+            if (Objects.isNull(cacheContent)) {
+                resetEmptyItem();
+            } else {
+                resetLastCacheParam();
+            }
         } else {
             this.selectedItem = selectedItem;
         }
@@ -177,6 +183,8 @@ public class MethodDataContext implements Multicaster, Listener {
                                 selectItem(item);
                             },
                             this::resetEmptyItemFillParam);
+        } else if (Objects.equals(event.getType(), EventType.ADD_CACHE_PARAM_ITEM)) {
+            resetLastCacheParam();
         }
         fireDataChangeEvent(false);
 
@@ -193,6 +201,11 @@ public class MethodDataContext implements Multicaster, Listener {
 
     private void resetEmptyItem() {
         freeItem = new ParamDataItem("", qualifiedMethodName, JsonElementUtil.getSimpleText(getParamList()));
+        selectItem(freeItem);
+    }
+
+    private void resetLastCacheParam() {
+        freeItem = new ParamDataItem("", qualifiedMethodName, cacheContent);
         selectItem(freeItem);
     }
 

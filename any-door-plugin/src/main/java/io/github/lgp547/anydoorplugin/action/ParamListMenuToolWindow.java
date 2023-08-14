@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * @author: zhouh
  * @date: 2023-06-16 11:03
  **/
-public class ParamListMenuFactory implements ToolWindowFactory {
+public class ParamListMenuToolWindow implements ToolWindowFactory {
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {

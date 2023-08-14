@@ -24,13 +24,13 @@ public class ClassDataContext {
         this.data = data;
     }
 
-    public MethodDataContext newMethodDataContext(String qualifiedMethodName, Long selectedId) {
+    public MethodDataContext newMethodDataContext(String qualifiedMethodName, Long selectedId, String cacheContent) {
 
         if (selectedId == null) {
-            return new MethodDataContext(this, qualifiedMethodName);
+            return new MethodDataContext(this, qualifiedMethodName, cacheContent);
         } else {
             ParamDataItem dataItem = listMethodData(qualifiedMethodName).stream().filter(item -> Objects.equals(item.getId(), selectedId)).findAny().orElse(null);
-            return new MethodDataContext(this, qualifiedMethodName, dataItem);
+            return new MethodDataContext(this, qualifiedMethodName, dataItem, cacheContent);
         }
     }
 

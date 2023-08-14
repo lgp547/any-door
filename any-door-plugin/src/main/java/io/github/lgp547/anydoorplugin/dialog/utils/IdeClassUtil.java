@@ -19,19 +19,19 @@ public class IdeClassUtil {
     public static String getMethodQualifiedName(PsiMethod psiMethod) {
         PsiClass containingClass = psiMethod.getContainingClass();
         if (containingClass != null) {
-            String fullQualifiedName = containingClass.getQualifiedName() + "#" + psiMethod.getName();
+            StringBuilder fullQualifiedName = new StringBuilder(containingClass.getQualifiedName() + "#" + psiMethod.getName());
             PsiParameter[] parameters = psiMethod.getParameterList().getParameters();
             if (parameters.length > 0) {
-                fullQualifiedName += "(";
+                fullQualifiedName.append("(");
                 for (int i = 0; i < parameters.length; i++) {
-                    fullQualifiedName += parameters[i].getType().getCanonicalText();
+                    fullQualifiedName.append(parameters[i].getType().getCanonicalText());
                     if (i < parameters.length - 1) {
-                        fullQualifiedName += ",";
+                        fullQualifiedName.append(",");
                     }
                 }
-                fullQualifiedName += ")";
+                fullQualifiedName.append(")");
             }
-            return fullQualifiedName;
+            return fullQualifiedName.toString();
         } else {
             return psiMethod.getName();
         }

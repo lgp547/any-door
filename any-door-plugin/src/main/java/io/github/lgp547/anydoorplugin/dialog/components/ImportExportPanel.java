@@ -10,7 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.swing.*;
@@ -25,6 +25,7 @@ import com.intellij.ui.components.JBRadioButton;
 import com.intellij.util.ui.JBDimension;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
 import io.github.lgp547.anydoorplugin.dialog.utils.ParamUtil;
+import io.github.lgp547.anydoorplugin.util.JsonUtil;
 
 /**
  * @description:
@@ -38,6 +39,7 @@ public class ImportExportPanel extends JBPanel<ImportExportPanel> {
 
     private final String CURL = "cURL";
     private final String JSON = "JSON";
+    private final String QUERY = "QUERY";
 
 
     private final String title;
@@ -98,27 +100,36 @@ public class ImportExportPanel extends JBPanel<ImportExportPanel> {
         ActionListener listener = e -> {
             MyRadioButton button = (MyRadioButton) e.getSource();
             if (button.isSelected() && Objects.equals(EXPORT, title)) {
-                editorTextField.setText("");
-                button.doExport(dataItem.getParam());
+                editorTextField.setText(button.doExport(dataItem.getParam()));
             }
         };
 
+        MyRadioButton json = addRadioButton(JSON);
+        json.setImportAction(editorTextField::getText);
+        json.setExportAction(Function.identity());
+        json.addActionListener(listener);
+
+        MyRadioButton query = addRadioButton(QUERY);
+        query.setExportAction(JsonUtil::jsonToQuery);
+        query.addActionListener(listener);
+
         MyRadioButton curl = addRadioButton(CURL);
+        curl.setExportAction(JsonUtil::jsonToQuery);
         curl.setImportAction(() -> {
             String text = editorTextField.getText();
             return ParamUtil.importFromCurl(project, text);
         });
-
-
-        MyRadioButton json = addRadioButton(JSON);
-        json.setImportAction(editorTextField::getText);
-        json.setExportAction(editorTextField::setText);
-
         curl.addActionListener(listener);
-        json.addActionListener(listener);
+
+
         buttonGroup.add(json);
+        buttonGroup.add(query);
         buttonGroup.add(curl);
+
+        editorTextField.setText(dataItem.getParam());
     }
+
+
 
     private MyRadioButton addRadioButton(String text) {
         MyRadioButton radioButton = new MyRadioButton(text);
@@ -171,7 +182,7 @@ public class ImportExportPanel extends JBPanel<ImportExportPanel> {
 
     static class MyRadioButton extends JBRadioButton {
         private Supplier<String> importAction;
-        private Consumer<String> exportAction;
+        private Function<String, String> exportAction;
 
         public MyRadioButton(String text) {
             super(text);
@@ -269,10 +280,6 @@ public class ImportExportPanel extends JBPanel<ImportExportPanel> {
             this.importAction = importAction;
         }
 
-        public void setExportAction(Consumer<String> exportAction) {
-            this.exportAction = exportAction;
-        }
-
         public String doImport() {
             if (Objects.isNull(importAction)) {
                 return null;
@@ -280,12 +287,15 @@ public class ImportExportPanel extends JBPanel<ImportExportPanel> {
             return importAction.get();
         }
 
-        public void doExport(String text) {
-            if (Objects.isNull(exportAction)) {
-                return;
-            }
-            exportAction.accept(text);
+        public void setExportAction(Function<String, String> fun) {
+            exportAction = fun;
         }
 
+        public String doExport(String param) {
+            if (null == exportAction) {
+                return "";
+            }
+            return exportAction.apply(param);
+        }
     }
 }

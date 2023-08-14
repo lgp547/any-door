@@ -17,7 +17,7 @@ import com.intellij.psi.PsiParameterList;
 import io.github.lgp547.anydoorplugin.AnyDoorInfo;
 import io.github.lgp547.anydoorplugin.dialog.DataContext;
 import io.github.lgp547.anydoorplugin.dialog.MainUI;
-import io.github.lgp547.anydoorplugin.dialog.TextAreaDialog;
+import io.github.lgp547.anydoorplugin.dialog.old.TextAreaDialog;
 import io.github.lgp547.anydoorplugin.dialog.utils.IdeClassUtil;
 import io.github.lgp547.anydoorplugin.dto.ParamCacheDto;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
@@ -83,15 +83,20 @@ public class AnyDoorPerformed {
 
     private boolean useNewUI(AnyDoorSettingsState service, Project project, PsiClass psiClass, PsiMethod method, String cacheKey) {
         if (service.enableNewUI) {
-            MainUI mainUI = new MainUI(project, DataContext.instance(project).getExecuteDataContext(psiClass.getQualifiedName(), IdeClassUtil.getMethodQualifiedName(method)));
+            ParamCacheDto cache = service.getCache(cacheKey);
+            MainUI mainUI = new MainUI(project, DataContext.instance(project).getExecuteDataContext(psiClass.getQualifiedName(), IdeClassUtil.getMethodQualifiedName(method), cache));
             mainUI.setOkAction((text) -> {
-                ParamCacheDto paramCacheDto = new ParamCacheDto(-1L, false, text);
+                if (mainUI.isChangePid()) {
+                    service.pid = mainUI.getPid().longValue();
+                }
+
+                ParamCacheDto paramCacheDto = new ParamCacheDto(mainUI.getRunNum(), mainUI.getIsConcurrent(), text);
                 service.putCache(cacheKey, paramCacheDto);
 
                 if (psiClass.isInterface()) {
                     text = JsonUtil.transformedKey(text, getParamTypeNameTransformer(method.getParameterList()));
                 }
-                String jsonDtoStr = getJsonDtoStr(psiClass.getName(), method.getName(), toParamTypeNameList(method.getParameterList()), text, !service.enableAsyncExecute, paramCacheDto);
+                String jsonDtoStr = getJsonDtoStr(psiClass.getQualifiedName(), method.getName(), toParamTypeNameList(method.getParameterList()), text, !service.enableAsyncExecute, paramCacheDto);
                 openAnyDoor(project, jsonDtoStr, service, (url, e) -> NotifierUtil.notifyError(project, "call " + url + " error [ " + e.getMessage() + " ]"));
             });
             mainUI.show();
@@ -101,18 +106,20 @@ public class AnyDoorPerformed {
     }
 
     public void useNewUI(AnyDoorSettingsState service, Project project, String qualifiedClassName, String qualifiedMethodName) {
-        MainUI mainUI = new MainUI(project, DataContext.instance(project).getExecuteDataContext(qualifiedClassName, qualifiedMethodName));
-
         PsiClass psiClass = IdeClassUtil.findClass(project, qualifiedClassName);
         PsiMethod psiMethod = IdeClassUtil.findMethod(project, qualifiedMethodName);
         if (Objects.isNull(psiClass) || Objects.isNull(psiMethod)) {
-            mainUI.setOkAction((text) -> {
-                NotifierUtil.notifyError(project, "class or method not found");
-            });
+            NotifierUtil.notifyError(project, "class or method not found");
         }else {
+            String cacheKey = getCacheKey(psiClass.getName(), psiMethod.getName(), toParamTypeNameList(psiMethod.getParameterList()));
+            ParamCacheDto cache = service.getCache(cacheKey);
+            MainUI mainUI = new MainUI(project, DataContext.instance(project).getExecuteDataContext(qualifiedClassName, qualifiedMethodName, cache));
             mainUI.setOkAction((text) -> {
-                String cacheKey = getCacheKey(psiClass.getName(), psiMethod.getName(), toParamTypeNameList(psiMethod.getParameterList()));
-                ParamCacheDto paramCacheDto = new ParamCacheDto(-1L, false, text);
+                if (mainUI.isChangePid()) {
+                    service.pid = mainUI.getPid().longValue();
+                }
+
+                ParamCacheDto paramCacheDto = new ParamCacheDto(mainUI.getRunNum(), mainUI.getIsConcurrent(), text);
                 service.putCache(cacheKey, paramCacheDto);
 
                 if (psiClass.isInterface()) {
@@ -121,9 +128,8 @@ public class AnyDoorPerformed {
                 String jsonDtoStr = getJsonDtoStr(psiClass.getName(), psiMethod.getName(), toParamTypeNameList(psiMethod.getParameterList()), text, !service.enableAsyncExecute, paramCacheDto);
                 openAnyDoor(project, jsonDtoStr, service, (url, e) -> NotifierUtil.notifyError(project, "call " + url + " error [ " + e.getMessage() + " ]"));
             });
+            mainUI.show();
         }
-        
-        mainUI.show();
     }
 
     private static void openAnyDoor(Project project, String jsonDtoStr, AnyDoorSettingsState service, BiConsumer<String, Exception> errHandle) {

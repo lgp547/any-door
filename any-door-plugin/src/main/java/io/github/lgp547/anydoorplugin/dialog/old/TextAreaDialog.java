@@ -1,8 +1,9 @@
-package io.github.lgp547.anydoorplugin.dialog;
+package io.github.lgp547.anydoorplugin.dialog.old;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.psi.PsiParameterList;
+import io.github.lgp547.anydoorplugin.dialog.JSONEditor;
 import io.github.lgp547.anydoorplugin.dto.ParamCacheDto;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +22,7 @@ public class TextAreaDialog extends DialogWrapper {
         super(project, true, IdeModalityType.MODELESS);
         setTitle(title);
         this.service = service;
-        textArea = new JSONEditor(paramCacheDto.getContent(), psiParameterList, project);
+        textArea = new JSONEditor(paramCacheDto.content(), psiParameterList, project);
         contentPanel = new ContentPanel(textArea);
         contentPanel.addCacheButtonListener(e -> textArea.genCacheContent());
         contentPanel.addSimpleButtonListener(e -> textArea.genSimpleContent());
@@ -43,7 +44,7 @@ public class TextAreaDialog extends DialogWrapper {
         return textArea.getText();
     }
 
-    public Long getRunNum() {
+    public Integer getRunNum() {
         return contentPanel.getRunNum();
     }
 

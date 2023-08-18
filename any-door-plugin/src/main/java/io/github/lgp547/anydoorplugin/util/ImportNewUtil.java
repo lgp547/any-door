@@ -90,8 +90,10 @@ public class ImportNewUtil {
                     !StringUtils.startsWithAny(curFile.getName(), AnyDoorInfo.ANY_DOOR_NAME, "arthas") && StringUtils.endsWith(curFile.getName(), ".jar"));
             if (dependenceJars != null && dependenceJars.length != 0) {
                 genAllDependenceFile(dependenceJars, dependenceJarFilePath);
+                NotifierUtil.notifyInfo(project, String.format("%s dependence gen %s", dependenceJars.length, dependenceJarFilePath));
+            } else {
+                NotifierUtil.notifyError(project, "dependence jar is empty.Please check the path:" + dependenceJarFilePath);
             }
-            NotifierUtil.notifyInfo(project, String.format("%s dependence gen %s", Optional.ofNullable(dependenceJars).map(i -> i.length), dependenceJarFilePath));
         } catch (Exception e) {
             NotifierUtil.notifyError(project, anyDoorAllDependenceJar + " does not exist. errMsg:" + e.getMessage());
         }

@@ -47,6 +47,9 @@ public class ParamCacheDto {
     }
 
     public String content() {
+        if (null == content) {
+            return null;
+        }
         return JsonUtil.formatterJson(content);
     }
 }

@@ -5,14 +5,13 @@ import com.intellij.openapi.project.Project;
 import io.github.lgp547.anydoorplugin.data.DataService;
 import io.github.lgp547.anydoorplugin.data.domain.Data;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
-import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 
 /**
  * @description:
  * @author: zhouh
  * @date: 2023-07-05 19:43
  **/
-@Service
+@Service(value = Service.Level.PROJECT)
 public final class ParamDataService implements DataService<ParamDataItem> {
     private final Project project;
     private final ParamDataReaderWriter paramDataReaderWriter;
@@ -24,7 +23,7 @@ public final class ParamDataService implements DataService<ParamDataItem> {
     public ParamDataService(Project project) {
         this.project = project;
 
-        this.paramDataReaderWriter = new ParamDataReaderWriter(project, ParamDataIdGenerator.INSTANCE.init(project));
+        this.paramDataReaderWriter = new ParamDataReaderWriter(project, new ParamDataIdGenerator(project));
     }
 
     @Override

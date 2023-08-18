@@ -36,7 +36,7 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
 
     public String mvcWebPathPrefix = "";
 
-    public boolean enableNewUI = false;
+    public boolean enableNewUI = true;
 
     @Nullable
     @Override

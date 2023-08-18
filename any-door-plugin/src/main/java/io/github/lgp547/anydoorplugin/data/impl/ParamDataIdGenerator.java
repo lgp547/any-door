@@ -5,7 +5,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.intellij.openapi.project.Project;
 import io.github.lgp547.anydoorplugin.data.IdGenerator;
-import io.github.lgp547.anydoorplugin.dialog.DataContext;
+import io.github.lgp547.anydoorplugin.data.domain.Data;
+import io.github.lgp547.anydoorplugin.data.domain.ParamIndexData;
 
 /**
  * @description:
@@ -13,50 +14,19 @@ import io.github.lgp547.anydoorplugin.dialog.DataContext;
  * @date: 2023-07-12 13:01
  **/
 public class ParamDataIdGenerator implements IdGenerator {
-    public static final ParamDataIdGenerator INSTANCE = new ParamDataIdGenerator();
-    private final Object lock;
 
-    private volatile Project project;
+    private final AtomicLong nextId;
 
-    private volatile AtomicLong nextId;
 
-    private ParamDataIdGenerator() {
-        lock = new Object();
-    }
-
-    public ParamDataIdGenerator init(Project project) {
-        if (this.project != null) {
-            throw new IllegalStateException("ParamDataIdGenerator already initialized");
-        }
-        synchronized (lock) {
-            if (this.project == null) {
-                this.project = project;
-            }
-        }
-
-        return this;
-    }
-
-    private void initId() {
-        Long id = DataContext.instance(project).currentId();
-        nextId = new AtomicLong(Objects.requireNonNullElse(id, 0L));
+    public ParamDataIdGenerator(Project project) {
+        ParamIndexService service = project.getService(ParamIndexService.class);
+        Data<ParamIndexData> paramIndexDataData = service.find(project.getName());
+        Long id = paramIndexDataData.getDataList().stream().map(ParamIndexData::getId).max(Long::compare).orElse(0L);
+        nextId = new AtomicLong(id);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Long nextId() {
-        if (project == null) {
-            throw new IllegalStateException("ParamDataIdGenerator not initialized");
-        }
-
-        if (nextId == null) {
-            synchronized (lock) {
-                if (nextId == null) {
-                    initId();
-                }
-            }
-        }
-
         return nextId.incrementAndGet();
     }
 }

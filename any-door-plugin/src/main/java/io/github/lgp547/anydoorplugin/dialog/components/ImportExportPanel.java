@@ -108,6 +108,7 @@ public class ImportExportPanel extends JBPanel<ImportExportPanel> {
         json.setImportAction(editorTextField::getText);
         json.setExportAction(Function.identity());
         json.addActionListener(listener);
+        json.setSelected(true);
 
         MyRadioButton query = addRadioButton(QUERY);
         query.setExportAction(JsonUtil::jsonToQuery);

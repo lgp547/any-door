@@ -1,6 +1,5 @@
 package io.github.lgp547.anydoorplugin.dialog;
 
-import java.awt.event.ActionEvent;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -9,9 +8,7 @@ import javax.swing.*;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
 import io.github.lgp547.anydoorplugin.dialog.components.MainPanel;
-import io.github.lgp547.anydoorplugin.dialog.components.SaveDialog;
 import io.github.lgp547.anydoorplugin.dialog.event.Event;
 import io.github.lgp547.anydoorplugin.dialog.event.EventType;
 import io.github.lgp547.anydoorplugin.dialog.event.GlobalMulticaster;
@@ -19,8 +16,6 @@ import io.github.lgp547.anydoorplugin.dialog.event.Listener;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.DataSyncEvent;
 import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
 import io.github.lgp547.anydoorplugin.util.JsonUtil;
-import jnr.ffi.annotations.In;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,9 +34,9 @@ public class MainUI extends DialogWrapper implements Listener {
 
     private Consumer<String> okAction;
 
-    public MainUI(@Nullable Project project, MethodDataContext context) {
+    public MainUI(String title, @Nullable Project project, MethodDataContext context) {
         super(project, true, IdeModalityType.MODELESS);
-
+        setTitle(title);
         this.project = project;
         this.context = context;
 

@@ -84,7 +84,8 @@ public class AnyDoorPerformed {
     private boolean useNewUI(AnyDoorSettingsState service, Project project, PsiClass psiClass, PsiMethod method, String cacheKey) {
         if (service.enableNewUI) {
             ParamCacheDto cache = service.getCache(cacheKey);
-            MainUI mainUI = new MainUI(project, DataContext.instance(project).getExecuteDataContext(psiClass.getQualifiedName(), IdeClassUtil.getMethodQualifiedName(method), cache));
+            String title = String.format("(%s)method parameter", method.getName());
+            MainUI mainUI = new MainUI(title, project, DataContext.instance(project).getExecuteDataContext(psiClass.getQualifiedName(), IdeClassUtil.getMethodQualifiedName(method), cache));
             mainUI.setOkAction((text) -> {
                 if (mainUI.isChangePid()) {
                     service.pid = mainUI.getPid().longValue();
@@ -113,7 +114,8 @@ public class AnyDoorPerformed {
         }else {
             String cacheKey = getCacheKey(psiClass.getName(), psiMethod.getName(), toParamTypeNameList(psiMethod.getParameterList()));
             ParamCacheDto cache = service.getCache(cacheKey);
-            MainUI mainUI = new MainUI(project, DataContext.instance(project).getExecuteDataContext(qualifiedClassName, qualifiedMethodName, cache));
+            String title = String.format("(%s)method parameter", psiMethod.getName());
+            MainUI mainUI = new MainUI(title, project, DataContext.instance(project).getExecuteDataContext(qualifiedClassName, qualifiedMethodName, cache));
             mainUI.setOkAction((text) -> {
                 if (mainUI.isChangePid()) {
                     service.pid = mainUI.getPid().longValue();

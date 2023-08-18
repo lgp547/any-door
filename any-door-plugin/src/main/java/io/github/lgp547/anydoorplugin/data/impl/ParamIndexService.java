@@ -11,7 +11,7 @@ import io.github.lgp547.anydoorplugin.data.domain.ParamIndexData;
  * @author: zhouh
  * @date: 2023-07-22 12:28
  **/
-@Service
+@Service(value = Service.Level.PROJECT)
 public final class ParamIndexService implements DataService<ParamIndexData> {
     private final Project project;
     private final ParamIndexReaderWriter paramIndexReaderWriter;

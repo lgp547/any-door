@@ -1,13 +1,6 @@
 package io.github.lgp547.anydoorplugin.dialog;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
+import com.intellij.openapi.components.Service;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
@@ -27,14 +20,21 @@ import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
 import io.github.lgp547.anydoorplugin.dialog.utils.IdeClassUtil;
 import io.github.lgp547.anydoorplugin.dto.ParamCacheDto;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
 /**
  * @description:
  * @author: zhouh
  * @date: 2023-07-18 18:09
  **/
-public class DataContext implements Listener {
+@Service(value = Service.Level.PROJECT)
+public final class DataContext implements Listener {
 
-    private static final ConcurrentHashMap<String, DataContext> instanceMap = new ConcurrentHashMap<>();
     private final Project project;
     private final DataService<ParamIndexData> indexService;
     private final DataService<ParamDataItem> dataService;
@@ -43,12 +43,8 @@ public class DataContext implements Listener {
     private final Map<String, ClassDataContext> contextMap;
     private final Data<ParamIndexData> indexData;
 
-    private static String getProjectKey(Project project) {
-        return project.getProjectFilePath() + project.getName();
-    }
-
     public static DataContext instance(Project project) {
-        return instanceMap.computeIfAbsent(getProjectKey(project), k -> new DataContext(project));
+        return project.getService(DataContext.class);
     }
 
     public DataContext(Project project) {
@@ -137,10 +133,6 @@ public class DataContext implements Listener {
             }
             GlobalMulticaster.INSTANCE.fireEvent(EventHelper.createDataSyncEvent(changeEvent.getQualifiedMethodName()));
         }
-    }
-
-    public Long currentId() {
-        return indexData.getDataList().stream().map(ParamIndexData::getId).max(Long::compare).orElse(null);
     }
 
     public List<ParamIndexData> search(String text) {

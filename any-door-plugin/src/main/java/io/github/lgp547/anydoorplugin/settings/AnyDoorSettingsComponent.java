@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.Arrays;
 
 /**
@@ -56,6 +57,10 @@ public class AnyDoorSettingsComponent {
 
     private final JButton removeAllButton = new JButton("Remove `any-door` jar for all module");
 
+    private final JBTextField dataFileDir = new JBTextField();
+
+    private final JBTextField projectBasePath = new JBTextField();
+
     public AnyDoorSettingsComponent(Project project) {
         componentInit(project);
         mainPanelInit();
@@ -78,9 +83,14 @@ public class AnyDoorSettingsComponent {
         runProjectModePanel3.add(button);
         runProjectModePanel3.add(removeAllButton);
 
+        JPanel runProjectModePanel4 = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        runProjectModePanel4.add(projectBasePath);
+        runProjectModePanel4.add(dataFileDir);
+
         myMainPanel = FormBuilder.createFormBuilder()
                 .addLabeledComponent(new JBLabel("Enable async execute:"), enableAsyncExecute)
                 .addLabeledComponent(new JBLabel("Enable new UI:"), enableNewUI)
+                .addLabeledComponent(new JBLabel("Param data save path:"), runProjectModePanel4)
                 .addComponent(runProjectModePanel3)
                 .addSeparator()
                 .addLabeledComponent(new JBLabel("Execute `any-door` mode:"), runProjectModePanel)
@@ -124,6 +134,13 @@ public class AnyDoorSettingsComponent {
         importButton.addActionListener(e -> ImportNewUtil.fillAnyDoorJar(project, mainClassModuleComboBox.getItem()));
 
         removeAllButton.addActionListener(e -> ImportNewUtil.removeAllModuleLibrary(project, AnyDoorInfo.ANY_DOOR_NAME));
+
+        dataFileDir.setText(settings.dataFileDir);
+        dataFileDir.setToolTipText("Customize based on project path");
+
+        projectBasePath.setText(project.getBasePath());
+        projectBasePath.setEditable(false);
+        projectBasePath.setToolTipText("project base path");
     }
 
     public JPanel getPanel() {
@@ -216,5 +233,13 @@ public class AnyDoorSettingsComponent {
         } else {
             runProjectModeRadio2.setSelected(true);
         }
+    }
+
+    public String getDataFileDir() {
+        return StringUtils.replace(dataFileDir.getText(), "/", File.separator).replace("\\", File.separator);
+    }
+
+    public void setDataFileDir(String dataFileDir) {
+        this.dataFileDir.setText(dataFileDir);
     }
 }

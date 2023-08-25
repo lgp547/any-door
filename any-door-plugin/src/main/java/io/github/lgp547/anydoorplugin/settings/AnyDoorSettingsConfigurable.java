@@ -54,7 +54,8 @@ public class AnyDoorSettingsConfigurable implements Configurable {
                 !mySettingsComponent.isSelectJavaAttach().equals(settings.isSelectJavaAttach()) ||
                 !mySettingsComponent.getMvcAddress().equals(settings.mvcAddress) ||
                 !mySettingsComponent.getMvcPort().equals(settings.mvcPort) ||
-                !mySettingsComponent.getMvcWebPathPrefix().equals(settings.mvcWebPathPrefix)
+                !mySettingsComponent.getMvcWebPathPrefix().equals(settings.mvcWebPathPrefix) ||
+                !mySettingsComponent.getDataFileDir().equals(settings.dataFileDir)
                 ;
     }
 
@@ -71,6 +72,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
         settings.mvcAddress = mySettingsComponent.getMvcAddress();
         settings.mvcPort = mySettingsComponent.getMvcPort();
         settings.mvcWebPathPrefix = mySettingsComponent.getMvcWebPathPrefix();
+        settings.dataFileDir = mySettingsComponent.getDataFileDir();
     }
 
     @Override
@@ -85,6 +87,7 @@ public class AnyDoorSettingsConfigurable implements Configurable {
         mySettingsComponent.setMvcAddressText(settings.mvcAddress);
         mySettingsComponent.setMvcPortText(settings.mvcPort);
         mySettingsComponent.setMvcWebPathPrefix(settings.mvcWebPathPrefix);
+        mySettingsComponent.setDataFileDir(settings.dataFileDir);
     }
 
     @Override

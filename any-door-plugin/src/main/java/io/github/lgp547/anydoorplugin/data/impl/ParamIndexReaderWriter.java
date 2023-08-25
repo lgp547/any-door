@@ -8,6 +8,7 @@ import io.github.lgp547.anydoorplugin.data.AbstractParamDataReaderWriter;
 import io.github.lgp547.anydoorplugin.data.IdGenerator;
 import io.github.lgp547.anydoorplugin.data.domain.Data;
 import io.github.lgp547.anydoorplugin.data.domain.ParamIndexData;
+import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 
 /**
  * @description:
@@ -18,6 +19,8 @@ public class ParamIndexReaderWriter extends AbstractParamDataReaderWriter<ParamI
 
     private static final String INDEX_SUFFIX = "&index";
 
+    private final AnyDoorSettingsState settingsState;
+
     public ParamIndexReaderWriter(Project project) {
         this(project, new DefaultIdGenerator());
     }
@@ -25,6 +28,7 @@ public class ParamIndexReaderWriter extends AbstractParamDataReaderWriter<ParamI
     public ParamIndexReaderWriter(Project project, IdGenerator idGenerator) {
         super(project, idGenerator);
         Objects.requireNonNull(project);
+        settingsState = project.getService(AnyDoorSettingsState.class);
     }
 
     @Override
@@ -60,7 +64,7 @@ public class ParamIndexReaderWriter extends AbstractParamDataReaderWriter<ParamI
 
         String filepath = key + ".json";
 
-        return project.getBasePath() + DATA_BASE_DIR + FILE_SEPARATOR + filepath;
+        return project.getBasePath() + settingsState.dataFileDir + FILE_SEPARATOR + filepath;
     }
 
     @Override

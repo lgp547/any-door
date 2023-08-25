@@ -38,6 +38,8 @@ public class AnyDoorSettingsState implements PersistentStateComponent<AnyDoorSet
 
     public boolean enableNewUI = true;
 
+    public String dataFileDir = "/.idea/any-door-data/";
+
     @Nullable
     @Override
     public AnyDoorSettingsState getState() {

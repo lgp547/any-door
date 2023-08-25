@@ -1,9 +1,9 @@
 package io.github.lgp547.anydoorplugin.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -24,24 +24,35 @@ public class JsonUtil {
 
     public static ObjectMapper objectMapper = new ObjectMapper();
 
+    private final static ObjectWriter PRETTY_WRITER = objectMapper.writer().with(new AnyDoorJsonPrettyPrinter());
+
     /**
-     * compress json
+     * 压缩 json
      */
     public static String compressJson(String json) {
         if (StringUtils.isBlank(json) || "{}".equals(json)) {
             return json;
         }
-        return json.replaceAll("\\n", "").replaceAll("\\t", "").replaceAll("\\r", "").replaceAll("\\s", "");
+        JsonNode jsonNode;
+        try {
+            jsonNode = objectMapper.readTree(json);
+        } catch (Exception e) {
+            return json;
+        }
+        return jsonNode.toString();
     }
 
+    /**
+     * 格式化json
+     */
     public static String formatterJson(String json) {
         JsonNode jsonNode;
         try {
             jsonNode = objectMapper.readTree(json);
-        } catch (JsonProcessingException e) {
+            return PRETTY_WRITER.writeValueAsString(jsonNode);
+        } catch (Exception e) {
             return json;
         }
-        return jsonNode.toPrettyString();
     }
 
     public static JsonArray toJsonArray(List<String> list) {

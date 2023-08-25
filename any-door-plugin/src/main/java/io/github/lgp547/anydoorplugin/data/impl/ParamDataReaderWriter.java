@@ -9,6 +9,7 @@ import io.github.lgp547.anydoorplugin.data.IdGenerator;
 import io.github.lgp547.anydoorplugin.data.domain.CacheData;
 import io.github.lgp547.anydoorplugin.data.domain.Data;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
+import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 
 /**
  * @description:
@@ -17,6 +18,8 @@ import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
  **/
 public class ParamDataReaderWriter extends AbstractParamDataReaderWriter<ParamDataItem> {
 
+    private final AnyDoorSettingsState settingsState;
+
     public ParamDataReaderWriter(Project project) {
         this(project, new DefaultIdGenerator());
     }
@@ -24,6 +27,7 @@ public class ParamDataReaderWriter extends AbstractParamDataReaderWriter<ParamDa
     public ParamDataReaderWriter(Project project, IdGenerator idGenerator) {
         super(project, idGenerator);
         Objects.requireNonNull(project);
+        settingsState = project.getService(AnyDoorSettingsState.class);
     }
 
     @Override
@@ -84,7 +88,8 @@ public class ParamDataReaderWriter extends AbstractParamDataReaderWriter<ParamDa
 
         String filepath = key.replace(".", FILE_SEPARATOR) + shareable + ".json";
 
-        return project.getBasePath() + DATA_BASE_DIR + FILE_SEPARATOR + filepath;
+
+        return project.getBasePath() + settingsState.dataFileDir + FILE_SEPARATOR + filepath;
     }
 
     @Override

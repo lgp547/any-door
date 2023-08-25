@@ -25,6 +25,7 @@ import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiJavaFile;
 import com.intellij.psi.PsiManager;
@@ -37,6 +38,7 @@ import com.intellij.util.PsiNavigateUtil;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.ListTableModel;
+import io.github.lgp547.anydoorplugin.action.AnyDoorAgainOpenAction;
 import io.github.lgp547.anydoorplugin.action.AnyDoorPerformed;
 import io.github.lgp547.anydoorplugin.data.domain.Data;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
@@ -48,8 +50,11 @@ import io.github.lgp547.anydoorplugin.dialog.event.GlobalMulticaster;
 import io.github.lgp547.anydoorplugin.dialog.event.Listener;
 import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
 import io.github.lgp547.anydoorplugin.dialog.utils.IdeClassUtil;
+import io.github.lgp547.anydoorplugin.dto.ParamCacheDto;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
+import io.github.lgp547.anydoorplugin.util.AnyDoorActionUtil;
 import io.github.lgp547.anydoorplugin.util.AnyDoorIcons;
+import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -211,13 +216,20 @@ public class ParamListUI extends JPanel implements Listener {
 
                     ViewData value = tableModel.getRowValue(row);
                     String qName = value.dataItem.getQualifiedName();
+                    Long dataItemId = value.dataItem.getId();
 
                     int index = qName.lastIndexOf("#");
                     String className = qName.substring(0, index);
 
-//                    new MainUI(project, DataContext.instance(project).getExecuteDataContext(className, value.dataItem.getQualifiedName(), value.dataItem.getId())).show();
                     AnyDoorSettingsState service = project.getService(AnyDoorSettingsState.class);
-                    new AnyDoorPerformed().useNewUI(service, project, className, qName);
+                    PsiClass psiClass = IdeClassUtil.findClass(project, className);
+                    PsiMethod psiMethod = IdeClassUtil.findMethod(project, qName);
+                    if (Objects.isNull(psiClass) || Objects.isNull(psiMethod)) {
+                        NotifierUtil.notifyError(project, "class or method not found");
+                        return;
+                    }
+                    new AnyDoorPerformed().doUseNewUI(service, project, psiClass, psiMethod, AnyDoorActionUtil.genCacheKey(psiClass, psiMethod),
+                            () -> AnyDoorAgainOpenAction.PRE_METHOD_MAP.put(project.getName(), psiMethod), dataItemId);
                 }
             }
         });

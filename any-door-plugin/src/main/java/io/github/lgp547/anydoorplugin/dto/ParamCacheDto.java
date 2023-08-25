@@ -3,6 +3,7 @@ package io.github.lgp547.anydoorplugin.dto;
 import io.github.lgp547.anydoorplugin.util.JsonUtil;
 
 public class ParamCacheDto {
+
     private Integer runNum;
 
     private Boolean isConcurrent;

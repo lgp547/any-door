@@ -29,13 +29,6 @@ public class AnyDoorOpenAction extends AnAction {
 
     private final static Key<PsiMethod> USER_DATE_ELEMENT_KEY = new Key<>("user.psi.Element");
 
-    private final static Map<String, PsiMethod> PRE_METHOD_MAP = new FixedHashMap<>(10);
-
-    @Nullable
-    public static PsiMethod getPreMethod(String projectName) {
-        return PRE_METHOD_MAP.get(projectName);
-    }
-
     @Override
     public void actionPerformed(@NotNull final AnActionEvent e) {
         final Project project = e.getProject();
@@ -57,7 +50,7 @@ public class AnyDoorOpenAction extends AnAction {
                 }
             }
             final PsiMethod finalPsiMethod = psiMethod;
-            new AnyDoorPerformed().invoke(project, finalPsiMethod, () -> PRE_METHOD_MAP.put(project.getName(), finalPsiMethod));
+            new AnyDoorPerformed().invoke(project, finalPsiMethod, () -> AnyDoorAgainOpenAction.PRE_METHOD_MAP.put(project.getName(), finalPsiMethod));
         } catch (Exception exception) {
             log.error("anyDoor invoke exception", exception);
             NotifierUtil.notifyError(project, "invoke exception " + exception.getMessage());

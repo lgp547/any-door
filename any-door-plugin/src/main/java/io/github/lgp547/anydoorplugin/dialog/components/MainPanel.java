@@ -81,11 +81,11 @@ public class MainPanel extends JBPanel<MainPanel> implements Listener {
                     String name = dialog.getName().trim();
                     selectedDataItem.setName(name);
                     context.flush();
-                    NotifierUtil.notifyInfo(project, "Save success");
+                    NotifierUtil.notifyInfo(project, "Save " + selectedDataItem.getName() + " success");
                 }).show();
             } else {
                 context.flush();
-                NotifierUtil.notifyInfo(project, "Save success");
+                NotifierUtil.notifyInfo(project, "Save " + selectedDataItem.getName() + " success");
             }
         });
 

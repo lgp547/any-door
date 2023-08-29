@@ -17,7 +17,7 @@ import io.github.lgp547.anydoorplugin.dialog.event.Event;
 import io.github.lgp547.anydoorplugin.dialog.event.EventType;
 import io.github.lgp547.anydoorplugin.dialog.event.Listener;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.DisplayDataChangeEvent;
-import io.github.lgp547.anydoorplugin.dialog.event.impl.SelectItemChangedEvent;
+import io.github.lgp547.anydoorplugin.util.JsonUtil;
 import org.jetbrains.annotations.Nullable;
 
 public class MyEditor extends JSONEditor implements Listener {
@@ -44,7 +44,7 @@ public class MyEditor extends JSONEditor implements Listener {
             ParamDataItem selectedItem = ((DisplayDataChangeEvent) event).getSelectedItem();
             if (selectedItem != null) {
                 String text = selectedItem.getParam();
-                setText(text);
+                setText(JsonUtil.formatterJson(text));
             }
         }
     }

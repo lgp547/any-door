@@ -1,5 +1,8 @@
 package io.github.lgp547.anydoorplugin.dialog.event;
 
+import com.intellij.openapi.components.Service;
+import com.intellij.openapi.project.Project;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,14 +11,21 @@ import java.util.List;
  * @author: zhouh
  * @date: 2023-07-22 19:07
  **/
-public class GlobalMulticaster implements Multicaster {
+@Service(value = Service.Level.PROJECT)
+public final class DefaultMulticaster implements Multicaster {
 
-    public static final GlobalMulticaster INSTANCE = new GlobalMulticaster();
+//    public static final DefaultMulticaster INSTANCE = new DefaultMulticaster(project);
 
+    private final Project project;
     private Listener dataChangeListener;
     private final List<Listener> listeners = new ArrayList<>();
 
-    private GlobalMulticaster() {
+    public static DefaultMulticaster getInstance(Project project) {
+        return project.getService(DefaultMulticaster.class);
+    }
+
+    private DefaultMulticaster(Project project) {
+        this.project = project;
     }
 
     public void setDataChangeListener(Listener dataChangeListener) {

@@ -13,7 +13,7 @@ import io.github.lgp547.anydoorplugin.data.impl.ParamDataService;
 import io.github.lgp547.anydoorplugin.data.impl.ParamIndexService;
 import io.github.lgp547.anydoorplugin.dialog.event.Event;
 import io.github.lgp547.anydoorplugin.dialog.event.EventType;
-import io.github.lgp547.anydoorplugin.dialog.event.GlobalMulticaster;
+import io.github.lgp547.anydoorplugin.dialog.event.DefaultMulticaster;
 import io.github.lgp547.anydoorplugin.dialog.event.Listener;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.GlobalDataChangeEvent;
 import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
@@ -52,7 +52,7 @@ public final class DataContext implements Listener {
         this.indexService = project.getService(ParamIndexService.class);
         this.dataService = project.getService(ParamDataService.class);
         this.contextMap = new ConcurrentHashMap<>();
-        GlobalMulticaster.INSTANCE.setDataChangeListener(this);
+        DefaultMulticaster.getInstance(project).setDataChangeListener(this);
 
         indexData = indexService.find(project.getName());
     }
@@ -64,7 +64,7 @@ public final class DataContext implements Listener {
         contextMap.computeIfAbsent(qualifiedClassName, k -> {
             Data<ParamDataItem> data = dataService.find(qualifiedClassName);
             PsiClass psiClass = IdeClassUtil.findClass(project, qualifiedClassName);
-            return new ClassDataContext(psiClass, data);
+            return new ClassDataContext(psiClass, data, project);
         });
 
         return contextMap.get(qualifiedClassName);
@@ -74,14 +74,14 @@ public final class DataContext implements Listener {
     public ClassDataContext getClassDataContextNoCache(String qualifiedClassName) {
         Data<ParamDataItem> data = dataService.findNoCache(qualifiedClassName);
         PsiClass psiClass = JavaPsiFacade.getInstance(project).findClass(qualifiedClassName, GlobalSearchScope.allScope(project));
-        ClassDataContext context = new ClassDataContext(psiClass, data);
+        ClassDataContext context = new ClassDataContext(psiClass, data, project);
         contextMap.put(qualifiedClassName, context);
         return context;
     }
 
-    public MethodDataContext getExecuteDataContext(String qualifiedClassName, String qualifiedMethodName, ParamCacheDto cache) {
-        return getExecuteDataContext(qualifiedClassName, qualifiedMethodName, null, cache.content());
-    }
+//    public MethodDataContext getExecuteDataContext(String qualifiedClassName, String qualifiedMethodName, ParamCacheDto cache) {
+//        return getExecuteDataContext(qualifiedClassName, qualifiedMethodName, null, cache.content());
+//    }
 
     public MethodDataContext getExecuteDataContext(String qualifiedClassName, String qualifiedMethodName, Long selectedId, String cacheContent) {
         Objects.requireNonNull(qualifiedClassName);
@@ -131,7 +131,7 @@ public final class DataContext implements Listener {
                     return v;
                 });
             }
-            GlobalMulticaster.INSTANCE.fireEvent(EventHelper.createDataSyncEvent(changeEvent.getQualifiedMethodName()));
+            DefaultMulticaster.getInstance(project).fireEvent(EventHelper.createDataSyncEvent(changeEvent.getQualifiedMethodName()));
         }
     }
 

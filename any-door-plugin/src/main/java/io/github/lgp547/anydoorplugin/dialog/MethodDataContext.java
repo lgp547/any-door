@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameterList;
@@ -14,7 +15,7 @@ import io.github.lgp547.anydoorplugin.dialog.event.ComponentEvent;
 import io.github.lgp547.anydoorplugin.dialog.event.DataEvent;
 import io.github.lgp547.anydoorplugin.dialog.event.Event;
 import io.github.lgp547.anydoorplugin.dialog.event.EventType;
-import io.github.lgp547.anydoorplugin.dialog.event.GlobalMulticaster;
+import io.github.lgp547.anydoorplugin.dialog.event.DefaultMulticaster;
 import io.github.lgp547.anydoorplugin.dialog.event.Listener;
 import io.github.lgp547.anydoorplugin.dialog.event.Multicaster;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.AddDataItemEvent;
@@ -31,6 +32,7 @@ import io.github.lgp547.anydoorplugin.util.JsonElementUtil;
  **/
 public class MethodDataContext implements Multicaster, Listener {
 
+    private final Project project;
     private final ClassDataContext classDataContext;
     private final String qualifiedMethodName;
     private List<ParamDataItem> dataItems;
@@ -40,11 +42,12 @@ public class MethodDataContext implements Multicaster, Listener {
 
     private List<Listener> listeners = new ArrayList<>();
 
-    public MethodDataContext(ClassDataContext classDataContext, String qualifiedMethodName, String cacheContent) {
-        this(classDataContext, qualifiedMethodName, null, cacheContent);
+    public MethodDataContext(ClassDataContext classDataContext, String qualifiedMethodName, String cacheContent, Project project) {
+        this(classDataContext, qualifiedMethodName, null, cacheContent, project);
     }
 
-    public MethodDataContext(ClassDataContext classDataContext, String qualifiedMethodName, ParamDataItem selectedItem, String cacheContent) {
+    public MethodDataContext(ClassDataContext classDataContext, String qualifiedMethodName, ParamDataItem selectedItem, String cacheContent, Project project) {
+        this.project = project;
         this.cacheContent = cacheContent;
         this.classDataContext = classDataContext;
         this.qualifiedMethodName = qualifiedMethodName;
@@ -250,9 +253,9 @@ public class MethodDataContext implements Multicaster, Listener {
             ParamDataItem item = new ParamDataItem(selectedItem.getName(), selectedItem.getQualifiedName(), selectedItem.getParam());
             selectedItem = item;
 
-            GlobalMulticaster.INSTANCE.fireEvent(EventHelper.createGlobalSaveDataChangeEvent(classDataContext.clazz.getQualifiedName(), qualifiedMethodName, List.of(item)));
+            DefaultMulticaster.getInstance(project).fireEvent(EventHelper.createGlobalSaveDataChangeEvent(classDataContext.clazz.getQualifiedName(), qualifiedMethodName, List.of(item)));
         } else {
-            GlobalMulticaster.INSTANCE.fireEvent(EventHelper.createGlobalUpdateDataChangeEvent(classDataContext.clazz.getQualifiedName(), qualifiedMethodName));
+            DefaultMulticaster.getInstance(project).fireEvent(EventHelper.createGlobalUpdateDataChangeEvent(classDataContext.clazz.getQualifiedName(), qualifiedMethodName));
         }
     }
 }

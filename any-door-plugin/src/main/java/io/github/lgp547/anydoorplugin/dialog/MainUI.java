@@ -11,7 +11,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import io.github.lgp547.anydoorplugin.dialog.components.MainPanel;
 import io.github.lgp547.anydoorplugin.dialog.event.Event;
 import io.github.lgp547.anydoorplugin.dialog.event.EventType;
-import io.github.lgp547.anydoorplugin.dialog.event.GlobalMulticaster;
+import io.github.lgp547.anydoorplugin.dialog.event.DefaultMulticaster;
 import io.github.lgp547.anydoorplugin.dialog.event.Listener;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.DataSyncEvent;
 import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
@@ -34,7 +34,7 @@ public class MainUI extends DialogWrapper implements Listener {
 
     private Consumer<String> okAction;
 
-    public MainUI(String title, @Nullable Project project, MethodDataContext context) {
+    public MainUI(String title, Project project, MethodDataContext context) {
         super(project, true, IdeModalityType.MODELESS);
         setTitle(title);
         this.project = project;
@@ -42,7 +42,7 @@ public class MainUI extends DialogWrapper implements Listener {
 
         buttonSettings();
 
-        GlobalMulticaster.INSTANCE.addListener(this);
+        DefaultMulticaster.getInstance(project).addListener(this);
         init();
     }
 
@@ -89,7 +89,7 @@ public class MainUI extends DialogWrapper implements Listener {
 
     @Override
     protected void dispose() {
-        GlobalMulticaster.INSTANCE.removeListener(this);
+        DefaultMulticaster.getInstance(project).removeListener(this);
         super.dispose();
     }
 

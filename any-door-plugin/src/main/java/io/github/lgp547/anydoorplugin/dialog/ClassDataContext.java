@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import io.github.lgp547.anydoorplugin.data.domain.Data;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
@@ -15,11 +16,13 @@ import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
  **/
 public class ClassDataContext {
 
+    private final Project project;
     protected final PsiClass clazz;
     protected final Data<ParamDataItem> data;
 
 
-    public ClassDataContext(PsiClass clazz, Data<ParamDataItem> data) {
+    public ClassDataContext(PsiClass clazz, Data<ParamDataItem> data, Project project) {
+        this.project = project;
         this.clazz = clazz;
         this.data = data;
     }
@@ -27,10 +30,10 @@ public class ClassDataContext {
     public MethodDataContext newMethodDataContext(String qualifiedMethodName, Long selectedId, String cacheContent) {
 
         if (selectedId == null) {
-            return new MethodDataContext(this, qualifiedMethodName, cacheContent);
+            return new MethodDataContext(this, qualifiedMethodName, cacheContent, project);
         } else {
             ParamDataItem dataItem = listMethodData(qualifiedMethodName).stream().filter(item -> Objects.equals(item.getId(), selectedId)).findAny().orElse(null);
-            return new MethodDataContext(this, qualifiedMethodName, dataItem, cacheContent);
+            return new MethodDataContext(this, qualifiedMethodName, dataItem, cacheContent, project);
         }
     }
 

@@ -46,11 +46,10 @@ import io.github.lgp547.anydoorplugin.data.domain.ParamIndexData;
 import io.github.lgp547.anydoorplugin.dialog.components.CustomToolbar;
 import io.github.lgp547.anydoorplugin.dialog.event.Event;
 import io.github.lgp547.anydoorplugin.dialog.event.EventType;
-import io.github.lgp547.anydoorplugin.dialog.event.GlobalMulticaster;
+import io.github.lgp547.anydoorplugin.dialog.event.DefaultMulticaster;
 import io.github.lgp547.anydoorplugin.dialog.event.Listener;
 import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
 import io.github.lgp547.anydoorplugin.dialog.utils.IdeClassUtil;
-import io.github.lgp547.anydoorplugin.dto.ParamCacheDto;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
 import io.github.lgp547.anydoorplugin.util.AnyDoorActionUtil;
 import io.github.lgp547.anydoorplugin.util.AnyDoorIcons;
@@ -78,7 +77,7 @@ public class ParamListUI extends JPanel implements Listener {
 
     public ParamListUI(Project project) {
         this.project = project;
-        GlobalMulticaster.INSTANCE.addListener(this);
+        DefaultMulticaster.getInstance(project).addListener(this);
 
 
         toolBar = initToolBar();
@@ -188,7 +187,7 @@ public class ParamListUI extends JPanel implements Listener {
                 if (removeItems.size() == 0) {
                     return;
                 }
-                GlobalMulticaster.INSTANCE.fireEvent(EventHelper.createGlobalRemoveDataChangeEvent(context.clazz.getQualifiedName(), removeItems.get(0).getQualifiedName(), removeItems));
+                DefaultMulticaster.getInstance(project).fireEvent(EventHelper.createGlobalRemoveDataChangeEvent(context.clazz.getQualifiedName(), removeItems.get(0).getQualifiedName(), removeItems));
                 super.doOKAction();
             }
         }.show();

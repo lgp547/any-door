@@ -3,7 +3,7 @@ package io.github.lgp547.anydoorplugin.data;
 import java.util.Objects;
 import java.util.concurrent.Future;
 
-import com.esotericsoftware.minlog.Log;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import io.github.lgp547.anydoorplugin.data.domain.Data;
 import io.github.lgp547.anydoorplugin.data.domain.DataItem;
@@ -16,6 +16,8 @@ import io.github.lgp547.anydoorplugin.util.JsonUtil;
  * @date: 2023-07-22 11:41
  **/
 public abstract class AbstractParamDataReaderWriter<T extends DataItem> extends AbstractDataReaderWriter<T> implements DataPersistent<T> {
+
+    private static final Logger log = Logger.getInstance(AbstractParamDataReaderWriter.class);
 
     protected static final String SHAREABLE_SUFFIX = "&shareable";
     protected static final String FILE_SEPARATOR = System.getProperty("file.separator");
@@ -34,8 +36,8 @@ public abstract class AbstractParamDataReaderWriter<T extends DataItem> extends 
 
     @Override
     public Future<?> saveAsync(Data<T> data) {
-        Log.info("saveOrUpdate " + data.getIdentity());
-        Log.debug("saveOrUpdate " + JsonUtil.toStrNotExc(data));
+        log.info("saveOrUpdate " + data.getIdentity());
+        log.debug("saveOrUpdate " + JsonUtil.toStrNotExc(data));
         return write(data);
     }
 

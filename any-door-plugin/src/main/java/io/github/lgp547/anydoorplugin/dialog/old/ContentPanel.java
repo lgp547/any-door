@@ -1,4 +1,4 @@
-package io.github.lgp547.anydoorplugin.dialog;
+package io.github.lgp547.anydoorplugin.dialog.old;
 
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
@@ -78,8 +78,8 @@ public class ContentPanel extends JBPanel<ContentPanel> {
         this.pid.setText(String.valueOf(pid));
     }
 
-    public Long getRunNum() {
-        return NumberUtils.toLong(runNum.getText(), 1);
+    public Integer getRunNum() {
+        return NumberUtils.toInt(runNum.getText(), 1);
     }
 
     public Boolean getIsConcurrent() {

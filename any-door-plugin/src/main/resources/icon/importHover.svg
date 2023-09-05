@@ -1,0 +1,21 @@
+<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+        "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+    <defs>
+        <filter id="brightness">
+            <feComponentTransfer>
+                <feFuncR type="linear" slope="1.43" />
+                <feFuncG type="linear" slope="1.43" />
+                <feFuncB type="linear" slope="1.43" />
+            </feComponentTransfer>
+        </filter>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <rect width="2" height="10" x="2" y="4" fill="#6E6E6E" filter="url(#brightness)"/>
+        <rect width="10" height="2" x="2" y="12" fill="#6E6E6E" filter="url(#brightness)"/>
+        <g fill="#6E6E6E" transform="translate(6 1)" filter="url(#brightness)">
+            <rect width="2" height="8.386" x="3.532" y=".269" transform="rotate(45 4.532 4.462)"/>
+            <polygon points="0 3 6 9 0 9"/>
+        </g>
+    </g>
+</svg>

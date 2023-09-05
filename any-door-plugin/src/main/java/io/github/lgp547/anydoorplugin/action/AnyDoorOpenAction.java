@@ -3,6 +3,7 @@ package io.github.lgp547.anydoorplugin.action;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
@@ -24,14 +25,9 @@ import java.util.Map;
  */
 public class AnyDoorOpenAction extends AnAction {
 
+    private static final Logger log = Logger.getInstance(AnyDoorOpenAction.class);
+
     private final static Key<PsiMethod> USER_DATE_ELEMENT_KEY = new Key<>("user.psi.Element");
-
-    private final static Map<String, PsiMethod> PRE_METHOD_MAP = new FixedHashMap<>(10);
-
-    @Nullable
-    public static PsiMethod getPreMethod(String projectName) {
-        return PRE_METHOD_MAP.get(projectName);
-    }
 
     @Override
     public void actionPerformed(@NotNull final AnActionEvent e) {
@@ -54,8 +50,9 @@ public class AnyDoorOpenAction extends AnAction {
                 }
             }
             final PsiMethod finalPsiMethod = psiMethod;
-            new AnyDoorPerformed().invoke(project, finalPsiMethod, () -> PRE_METHOD_MAP.put(project.getName(), finalPsiMethod));
+            new AnyDoorPerformed().invoke(project, finalPsiMethod, () -> AnyDoorAgainOpenAction.PRE_METHOD_MAP.put(project.getName(), finalPsiMethod));
         } catch (Exception exception) {
+            log.error("anyDoor invoke exception", exception);
             NotifierUtil.notifyError(project, "invoke exception " + exception.getMessage());
         }
     }

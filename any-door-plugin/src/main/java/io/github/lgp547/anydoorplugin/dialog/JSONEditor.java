@@ -88,6 +88,12 @@ public class JSONEditor extends EditorTextField {
 
     /**
      * 将当前json内容的第二层转成query参数
+     * {
+     *     "dto":{
+     *         "name":"1",
+     *         "phone": 1
+     *     }
+     * }
      */
     public void jsonToQuery() {
         String text = getText();

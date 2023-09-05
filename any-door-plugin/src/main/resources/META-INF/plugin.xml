@@ -48,6 +48,15 @@
                              displayName="Any Door" nonDefaultProject="true"/>
         <projectService serviceImplementation="io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState"/>
 
+        <!-- Add your extensions here -->
+        <!-- 配置 File -> Settings -> Tools -->
+<!--        <projectConfigurable groupId="tools" displayName="AnyDoorPlugin ParamList Config" id="test.id"-->
+<!--                             instance=""/>-->
+
+        <!-- 窗体 (IDEA 界面右侧) -->
+        <toolWindow id="Any-Door" secondary="false" anchor="right" icon="io.github.lgp547.anydoorplugin.util.AnyDoorIcons.default_icon"
+                    factoryClass="io.github.lgp547.anydoorplugin.action.ParamListMenuToolWindow"/>
+
         <!-- notice -->
         <applicationService serviceImplementation="io.github.lgp547.anydoorplugin.util.NotifierUtil"/>
         <notificationGroup id="AnyDoor" displayType="BALLOON"/>

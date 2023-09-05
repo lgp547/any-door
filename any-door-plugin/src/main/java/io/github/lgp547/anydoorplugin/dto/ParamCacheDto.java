@@ -1,8 +1,13 @@
 package io.github.lgp547.anydoorplugin.dto;
 
+import io.github.lgp547.anydoorplugin.util.JsonUtil;
+
 public class ParamCacheDto {
-    private Long runNum;
+
+    private Integer runNum;
+
     private Boolean isConcurrent;
+
     private String content;
 
     public ParamCacheDto() {
@@ -12,17 +17,17 @@ public class ParamCacheDto {
         this.content = content;
     }
 
-    public ParamCacheDto(Long runNum, Boolean isConcurrent, String content) {
+    public ParamCacheDto(Integer runNum, Boolean isConcurrent, String content) {
         this.runNum = runNum;
         this.isConcurrent = isConcurrent;
         this.content = content;
     }
 
-    public Long getRunNum() {
+    public Integer getRunNum() {
         return runNum == null ? 1 : runNum;
     }
 
-    public void setRunNum(Long runNum) {
+    public void setRunNum(Integer runNum) {
         this.runNum = runNum;
     }
 
@@ -40,5 +45,12 @@ public class ParamCacheDto {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String content() {
+        if (null == content) {
+            return null;
+        }
+        return JsonUtil.formatterJson(content);
     }
 }

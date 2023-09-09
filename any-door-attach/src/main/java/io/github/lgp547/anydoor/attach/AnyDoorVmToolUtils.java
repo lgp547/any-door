@@ -1,9 +1,11 @@
-package io.github.lgp547.anydoor.attach.vmtool;
+package io.github.lgp547.anydoor.attach;
 
 import arthas.VmTool;
 import com.taobao.arthas.common.OSUtils;
 import io.github.lgp547.anydoor.common.util.AnyDoorBeanUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorFileUtil;
+import io.github.lgp547.anydoor.common.util.AnyDoorSpringUtil;
+import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.security.CodeSource;
@@ -59,4 +61,23 @@ public class AnyDoorVmToolUtils {
         return instance.getInstances(klass);
     }
 
+    /**
+     * 优先通过spring 上下文获取
+     */
+    public static Object getInstance(Class<?> clazz) {
+        try {
+            // 这里用的是被调用项目的ApplicationContext
+            AnyDoorSpringUtil.initApplicationContexts(() -> AnyDoorVmToolUtils.getInstances(ApplicationContext.class));
+            if (AnyDoorSpringUtil.containsBean(clazz)) {
+                return AnyDoorSpringUtil.getBean(clazz);
+            }
+        } catch (Throwable ignored) {
+        }
+        Object[] instances = AnyDoorVmToolUtils.getInstances(clazz);
+        if (instances.length == 0) {
+            return AnyDoorBeanUtil.instantiate(clazz);
+        } else {
+            return instances[0];
+        }
+    }
 }

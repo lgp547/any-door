@@ -1,13 +1,9 @@
 package io.github.lgp547.anydoor.attach;
 
-import io.github.lgp547.anydoor.attach.vmtool.AnyDoorVmToolUtils;
 import io.github.lgp547.anydoor.common.dto.AnyDoorRunDto;
-import io.github.lgp547.anydoor.common.util.AnyDoorBeanUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorClassUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorClassloader;
 import io.github.lgp547.anydoor.common.util.AnyDoorFileUtil;
-import io.github.lgp547.anydoor.common.util.AnyDoorSpringUtil;
-import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +48,7 @@ public class AnyDoorAttach {
         try (AnyDoorClassloader anyDoorClassloader = new AnyDoorClassloader(anyDoorRunDto.getJarPaths())) {
             Class<?> clazz = AnyDoorClassUtil.forName(anyDoorRunDto.getClassName());
             Method method = AnyDoorClassUtil.getMethod(clazz, anyDoorRunDto.getMethodName(), anyDoorRunDto.getParameterTypes());
-            Object instance = getInstance(clazz);
+            Object instance = AnyDoorVmToolUtils.getInstance(clazz);
 
             Class<?> anyDoorServiceClass = anyDoorClassloader.loadClass("io.github.lgp547.anydoor.core.AnyDoorService");
             Object anyDoorService = anyDoorServiceClass.getConstructor().newInstance();
@@ -65,22 +61,7 @@ public class AnyDoorAttach {
         }
     }
 
-    /**
-     * 优先通过spring 上下文获取
-     */
-    private static Object getInstance(Class<?> clazz) {
-        AnyDoorSpringUtil.initApplicationContexts(() -> AnyDoorVmToolUtils.getInstances(ApplicationContext.class));
-        if (AnyDoorSpringUtil.containsBean(clazz)) {
-            return AnyDoorSpringUtil.getBean(clazz);
-        } else {
-            Object[] instances = AnyDoorVmToolUtils.getInstances(clazz);
-            if (instances.length == 0) {
-                return AnyDoorBeanUtil.instantiate(clazz);
-            } else {
-                return instances[0];
-            }
-        }
-    }
+
 
 
 }

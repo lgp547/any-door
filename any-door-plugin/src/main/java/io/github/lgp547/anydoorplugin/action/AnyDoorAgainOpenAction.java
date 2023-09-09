@@ -2,6 +2,7 @@ package io.github.lgp547.anydoorplugin.action;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiMethod;
 import com.intellij.util.containers.FixedHashMap;
@@ -14,6 +15,8 @@ import java.util.Map;
  * 响应 Again Open AnyDoor 入口
  */
 public class AnyDoorAgainOpenAction extends AnAction {
+
+    private static final Logger log = Logger.getInstance(AnyDoorAgainOpenAction.class);
 
     public final static Map<String, PsiMethod> PRE_METHOD_MAP = new FixedHashMap<>(10);
 
@@ -28,6 +31,7 @@ public class AnyDoorAgainOpenAction extends AnAction {
             try {
                 new AnyDoorPerformed().invoke(project, psiMethod, () -> {});
             } catch (Exception exception) {
+                log.error("anyDoor invoke exception", exception);
                 NotifierUtil.notifyError(project, "invoke exception " + exception.getMessage());
             }
         }

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
+import java.net.URLDecoder;
 
 public class AnyDoorAttach {
 
@@ -20,7 +21,7 @@ public class AnyDoorAttach {
 
         if (agentArgs.startsWith("file://")) {
             try {
-                agentArgs = AnyDoorFileUtil.getTextFileAsString(new File(agentArgs.substring(7)));
+                agentArgs = AnyDoorFileUtil.getTextFileAsString(new File(URLDecoder.decode(agentArgs.substring(7), "UTF-8")));
             } catch (IOException e) {
                 System.err.println("any_door agentmain error. agentArgs[" + agentArgs + "]");
                 e.printStackTrace();

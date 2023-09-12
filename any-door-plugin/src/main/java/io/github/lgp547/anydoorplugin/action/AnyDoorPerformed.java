@@ -1,18 +1,9 @@
 package io.github.lgp547.anydoorplugin.action;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.BiConsumer;
-
 import com.google.gson.JsonObject;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.PsiParameter;
 import io.github.lgp547.anydoorplugin.AnyDoorInfo;
 import io.github.lgp547.anydoorplugin.dialog.DataContext;
 import io.github.lgp547.anydoorplugin.dialog.MainUI;
@@ -26,9 +17,12 @@ import io.github.lgp547.anydoorplugin.util.ImportNewUtil;
 import io.github.lgp547.anydoorplugin.util.JsonUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import io.github.lgp547.anydoorplugin.util.VmUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 
 /**
  * 打开任意门，核心执行

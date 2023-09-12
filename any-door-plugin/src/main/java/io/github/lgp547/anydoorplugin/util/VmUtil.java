@@ -1,5 +1,6 @@
 package io.github.lgp547.anydoorplugin.util;
 
+import com.google.common.base.Charsets;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
 import com.sun.tools.attach.AgentLoadException;
@@ -7,6 +8,7 @@ import com.sun.tools.attach.VirtualMachine;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
@@ -22,7 +24,7 @@ public class VmUtil {
             // Exceed attach limit, go file transfer. file://paramPath
             String agentParam = param;
             if (agentParam.length() > 600 && flushFile(paramPath, agentParam)) {
-                agentParam = "file://" + paramPath;
+                agentParam = "file://" + URLEncoder.encode(paramPath, Charsets.UTF_8);
             }
 
             String pidProcess = pid + " process";

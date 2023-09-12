@@ -11,7 +11,7 @@
             <li>选择要执行的方法，右键选择 Open AnyDoor (control/command+shift+D)</li>
             <li>填充参数点击ok，即可调用到当前方法</li>
         </ul>
-        详情说明见 <a href="https://github.com/lgp547/any-door#readme">readme</a><br>
+        详情说明见 <a href="https://github.com/lgp547/any-door#readme">any-door#readme</a><br>
         QQ讨论群: 421880294<br><br>
 
         Any method to execute a Spring project,Either the 'App' layer or the 'Dao' layer can execution directly.<br>
@@ -21,10 +21,17 @@
             <li>select method and 'Open AnyDoor' (control/command+shift+D)</li>
             <li>fill json param before run</li>
         </ul>
-        <a href="https://github.com/lgp547/any-door">any-door</a><br>
     ]]></description>
 
     <change-notes><![CDATA[
+        <strong>2.0.0</strong>
+        <ul>
+            <li>团队协助，共享调用参数 <a href="https://github.com/zhouhao91">zhouhao91</a></li>
+            <li>参数UI页面优化 <a href="https://github.com/zhouhao91">zhouhao91</a></li>
+            <li>[fix]无提供spring项目的调用</li>
+            <li>[fix]懒加载情况下会有无法实例化类情况</li>
+            <li>[fix]参数传递中文路径</li>
+        </ul>
         <strong>1.4.0</strong>
         <ul>
             <li>类加载隔离，和运行项目不做耦合，无依赖冲突问题</li>

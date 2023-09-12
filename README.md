@@ -67,6 +67,13 @@
 详情见issues
 
 ## 发布版本
+### 2.0.0 团队参数共享
+- 团队协助，共享调用参数 [@zhouhao91](https://github.com/zhouhao91)
+- ui页面优化 [@zhouhao91](https://github.com/zhouhao91)
+- [fix]无提供spring项目的调用
+- [fix]懒加载情况下会有无法实例化类情况
+- [fix]参数传递中文路径
+
 ### 1.4.0 类加载隔离
 - 类加载隔离，和运行项目不做耦合，无依赖冲突问题
 - 支持没有 Spring 依赖的 Java 项目，插件运行无需使用方提供 Spring 依赖

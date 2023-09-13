@@ -8,35 +8,50 @@
 - xxlJob
 - rpc入口
 - mq入口
-- 小改动的测试
+- 改动的测试
+
+**Tips：配合热加载可以做到随时修改即可测试**
 
 ## 功能展示
-![img](dosc/image/功能展示.gif)
+![功能展示](dosc/image/功能展示1.gif)
 
 
 ## 快速开始（结合插件）
+总结：安装插件 -> 启动项目 -> 右键方法 -> 填写参数 -> Run
 ### 1 安装插件
+1.1安装，方便快捷，但需要自由上网（**推荐**）
+
+1.2安装，提供了国内下载地址，但需要手动导入
+
+#### 1.1 直接插件市场下载（推荐）
 插件市场直接搜索 anydoor
 
 ![img.png](dosc/image/安装插件.png)
 
+#### 1.2 下载提供的压缩包
+下载完成后导入到idea [国内下载地址](https://gitee.com/lgp547/any-door-plugin-download)
+![img.png](dosc/image/安装插件压缩包.png)
+
+
 ### 2 启动项目
-说明：一般情况下会主动填充运行进程的进程id（可在配置页面修改）
+平常方式启动java的main函数
+
+Tips：一般情况下会主动填充运行进程的进程id（可在配置页面修改）
 
 ### 3 执行调用
-1. 找到想要执行的方法，右键弹出选择打开任意门（有对应的快捷键）
+1. 找到想要执行的方法，右键弹出选择打开任意门（有对应的快捷键 control/command+shift+D）
 
 ![img.png](dosc/image/打开任意门.png)
 
 2. 填写要调用的参数，并点击 ok 按钮
 
-![img.png](dosc/image/启动.png)
+![img.png](dosc/image/启动1.png)
 
 3. **你将会发现当前方法被执行了！（可进行断点查看）**
 
 ## 插件属性说明
-
-![img.png](dosc/image/配置页.png)
+![img.png](dosc/image/方法执行.png)
+![img_1.png](dosc/image/配置页1.png)
 
 
 ## 核心包支持功能
@@ -73,9 +88,15 @@
 - [fix]无提供spring项目的调用
 - [fix]懒加载情况下会有无法实例化类情况
 - [fix]参数传递中文路径
+- [fix]重载方法参数有基本数据类型时报错问题 [@jinghong](https://github.com/auto-generated)
 
 ### 1.4.0 类加载隔离
 - 类加载隔离，和运行项目不做耦合，无依赖冲突问题
 - 支持没有 Spring 依赖的 Java 项目，插件运行无需使用方提供 Spring 依赖
 - 一个类多实例将会随机取一个实例
 - [fix]无参方法无记录上一次调用
+
+## 使用到的开源项目
+- [arthas](https://github.com/alibaba/arthas)
+- [jackson](https://github.com/FasterXML/jackson)
+- [lambda-from-string](https://github.com/greenjoe/lambdaFromString)

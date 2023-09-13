@@ -26,11 +26,12 @@
     <change-notes><![CDATA[
         <strong>2.0.0</strong>
         <ul>
-            <li>团队协助，共享调用参数 <a href="https://github.com/zhouhao91">zhouhao91</a></li>
-            <li>参数UI页面优化 <a href="https://github.com/zhouhao91">zhouhao91</a></li>
+            <li>团队协助，共享调用参数 <a href="https://github.com/zhouhao91">@zhouhao91</a></li>
+            <li>参数UI页面优化 <a href="https://github.com/zhouhao91">@zhouhao91</a></li>
             <li>[fix]无提供spring项目的调用</li>
             <li>[fix]懒加载情况下会有无法实例化类情况</li>
             <li>[fix]参数传递中文路径</li>
+            <li>[fix]重载方法参数有基本数据类型时报错问题 <a href="https://github.com/auto-generated">@jinghong</a></li>
         </ul>
         <strong>1.4.0</strong>
         <ul>

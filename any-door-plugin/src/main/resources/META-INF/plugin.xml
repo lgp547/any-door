@@ -24,6 +24,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <strong>2.0.1</strong>
+        <ul>
+            <li>[fix]修复私有方法丢失依赖</li>
+        </ul>
         <strong>2.0.0</strong>
         <ul>
             <li>团队协助，共享调用参数 <a href="https://github.com/zhouhao91">@zhouhao91</a></li>

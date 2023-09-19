@@ -82,6 +82,10 @@ Tips：一般情况下会主动填充运行进程的进程id（可在配置页�
 详情见issues
 
 ## 发布版本
+
+### 2.0.1 修复版本
+- [fix]修复私有方法丢失依赖
+
 ### 2.0.0 团队参数共享
 - 团队协助，共享调用参数 [@zhouhao91](https://github.com/zhouhao91)
 - ui页面优化 [@zhouhao91](https://github.com/zhouhao91)

@@ -1,4 +1,4 @@
-package io.github.lgp547.anydoor.util;
+package io.github.lgp547.anydoor.common.util;
 
 import org.springframework.aop.SpringProxy;
 import org.springframework.aop.TargetClassAware;
@@ -9,7 +9,7 @@ import org.springframework.util.ClassUtils;
 
 import java.lang.reflect.Proxy;
 
-public class AopUtil {
+public class AnyDoorAopUtil {
 
 
     public static Class<?> getTargetClass(Object candidate) {
@@ -44,7 +44,7 @@ public class AopUtil {
                     return (T) getTargetObject(target);
                 }
             }
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             System.err.println("Failed to unwrap proxied object");
             ex.printStackTrace();
         }

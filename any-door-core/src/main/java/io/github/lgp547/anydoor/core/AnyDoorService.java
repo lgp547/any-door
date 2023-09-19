@@ -4,7 +4,7 @@ import io.github.lgp547.anydoor.common.dto.AnyDoorRunDto;
 import io.github.lgp547.anydoor.common.util.AnyDoorBeanUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorClassUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorSpringUtil;
-import io.github.lgp547.anydoor.util.AopUtil;
+import io.github.lgp547.anydoor.common.util.AnyDoorAopUtil;
 import io.github.lgp547.anydoor.util.JsonUtil;
 
 import java.lang.reflect.Method;
@@ -36,7 +36,7 @@ public class AnyDoorService {
             } else {
                 bean = AnyDoorSpringUtil.getBean(clazz);
                 if (!Modifier.isPublic(method.getModifiers())) {
-                    bean = AopUtil.getTargetObject(bean);
+                    bean = AnyDoorAopUtil.getTargetObject(bean);
                 }
             }
             return doRun(anyDoorDto, method, bean, () -> {});

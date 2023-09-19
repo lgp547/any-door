@@ -2,6 +2,7 @@ package io.github.lgp547.anydoor.attach;
 
 import arthas.VmTool;
 import com.taobao.arthas.common.OSUtils;
+import io.github.lgp547.anydoor.common.util.AnyDoorAopUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorBeanUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorFileUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorSpringUtil;
@@ -59,6 +60,15 @@ public class AnyDoorVmToolUtils {
 
     public static <T> T[] getInstances(Class<T> klass) {
         return instance.getInstances(klass);
+    }
+
+    public static Object getInstance(Class<?> clazz, boolean isGetTargetObject) {
+        Object instance = getInstance(clazz);
+        if (isGetTargetObject) {
+            return AnyDoorAopUtil.getTargetObject(instance);
+        } else {
+            return instance;
+        }
     }
 
     /**

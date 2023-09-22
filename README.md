@@ -100,7 +100,14 @@ Tips：一般情况下会主动填充运行进程的进程id（可在配置页�
 - 一个类多实例将会随机取一个实例
 - [fix]无参方法无记录上一次调用
 
-## 使用到的开源项目
-- [arthas](https://github.com/alibaba/arthas)
-- [jackson](https://github.com/FasterXML/jackson)
-- [lambda-from-string](https://github.com/greenjoe/lambdaFromString)
+## 感谢
+Tips：若觉得不错，可以点个Star(✨✨)或者[评价](https://plugins.jetbrains.com/plugin/20385-anydoor/reviews/new)下
+
+Tips：若觉得**很不错或支持项目**，可以[❤️❤️❤️赞赏❤️❤️❤️](dosc%2F%E8%B5%9E%E8%B5%8F%E9%A1%B5.md)
+
+
+> 感谢以下项目支持
+> - [arthas](https://github.com/alibaba/arthas)
+> - [jackson](https://github.com/FasterXML/jackson)
+> - [lambda-from-string](https://github.com/greenjoe/lambdaFromString)
+

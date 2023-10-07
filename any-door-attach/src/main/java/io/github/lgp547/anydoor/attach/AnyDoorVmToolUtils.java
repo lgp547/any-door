@@ -6,6 +6,8 @@ import io.github.lgp547.anydoor.common.util.AnyDoorAopUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorBeanUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorFileUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorSpringUtil;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
@@ -77,7 +79,7 @@ public class AnyDoorVmToolUtils {
     public static Object getInstance(Class<?> clazz) {
         try {
             // 这里用的是被调用项目的ApplicationContext
-            AnyDoorSpringUtil.initApplicationContexts(() -> AnyDoorVmToolUtils.getInstances(ApplicationContext.class));
+            AnyDoorSpringUtil.initApplicationContexts(() -> AnyDoorVmToolUtils.getInstances(ApplicationContext.class), () -> AnyDoorVmToolUtils.getInstances(BeanFactory.class));
             if (AnyDoorSpringUtil.containsBean(clazz)) {
                 return AnyDoorSpringUtil.getBean(clazz);
             }

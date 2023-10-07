@@ -1,6 +1,7 @@
 package io.github.lgp547.anydoor.common.util;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -21,14 +22,16 @@ public class AnyDoorSpringUtil {
     private static List<ApplicationContext> applicationContextList;
 
     private static Supplier<ApplicationContext[]> applicationContextsSupplier;
+    private static Supplier<BeanFactory[]> beanFactorySupplier;
 
     private static volatile boolean isInit = false;
 
-    public static void initApplicationContexts(Supplier<ApplicationContext[]> applicationContextsSupplier) {
+    public static void initApplicationContexts(Supplier<ApplicationContext[]> applicationContextsSupplier, Supplier<BeanFactory[]> beanFactorySupplier) {
         if (!isInit) {
             synchronized (AnyDoorSpringUtil.class) {
                 if (!isInit) {
                     AnyDoorSpringUtil.applicationContextsSupplier = applicationContextsSupplier;
+                    AnyDoorSpringUtil.beanFactorySupplier = beanFactorySupplier;
                     updateApplicationContextList();
                     setClassLoader();
                     isInit = true;
@@ -101,6 +104,18 @@ public class AnyDoorSpringUtil {
             Objects.requireNonNull(applicationContextList);
 
             try {
+                BeanFactory[] beanFactories = beanFactorySupplier.get();
+                System.out.println("beanFactories size " + beanFactories.length);
+                for (BeanFactory beanFactory : beanFactories) {
+                    try {
+                        T bean = beanFactory.getBean(requiredType);
+                        System.out.println("getBean by BeanFactory success" + bean.getClass().getName());
+                        return bean;
+                    } catch (Exception e) {
+                        System.err.println("getBean by BeanFactory error" + beanFactory.getClass().getName());
+                    }
+                }
+
                 return doGetBean(requiredType, applicationContextList);
             } catch (Exception exception) {
                 return doGetBean(requiredType, updateApplicationContextList());

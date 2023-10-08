@@ -16,7 +16,7 @@ public class AnyDoorAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(AnyDoorController.class)
     public AnyDoorController anyController(ApplicationContext[] applicationContexts) {
-        AnyDoorSpringUtil.initApplicationContexts(() -> applicationContexts);
+        AnyDoorSpringUtil.initApplicationContexts(() -> applicationContexts, null);
         return new AnyDoorController();
     }
 

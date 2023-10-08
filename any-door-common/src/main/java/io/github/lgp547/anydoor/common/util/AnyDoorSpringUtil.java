@@ -5,6 +5,7 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class AnyDoorSpringUtil {
 
     private static volatile boolean isInit = false;
 
-    public static void initApplicationContexts(Supplier<ApplicationContext[]> applicationContextsSupplier, Supplier<BeanFactory[]> beanFactorySupplier) {
+    public static void initApplicationContexts(Supplier<ApplicationContext[]> applicationContextsSupplier, @Nullable Supplier<BeanFactory[]> beanFactorySupplier) {
         if (!isInit) {
             synchronized (AnyDoorSpringUtil.class) {
                 if (!isInit) {
@@ -104,23 +105,34 @@ public class AnyDoorSpringUtil {
             Objects.requireNonNull(applicationContextList);
 
             try {
-                BeanFactory[] beanFactories = beanFactorySupplier.get();
-                System.out.println("beanFactories size " + beanFactories.length);
-                for (BeanFactory beanFactory : beanFactories) {
-                    try {
-                        T bean = beanFactory.getBean(requiredType);
-                        System.out.println("getBean by BeanFactory success" + bean.getClass().getName());
-                        return bean;
-                    } catch (Exception e) {
-                        System.err.println("getBean by BeanFactory error" + beanFactory.getClass().getName());
-                    }
-                }
-
                 return doGetBean(requiredType, applicationContextList);
             } catch (Exception exception) {
-                return doGetBean(requiredType, updateApplicationContextList());
+                try {
+                    return doGetBean(requiredType, updateApplicationContextList());
+                } catch (Exception e) {
+                    T bean = getBeanByBeanFactories(requiredType);
+                    if (bean != null) {
+                        return bean;
+                    } else {
+                        throw e;
+                    }
+                }
             }
         }
+    }
+
+    private static <T> T getBeanByBeanFactories(Class<T> requiredType) {
+        if (beanFactorySupplier == null) {
+            return null;
+        }
+        BeanFactory[] beanFactories = beanFactorySupplier.get();
+        for (BeanFactory beanFactory : beanFactories) {
+            try {
+                return beanFactory.getBean(requiredType);
+            } catch (Exception ignored) {
+            }
+        }
+        return null;
     }
 
     private static <T> T doGetBean(Class<T> requiredType, List<ApplicationContext> applicationContextList1) {

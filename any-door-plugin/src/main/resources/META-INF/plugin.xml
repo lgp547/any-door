@@ -24,6 +24,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <strong>2.0.2</strong>
+        <ul>
+            <li>[fix]修复获取不到bean的情况</li>
+        </ul>
         <strong>2.0.1</strong>
         <ul>
             <li>[fix]修复私有方法丢失依赖</li>

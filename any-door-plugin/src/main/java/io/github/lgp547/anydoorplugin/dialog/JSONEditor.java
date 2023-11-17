@@ -4,16 +4,16 @@ import com.intellij.ide.highlighter.HighlighterFactory;
 import com.intellij.json.JsonFileType;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiParameterList;
+import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.ui.EditorTextField;
 import com.intellij.util.LocalTimeCounter;
-import io.github.lgp547.anydoorplugin.util.JsonUtil;
+import io.github.lgp547.anydoorplugin.AnyDoorInfo;
 import io.github.lgp547.anydoorplugin.util.JsonElementUtil;
+import io.github.lgp547.anydoorplugin.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -117,12 +117,18 @@ public class JSONEditor extends EditorTextField {
     }
 
     protected Document createDocument(String initText) {
-        final PsiFileFactory factory = PsiFileFactory.getInstance(getProject());
-        final long stamp = LocalTimeCounter.currentTime();
-        final PsiFile psiFile = factory.createFileFromText("Dummy." + fileType.getDefaultExtension(), fileType, initText, stamp, true, false);
+//        final PsiFileFactory factory = PsiFileFactory.getInstance(getProject());
+//        final long stamp = ;
+//        final PsiFile psiFile = factory.createFileFromText("Dummy." + fileType.getDefaultExtension(), fileType, initText, stamp, true, false);
+//
+//        //TextCompletionUtil.installProvider(psiFile, new MyTextFieldCompletionProvider(), true);
+//        return PsiDocumentManager.getInstance(getProject()).getDocument(psiFile);
 
-        //TextCompletionUtil.installProvider(psiFile, new MyTextFieldCompletionProvider(), true);
-        return PsiDocumentManager.getInstance(getProject()).getDocument(psiFile);
+        LightVirtualFile virtualFile = new LightVirtualFile(AnyDoorInfo.ANY_DOOR_PARAM_FILE_NAME, fileType, initText, LocalTimeCounter.currentTime());
+
+//        MyBranchedVirtualFile myBranchedVirtualFile = new MyBranchedVirtualFile(virtualFile, AnyDoorInfo.ANY_DOOR_PARAM_FILE_NAME, MyBranchedVirtualFile.createBranchImpl(getProject()));
+
+        return FileDocumentManager.getInstance().getDocument(virtualFile);
     }
 
     @Override

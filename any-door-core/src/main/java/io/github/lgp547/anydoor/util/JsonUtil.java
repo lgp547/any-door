@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -12,6 +13,8 @@ import io.github.lgp547.anydoor.util.jackson.AnyDoorTimeDeserializer;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.temporal.Temporal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class JsonUtil {
@@ -51,6 +54,33 @@ public class JsonUtil {
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    public static List<Map<String, Object>> toMaps(String content) {
+        try {
+            JsonNode jsonNode = objectMapper.readTree(content);
+            List<Map<String, Object>> result = new ArrayList<>();
+            for (JsonNode node : jsonNode) {
+                Map<String, Object> map = objectMapper.convertValue(node, Map.class);
+                result.add(map);
+            }
+            return result;
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static boolean isJsonArray(String jsonString) {
+        try {
+            JsonNode jsonNode = objectMapper.readTree(jsonString);
+            return jsonNode.isArray();
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static void main(String[] args) {
+        JsonUtil.isJsonArray("[{\"i\":1,\"s\":\"aa\"}]");
     }
 
     public static String toStrNotExc(Object value) {

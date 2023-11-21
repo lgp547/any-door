@@ -79,10 +79,6 @@ public class JsonUtil {
         }
     }
 
-    public static void main(String[] args) {
-        JsonUtil.isJsonArray("[{\"i\":1,\"s\":\"aa\"}]");
-    }
-
     public static String toStrNotExc(Object value) {
         if (value == null) {
             return null;

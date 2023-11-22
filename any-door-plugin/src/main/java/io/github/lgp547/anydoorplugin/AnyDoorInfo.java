@@ -24,5 +24,4 @@ public interface AnyDoorInfo {
      */
     Map<String, String> libMap = Map.of("any-door", "io.github.lgp547");
 
-    String ANY_DOOR_PARAM_FILE_NAME = "AnyDoorParamFile.json";
 }

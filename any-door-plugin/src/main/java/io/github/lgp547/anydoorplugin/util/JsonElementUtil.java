@@ -21,9 +21,11 @@ import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class JsonElementUtil {
     public static boolean isNoSupportType(PsiClass psiClass) {
@@ -132,7 +134,7 @@ public class JsonElementUtil {
         return gson.toJson(jsonObject);
     }
 
-    private static JsonObject toParamNameListNew(PsiParameterList parameterList) {
+    public static JsonObject toParamNameListNew(PsiParameterList parameterList) {
         JsonObject jsonObject = new JsonObject();
         for (int i = 0; i < parameterList.getParametersCount(); i++) {
             PsiParameter parameter = Objects.requireNonNull(parameterList.getParameter(i));
@@ -154,5 +156,21 @@ public class JsonElementUtil {
         }
         Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
         return gson.toJson(jsonObject);
+    }
+
+    /**
+     * 获取JsonObject的所有key
+     */
+    public static Set<String> getJsonObjectKey(JsonObject jsonObject) {
+        Set<String> keys = new HashSet<>();
+        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+            String key = entry.getKey();
+            keys.add(key);
+            JsonElement value = entry.getValue();
+            if (value.isJsonObject()) {
+                keys.addAll(getJsonObjectKey(value.getAsJsonObject()));
+            }
+        }
+        return keys;
     }
 }

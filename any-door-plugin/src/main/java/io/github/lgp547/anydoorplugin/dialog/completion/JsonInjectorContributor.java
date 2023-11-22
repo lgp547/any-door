@@ -9,6 +9,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiLanguageInjectionHost;
 import io.github.lgp547.anydoorplugin.AnyDoorInfo;
+import io.github.lgp547.anydoorplugin.dialog.JSONEditor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +33,7 @@ public final class JsonInjectorContributor implements LanguageInjectionContribut
         if (context instanceof PsiLanguageInjectionHost) {
             String text = context.getText();
             boolean b = text != null && text.startsWith("\"`") && text.endsWith("`\"") && text.length() > 4;
-            boolean equals = context.getContainingFile().getName().equals(AnyDoorInfo.ANY_DOOR_PARAM_FILE_NAME);
+            boolean equals = context.getContainingFile().getName().equals(JSONEditor.ANY_DOOR_PARAM_FILE_NAME);
             return b && equals;
         }
         return false;

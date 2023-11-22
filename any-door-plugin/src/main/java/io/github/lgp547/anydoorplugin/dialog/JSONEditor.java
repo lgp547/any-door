@@ -4,19 +4,19 @@ import com.intellij.ide.highlighter.HighlighterFactory;
 import com.intellij.json.JsonFileType;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.ex.EditorEx;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.PsiParameterList;
-import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.ui.EditorTextField;
-import com.intellij.util.LocalTimeCounter;
-import io.github.lgp547.anydoorplugin.AnyDoorInfo;
 import io.github.lgp547.anydoorplugin.util.JsonElementUtil;
 import io.github.lgp547.anydoorplugin.util.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.jps.incremental.GlobalContextKey;
 
 import java.net.URI;
 import java.net.URLDecoder;
@@ -30,6 +30,11 @@ import java.util.stream.Collectors;
 
 
 public class JSONEditor extends EditorTextField {
+
+    public static String ANY_DOOR_PARAM_FILE_NAME = "AnyDoorParamFile.json";
+
+    public static GlobalContextKey<PsiParameterList> ANY_DOOR_EDIT_PARAMS = GlobalContextKey.create("anyDoorEditParams");
+
     private final FileType fileType = JsonFileType.INSTANCE;
 
     private final PsiParameterList psiParameterList;
@@ -40,7 +45,6 @@ public class JSONEditor extends EditorTextField {
 
     public JSONEditor(String cacheText, @Nullable PsiParameterList psiParameterList, Project project) {
         super("", project, JsonFileType.INSTANCE);
-
         this.cacheContent = cacheText;
         this.psiParameterList = psiParameterList;
 
@@ -117,18 +121,11 @@ public class JSONEditor extends EditorTextField {
     }
 
     protected Document createDocument(String initText) {
-//        final PsiFileFactory factory = PsiFileFactory.getInstance(getProject());
-//        final long stamp = ;
-//        final PsiFile psiFile = factory.createFileFromText("Dummy." + fileType.getDefaultExtension(), fileType, initText, stamp, true, false);
-//
-//        //TextCompletionUtil.installProvider(psiFile, new MyTextFieldCompletionProvider(), true);
-//        return PsiDocumentManager.getInstance(getProject()).getDocument(psiFile);
+        final PsiFileFactory factory = PsiFileFactory.getInstance(getProject());
+        final long stamp = System.currentTimeMillis();
+        final PsiFile psiFile = factory.createFileFromText(ANY_DOOR_PARAM_FILE_NAME, fileType, initText, stamp, true, false);
 
-        LightVirtualFile virtualFile = new LightVirtualFile(AnyDoorInfo.ANY_DOOR_PARAM_FILE_NAME, fileType, initText, LocalTimeCounter.currentTime());
-
-//        MyBranchedVirtualFile myBranchedVirtualFile = new MyBranchedVirtualFile(virtualFile, AnyDoorInfo.ANY_DOOR_PARAM_FILE_NAME, MyBranchedVirtualFile.createBranchImpl(getProject()));
-
-        return FileDocumentManager.getInstance().getDocument(virtualFile);
+        return PsiDocumentManager.getInstance(getProject()).getDocument(psiFile);
     }
 
     @Override
@@ -138,6 +135,8 @@ public class JSONEditor extends EditorTextField {
         ex.setHighlighter(HighlighterFactory.createHighlighter(getProject(), JsonFileType.INSTANCE));
         ex.setEmbeddedIntoDialogWrapper(true);
         ex.setOneLineMode(false);
+
+        ex.putUserData(ANY_DOOR_EDIT_PARAMS, psiParameterList);
 
         return ex;
     }
@@ -160,12 +159,5 @@ public class JSONEditor extends EditorTextField {
         setText(jsonContent);
     }
 
-//    private static class MyTextFieldCompletionProvider extends TextFieldCompletionProvider implements DumbAware {
-//        @Override
-//        protected void addCompletionVariants(@NotNull String text, int offset, @NotNull String prefix, @NotNull CompletionResultSet result) {
-//            result.addElement(LookupElementBuilder.create("123456"));
-//            result.addElement(LookupElementBuilder.create("234567"));
-//        }
-//    }
 
 }

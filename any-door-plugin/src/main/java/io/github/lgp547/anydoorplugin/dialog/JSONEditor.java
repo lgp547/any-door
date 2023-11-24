@@ -125,6 +125,8 @@ public class JSONEditor extends EditorTextField {
         final long stamp = System.currentTimeMillis();
         final PsiFile psiFile = factory.createFileFromText(ANY_DOOR_PARAM_FILE_NAME, fileType, initText, stamp, true, false);
 
+        psiFile.putUserData(ANY_DOOR_EDIT_PARAMS, psiParameterList);
+
         return PsiDocumentManager.getInstance(getProject()).getDocument(psiFile);
     }
 

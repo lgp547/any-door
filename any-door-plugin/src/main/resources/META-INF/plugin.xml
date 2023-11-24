@@ -81,7 +81,8 @@
 
         <languageInjectionPerformer implementationClass="io.github.lgp547.anydoorplugin.dialog.completion.JsonInjectionPerformer" language="JSON"/>
 
-<!--        <lang.directNavigationProvider implementation="io.github.lgp547.anydoorplugin.dialog.navigation.JsonKeyNavigationProvider" />-->
+        <!--suppress PluginXmlValidity -->
+        <lang.directNavigationProvider implementation="io.github.lgp547.anydoorplugin.dialog.navigation.JsonKeyNavigationProvider" />
 
         <completion.contributor implementationClass="io.github.lgp547.anydoorplugin.dialog.completion.JsonKeyCompletionContributor" language="JSON"/>
     </extensions>

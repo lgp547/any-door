@@ -312,8 +312,6 @@ public class ParamListUI extends JPanel implements Listener {
 
         public ParamListToolBar() {
             super();
-            this.setFloatable(false);
-
         }
 
     }

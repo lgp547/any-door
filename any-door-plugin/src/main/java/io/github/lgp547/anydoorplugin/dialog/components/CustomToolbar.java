@@ -16,6 +16,8 @@ import javax.swing.*;
 public class CustomToolbar extends JToolBar {
     public CustomToolbar() {
         super();
+        this.setOpaque(false);
+        this.setFloatable(false);
     }
 
     public JButton addToolButton(String tip, Icon icon, Icon hoverIcon, Consumer<ActionEvent> consumer) {

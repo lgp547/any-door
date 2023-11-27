@@ -33,7 +33,6 @@ public class MyToolBar extends CustomToolbar {
         this.project = project;
         this.multicaster = multicaster;
 
-        this.setFloatable(false);
         this.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, this.getBackground().darker()));
 
         initButtons();

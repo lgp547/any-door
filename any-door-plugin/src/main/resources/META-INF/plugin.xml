@@ -24,6 +24,13 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <strong>2.1.0 代码提示和导航</strong>
+        <ul>
+            <li>增加参数窗口填写Key的时候代码完成提示</li>
+            <li>增加参数窗口Key的导航跳转</li>
+            <li>[fix]打开参数窗口遇到文件失效</li>
+            <li>[fix]在黑色主题下窗口背景颜色不正确</li>
+        </ul>
         <strong>2.0.2</strong>
         <ul>
             <li>[fix]修复获取不到bean的情况</li>

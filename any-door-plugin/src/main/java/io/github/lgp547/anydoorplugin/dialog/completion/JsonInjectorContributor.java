@@ -4,27 +4,38 @@ import com.intellij.lang.injection.general.Injection;
 import com.intellij.lang.injection.general.LanguageInjectionContributor;
 import com.intellij.lang.injection.general.SimpleInjection;
 import com.intellij.lang.java.JavaLanguage;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiLanguageInjectionHost;
-import io.github.lgp547.anydoorplugin.AnyDoorInfo;
+import com.intellij.psi.PsiParameterList;
+import com.intellij.psi.impl.source.PsiJavaFileBaseImpl;
 import io.github.lgp547.anydoorplugin.dialog.JSONEditor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 /**
  * 贡献者
- * lgp todo: 需要类型以及包名
  */
 public final class JsonInjectorContributor implements LanguageInjectionContributor {
-
 
     @Override
     public @Nullable Injection getInjection(@NotNull PsiElement context) {
         if (isInjectable(context)) {
-            Project project = context.getProject();
-            return new SimpleInjection(JavaLanguage.INSTANCE, "import test2.run.*; public class Test { String u = ", ";}", null);
+            PsiParameterList psiParameterList = context.getContainingFile().getUserData(JSONEditor.ANY_DOOR_EDIT_PARAMS);
+            String projectPackName = Optional.ofNullable(psiParameterList).map(PsiElement::getParent).map(PsiElement::getParent).map(PsiElement::getParent).map(item -> {
+                if (item instanceof PsiJavaFileBaseImpl) {
+                    return ((PsiJavaFileBaseImpl) item).getPackageName() + ".*";
+                }
+                return "";
+            }).orElse("");
+
+            String typeName = "String";
+
+            String prefix = String.format("import %s; public class AnyDoorInjectionClass { %s u = ", projectPackName, typeName);
+            String suffix = ";}";
+            return new SimpleInjection(JavaLanguage.INSTANCE, prefix, suffix, null);
         }
         return null;
     }

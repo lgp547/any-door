@@ -7,8 +7,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
-import com.intellij.psi.PsiWhiteSpace;
 import io.github.lgp547.anydoorplugin.dialog.JSONEditor;
+import io.github.lgp547.anydoorplugin.util.JsonElementUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +28,7 @@ public class JsonKeyNavigationProvider implements DirectNavigationProvider {
         }
 
         // 非key不做处理
-        if (!isJsonKey(element.getParent())) {
+        if (!JsonElementUtil.isJsonKey(element)) {
             return null;
         }
 
@@ -61,11 +61,5 @@ public class JsonKeyNavigationProvider implements DirectNavigationProvider {
         return null;
     }
 
-    private static boolean isJsonKey(PsiElement parent) {
-        PsiElement nextSibling = parent.getNextSibling();
-        while (nextSibling instanceof PsiWhiteSpace) {
-            nextSibling = nextSibling.getNextSibling();
-        }
-        return nextSibling != null && nextSibling.getText().equals(":");
-    }
+
 }

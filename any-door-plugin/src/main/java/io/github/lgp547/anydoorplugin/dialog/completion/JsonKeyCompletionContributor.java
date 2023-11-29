@@ -25,6 +25,11 @@ public class JsonKeyCompletionContributor extends CompletionContributor {
             return;
         }
 
+        // 非key不做处理
+        if (!JsonElementUtil.isJsonKey(parameters.getPosition())) {
+            return;
+        }
+
         PsiParameterList psiParameterList = parameters.getEditor().getUserData(JSONEditor.ANY_DOOR_EDIT_PARAMS);
         if (psiParameterList != null && psiParameterList.getParameters().length > 0) {
             JsonObject jsonObject = JsonElementUtil.toParamNameListNew(psiParameterList);

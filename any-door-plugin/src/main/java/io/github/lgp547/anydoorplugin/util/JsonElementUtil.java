@@ -9,9 +9,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassType;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import com.intellij.psi.PsiType;
+import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -172,5 +175,19 @@ public class JsonElementUtil {
             }
         }
         return keys;
+    }
+
+    public static boolean isJsonKey(PsiElement psiElement) {
+        if (psiElement == null) {
+            return false;
+        }
+        if (psiElement instanceof LeafPsiElement) {
+            psiElement = psiElement.getParent();
+        }
+        PsiElement nextSibling = psiElement.getNextSibling();
+        while (nextSibling instanceof PsiWhiteSpace) {
+            nextSibling = nextSibling.getNextSibling();
+        }
+        return nextSibling != null && nextSibling.getText().equals(":");
     }
 }

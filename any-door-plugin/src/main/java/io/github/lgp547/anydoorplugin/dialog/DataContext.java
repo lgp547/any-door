@@ -60,14 +60,13 @@ public final class DataContext implements Listener {
     public ClassDataContext getClassDataContext(String qualifiedClassName) {
         Objects.requireNonNull(qualifiedClassName);
 
-        //TODO 暂时不考虑Shareable
-        contextMap.computeIfAbsent(qualifiedClassName, k -> {
+        ClassDataContext classDataContext = contextMap.get(qualifiedClassName);
+        if (classDataContext == null || classDataContext.clazz == null || !classDataContext.clazz.isValid()) {
             Data<ParamDataItem> data = dataService.find(qualifiedClassName);
             PsiClass psiClass = IdeClassUtil.findClass(project, qualifiedClassName);
             return new ClassDataContext(psiClass, data, project);
-        });
-
-        return contextMap.get(qualifiedClassName);
+        }
+        return classDataContext;
     }
 
 

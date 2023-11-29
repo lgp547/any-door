@@ -37,6 +37,7 @@ public class JSONEditor extends EditorTextField {
 
     private final FileType fileType = JsonFileType.INSTANCE;
 
+    @Nullable
     private final PsiParameterList psiParameterList;
 
     private String cacheContent;

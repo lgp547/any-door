@@ -9,6 +9,7 @@ import com.sun.tools.attach.VirtualMachine;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
@@ -36,8 +37,13 @@ public class VmUtil {
                 if (ioException.getMessage() != null && ioException.getMessage().contains("Non-numeric value found")) {
                     log.warn("jdk lower version attach higher version, can ignore");
                 } else {
-                    log.error("attachAsync error [pid:{} jarFilePath:{} param:{} errMsg:{}]", pid, jarFilePath, agentParam, ioException.getMessage());
-                    errHandle.accept(pidProcess, ioException);
+                    if (Objects.equals(ioException.getMessage(), "No such process")) {
+                        log.warn(String.format("attachAsync No such process [pid:%s]", pid));
+                        errHandle.accept(pidProcess, new RuntimeException("No such process. Please restart the project process"));
+                    } else {
+                        log.error("attachAsync error [pid:{} jarFilePath:{} param:{} errMsg:{}]", pid, jarFilePath, agentParam, ioException.getMessage());
+                        errHandle.accept(pidProcess, ioException);
+                    }
                 }
             } catch (AgentLoadException agentLoadException) {
                 if ("0".equals(agentLoadException.getMessage())) {

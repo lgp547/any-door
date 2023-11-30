@@ -8,6 +8,7 @@ import io.github.lgp547.anydoor.common.util.AnyDoorSpringUtil;
 import io.github.lgp547.anydoor.util.JsonUtil;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -73,41 +74,50 @@ public class AnyDoorService {
     public Object doRun(AnyDoorRunDto anyDoorDto, Method method, Object bean, Runnable endRun) {
         String methodName = method.getName();
         String content = JsonUtil.toStrNotExc(anyDoorDto.getContent());
-        if (JsonUtil.isJsonArray(content)) {
-            List<Map<String, Object>> contentMaps = JsonUtil.toMaps(content);
-            return contentMaps.stream()
-                .map(contentMap -> handleAndRun(anyDoorDto, method, bean, endRun, contentMap, methodName))
-                .collect(Collectors.toList());
-        } else {
-            Map<String, Object> contentMap = JsonUtil.toMap(content);
-            return handleAndRun(anyDoorDto, method, bean, endRun, contentMap, methodName);
-        }
+        return handleAndRun(anyDoorDto, method, bean, endRun, content, methodName);
     }
 
-    private static Object handleAndRun(AnyDoorRunDto anyDoorDto, Method method, Object bean, Runnable endRun,
-        Map<String, Object> contentMap, String methodName) {
+    private static Object handleAndRun(AnyDoorRunDto anyDoorDto, Method method, Object bean, Runnable endRun, String content, String methodName) {
         AnyDoorHandlerMethod handlerMethod = new AnyDoorHandlerMethod(bean, method);
-        if (anyDoorDto.getNum() == 1) {
+
+        Integer num = anyDoorDto.getNum();
+        List<Map<String, Object>> contentMaps;
+        // 若是json数组，数量按照数组为准
+        if (JsonUtil.isJsonArray(content)) {
+            contentMaps = JsonUtil.toMaps(content);
+            num = contentMaps.size();
+        } else {
+            ArrayList<Map<String, Object>> list = new ArrayList<>();
+            list.add(JsonUtil.toMap(content));
+            contentMaps = list;
+        }
+
+        if (num < 1) {
+            System.err.println("anyDoorService run param exception. num < 1");
+            return null;
+        }
+
+        if (num == 1) {
             if (Objects.equals(anyDoorDto.getSync(), true)) {
-                Object result = handlerMethod.invokeSync(contentMap);
+                Object result = handlerMethod.invokeSync(contentMaps.get(0));
                 System.out.println(ANY_DOOR_RUN_MARK + methodName + " return: " + JsonUtil.toStrNotExc(result));
                 endRun.run();
                 return result;
             } else {
-                handlerMethod.invokeAsync(contentMap).whenComplete(futureResultLogConsumer(methodName)).whenComplete((result, throwable) -> endRun.run());
+                handlerMethod.invokeAsync(contentMaps.get(0)).whenComplete(futureResultLogConsumer(methodName)).whenComplete((result, throwable) -> endRun.run());
                 return null;
             }
         } else {
             if (anyDoorDto.getConcurrent()) {
                 List<CompletableFuture<Object>> completableFutures =
-                    handlerMethod.concurrentInvokeAsync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName), excLogConsumer(methodName));
+                    handlerMethod.concurrentInvokeAsync(contentMaps, num, resultLogConsumer(methodName), excLogConsumer(methodName));
                 CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0])).whenComplete((result, throwable) -> endRun.run());
             } else {
                 if (Objects.equals(anyDoorDto.getSync(), true)) {
-                    handlerMethod.parallelInvokeSync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName));
+                    handlerMethod.parallelInvokeSync(contentMaps, num, resultLogConsumer(methodName));
                     endRun.run();
                 } else {
-                    CompletableFuture<Void> voidCompletableFuture = handlerMethod.parallelInvokeAsync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName));
+                    CompletableFuture<Void> voidCompletableFuture = handlerMethod.parallelInvokeAsync(contentMaps, num, resultLogConsumer(methodName));
                     voidCompletableFuture.whenComplete((result, throwable) -> endRun.run());
                 }
             }

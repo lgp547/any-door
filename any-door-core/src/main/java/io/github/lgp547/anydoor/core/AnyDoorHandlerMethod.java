@@ -41,9 +41,13 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
     /**
      * 并行，阻塞调度进程
      */
-    public void parallelInvokeSync(Map<String, Object> contentMap, int num, BiConsumer<Integer, Object> resultLogConsumer) {
-        Object[] args = getArgs(contentMap);
+    public void parallelInvokeSync(List<Map<String, Object>> contentMaps, int num, BiConsumer<Integer, Object> resultLogConsumer) {
+        Object[] curArgs = null;
         for (int i = 0; i < num; i++) {
+            if (contentMaps.size() > i) {
+                curArgs = getArgs(contentMaps.get(i));
+            }
+            final Object[] args = curArgs;
             resultLogConsumer.accept(i, doInvoke(args));
         }
     }
@@ -51,10 +55,14 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
     /**
      * 并行，不阻塞调度进程
      */
-    public CompletableFuture<Void> parallelInvokeAsync(Map<String, Object> contentMap, int num, BiConsumer<Integer, Object> resultLogConsumer) {
-        Object[] args = getArgs(contentMap);
+    public CompletableFuture<Void> parallelInvokeAsync(List<Map<String, Object>> contentMaps, int num, BiConsumer<Integer, Object> resultLogConsumer) {
         return CompletableFuture.runAsync(() -> {
+            Object[] curArgs = null;
             for (int i = 0; i < num; i++) {
+                if (contentMaps.size() > i) {
+                    curArgs = getArgs(contentMaps.get(i));
+                }
+                final Object[] args = curArgs;
                 resultLogConsumer.accept(i, doInvoke(args));
             }
         });
@@ -63,10 +71,14 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
     /**
      * 并发，不阻塞调度进程
      */
-    public List<CompletableFuture<Object>> concurrentInvokeAsync(Map<String, Object> contentMap, int num, BiConsumer<Integer, Object> resultLogConsumer, BiConsumer<Integer, Throwable> excLogConsumer) {
-        Object[] args = getArgs(contentMap);
+    public List<CompletableFuture<Object>> concurrentInvokeAsync(List<Map<String, Object>> contentMaps, int num, BiConsumer<Integer, Object> resultLogConsumer, BiConsumer<Integer, Throwable> excLogConsumer) {
+        Object[] curArgs = null;
         List<CompletableFuture<Object>> completableFutures = new ArrayList<>(num);
         for (int i = 0; i < num; i++) {
+            if (contentMaps.size() > i) {
+                curArgs = getArgs(contentMaps.get(i));
+            }
+            final Object[] args = curArgs;
             final int i1 = i;
             CompletableFuture<Object> objectCompletableFuture = CompletableFuture.supplyAsync(() -> doInvoke(args)).whenComplete(((o, throwable) -> {
                 if (throwable != null) {

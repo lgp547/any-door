@@ -75,7 +75,7 @@ public class JsonUtil {
             JsonNode jsonNode = objectMapper.readTree(jsonString);
             return jsonNode.isArray();
         } catch (Exception e) {
-            throw new IllegalArgumentException(e);
+            return false;
         }
     }
 

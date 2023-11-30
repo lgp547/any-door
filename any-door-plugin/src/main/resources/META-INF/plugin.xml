@@ -84,9 +84,9 @@
         <applicationService serviceImplementation="io.github.lgp547.anydoorplugin.util.NotifierUtil"/>
         <notificationGroup id="AnyDoor" displayType="BALLOON"/>
 
-        <languageInjectionContributor implementationClass="io.github.lgp547.anydoorplugin.dialog.completion.JsonInjectorContributor" language="JSON"/>
+<!--        <languageInjectionContributor implementationClass="io.github.lgp547.anydoorplugin.dialog.completion.JsonInjectorContributor" language="JSON"/>-->
 
-        <languageInjectionPerformer implementationClass="io.github.lgp547.anydoorplugin.dialog.completion.JsonInjectionPerformer" language="JSON"/>
+<!--        <languageInjectionPerformer implementationClass="io.github.lgp547.anydoorplugin.dialog.completion.JsonInjectionPerformer" language="JSON"/>-->
 
         <!--suppress PluginXmlValidity -->
         <lang.directNavigationProvider implementation="io.github.lgp547.anydoorplugin.dialog.navigation.JsonKeyNavigationProvider" />

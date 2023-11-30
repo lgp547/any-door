@@ -1,12 +1,11 @@
 package io.github.lgp547.anydoor.core;
 
 import io.github.lgp547.anydoor.common.dto.AnyDoorRunDto;
+import io.github.lgp547.anydoor.common.util.AnyDoorAopUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorBeanUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorClassUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorSpringUtil;
-import io.github.lgp547.anydoor.common.util.AnyDoorAopUtil;
 import io.github.lgp547.anydoor.util.JsonUtil;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -15,6 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class AnyDoorService {
 
@@ -39,13 +39,13 @@ public class AnyDoorService {
                     bean = AnyDoorAopUtil.getTargetObject(bean);
                 }
             }
-            return doRun(anyDoorDto, method, bean, () -> {});
+            return doRun(anyDoorDto, method, bean, () -> {
+            });
         } catch (Exception e) {
             System.err.println("anyDoorService run exception. param [" + anyDoorDto + "]");
             throw new RuntimeException(e);
         }
     }
-
 
     /**
      * {@code  io.github.lgp547.anydoor.attach.AnyDoorAttach#AnyDoorRun(String)}
@@ -72,8 +72,20 @@ public class AnyDoorService {
 
     public Object doRun(AnyDoorRunDto anyDoorDto, Method method, Object bean, Runnable endRun) {
         String methodName = method.getName();
-        Map<String, Object> contentMap = JsonUtil.toMap(JsonUtil.toStrNotExc(anyDoorDto.getContent()));
+        String content = JsonUtil.toStrNotExc(anyDoorDto.getContent());
+        if (JsonUtil.isJsonArray(content)) {
+            List<Map<String, Object>> contentMaps = JsonUtil.toMaps(content);
+            return contentMaps.stream()
+                .map(contentMap -> handleAndRun(anyDoorDto, method, bean, endRun, contentMap, methodName))
+                .collect(Collectors.toList());
+        } else {
+            Map<String, Object> contentMap = JsonUtil.toMap(content);
+            return handleAndRun(anyDoorDto, method, bean, endRun, contentMap, methodName);
+        }
+    }
 
+    private static Object handleAndRun(AnyDoorRunDto anyDoorDto, Method method, Object bean, Runnable endRun,
+        Map<String, Object> contentMap, String methodName) {
         AnyDoorHandlerMethod handlerMethod = new AnyDoorHandlerMethod(bean, method);
         if (anyDoorDto.getNum() == 1) {
             if (Objects.equals(anyDoorDto.getSync(), true)) {
@@ -88,7 +100,7 @@ public class AnyDoorService {
         } else {
             if (anyDoorDto.getConcurrent()) {
                 List<CompletableFuture<Object>> completableFutures =
-                        handlerMethod.concurrentInvokeAsync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName), excLogConsumer(methodName));
+                    handlerMethod.concurrentInvokeAsync(contentMap, anyDoorDto.getNum(), resultLogConsumer(methodName), excLogConsumer(methodName));
                 CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0])).whenComplete((result, throwable) -> endRun.run());
             } else {
                 if (Objects.equals(anyDoorDto.getSync(), true)) {

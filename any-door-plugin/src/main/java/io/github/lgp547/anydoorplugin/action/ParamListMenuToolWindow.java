@@ -1,5 +1,6 @@
 package io.github.lgp547.anydoorplugin.action;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -20,7 +21,7 @@ public class ParamListMenuToolWindow implements ToolWindowFactory {
         ParamListUI ui = new ParamListUI(project);
 
         // 获取内容工厂的实例
-        ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
+        ContentFactory contentFactory = ApplicationManager.getApplication().getService(ContentFactory.class);
         // 获取 ToolWindow 显示的内容
         Content content = contentFactory.createContent(ui, "", false);
         // 设置 ToolWindow 显示的内容

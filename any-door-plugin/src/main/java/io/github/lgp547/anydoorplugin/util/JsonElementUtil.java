@@ -39,6 +39,7 @@ public class JsonElementUtil {
         if (num > 5) {
             return JsonNull.INSTANCE;
         }
+        // 新版本使用：PsiTypes.intType()
         if (type.isAssignableFrom(PsiType.INT)) {
             return new JsonPrimitive(0);
         }

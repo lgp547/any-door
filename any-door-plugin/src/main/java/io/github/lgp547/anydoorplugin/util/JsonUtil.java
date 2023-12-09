@@ -4,23 +4,18 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import org.apache.commons.lang3.StringUtils;
-
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 
 public class JsonUtil {
-
-    public static Gson gson = new GsonBuilder().create();
 
     public static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -62,10 +57,28 @@ public class JsonUtil {
     }
 
     public static String transformedKey(String text, Map<String, String> paramTypeNameTransformer) {
-        JsonObject jsonObject = gson.fromJson(text, JsonObject.class);
-        JsonObject newJsonObj = new JsonObject();
-        jsonObject.entrySet().forEach(entry -> newJsonObj.add(paramTypeNameTransformer.getOrDefault(entry.getKey(), entry.getKey()), entry.getValue()));
-        return gson.toJson(newJsonObj);
+        try {
+            JsonNode jsonNode = objectMapper.readTree(text);
+            if (jsonNode.isArray()) {
+                // 处理 JsonArray
+                List<Map<String, Object>> newJsonArray = new ArrayList<>();
+                for (JsonNode node : jsonNode) {
+                    Map<String, Object> newMap = new HashMap<>();
+                    Map<String, Object> map = objectMapper.convertValue(node, Map.class);
+                    map.forEach((key, value) -> newMap.put(paramTypeNameTransformer.getOrDefault(key, key), value));
+                    newJsonArray.add(newMap);
+                }
+                return objectMapper.writeValueAsString(newJsonArray);
+            } else {
+                // 处理 JsonObject
+                Map<String, Object> map = objectMapper.readValue(text, Map.class);
+                Map<String, Object> newJsonObject = new HashMap<>();
+                map.forEach((key, value) -> newJsonObject.put(paramTypeNameTransformer.getOrDefault(key, key), value));
+                return objectMapper.writeValueAsString(newJsonObject);
+            }
+        } catch (Exception ignored) {
+        }
+        return text;
     }
 
     public static String toStr(Object value) throws Exception {

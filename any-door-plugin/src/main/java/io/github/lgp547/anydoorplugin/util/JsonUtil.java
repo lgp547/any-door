@@ -81,33 +81,6 @@ public class JsonUtil {
         return text;
     }
 
-    public static void main(String[] args) {
-        String json = "{\n" +
-            "  \"name\": \"John\",\n" +
-            "  \"age\": 30,\n" +
-            "  \"city\": \"New York\"\n" +
-            "}";
-        String jsonArray = "[\n" +
-            "  {\n" +
-            "    \"name\": \"John\",\n" +
-            "    \"age\": 30,\n" +
-            "    \"city\": \"New York\"\n" +
-            "  },\n" +
-            "  {\n" +
-            "    \"name\": \"Jane\",\n" +
-            "    \"age\": 25,\n" +
-            "    \"city\": \"London\"\n" +
-            "  }\n" +
-            "]";
-        Map<String, String> pMap = Map.of("name", "arg0", "age", "arg1", "city", "arg2");
-        // test
-        String res1 = transformedKey(json, pMap);
-        String res2 = transformedKey(jsonArray, pMap);
-        // sout
-        System.out.println(res1);
-        System.out.println(res2);
-    }
-
     public static String toStr(Object value) throws Exception {
         if (value == null) {
             return null;

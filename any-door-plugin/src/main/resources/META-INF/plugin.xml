@@ -24,6 +24,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <strong>2.1.2 修复版本</strong>
+        <ul>
+            <li>支持23.3版本</li>
+            <li>[fix]jsonKey的判断</li>
+            <li>[fix]批量情况接口的参数传递</li>
+        </ul>
         <strong>2.1.1 代码提示和导航</strong>
         <ul>
             <li>增加参数窗口填写Key的时候代码完成提示</li>

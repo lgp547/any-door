@@ -8,9 +8,10 @@ version = "2.1.1"
 
 repositories {
     mavenCentral()
-    mavenLocal {
-        url = uri("/Users/lgp/.m2/repository")
-    }
+    // todo：自行修改成本地仓库地址
+//    mavenLocal {
+//        url = uri("/Users/lgp/.m2/repository")
+//    }
 }
 
 dependencies {
@@ -37,7 +38,7 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("203.*")
-        untilBuild.set("232.*")
+        untilBuild.set("233.*")
     }
 
 //    signPlugin {

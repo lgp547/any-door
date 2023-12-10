@@ -15,6 +15,7 @@ import com.intellij.psi.PsiParameterList;
 import com.intellij.psi.PsiType;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
+import com.intellij.psi.impl.source.tree.PsiErrorElementImpl;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -189,6 +190,13 @@ public class JsonElementUtil {
         while (nextSibling instanceof PsiWhiteSpace) {
             nextSibling = nextSibling.getNextSibling();
         }
-        return nextSibling != null && nextSibling.getText().equals(":");
+        boolean isJsonKey = nextSibling != null && nextSibling.getText().equals(":");
+        if (isJsonKey) {
+            return true;
+        }
+        if (nextSibling instanceof PsiErrorElementImpl) {
+            return ((PsiErrorElementImpl) nextSibling).getErrorDescription().contains("':' expected");
+        }
+        return false;
     }
 }

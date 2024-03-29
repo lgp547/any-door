@@ -16,6 +16,7 @@ import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class JsonUtil {
 
@@ -91,5 +92,15 @@ public class JsonUtil {
                 return null;
             }
         }
+    }
+
+    public static String toContentStrNotExc(Object value) {
+        if (value instanceof Optional) {
+            Optional<?> valueOpt = (Optional<?>) value;
+            if (valueOpt.isPresent()) {
+                return toStrNotExc(valueOpt.get());
+            }
+        }
+        return toStrNotExc(value);
     }
 }

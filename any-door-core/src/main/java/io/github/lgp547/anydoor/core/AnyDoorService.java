@@ -100,7 +100,7 @@ public class AnyDoorService {
         if (num == 1) {
             if (Objects.equals(anyDoorDto.getSync(), true)) {
                 Object result = handlerMethod.invokeSync(contentMaps.get(0));
-                System.out.println(ANY_DOOR_RUN_MARK + methodName + " return: " + JsonUtil.toStrNotExc(result));
+                System.out.println(ANY_DOOR_RUN_MARK + methodName + " return: " + JsonUtil.toContentStrNotExc(result));
                 endRun.run();
                 return result;
             } else {
@@ -126,7 +126,7 @@ public class AnyDoorService {
     }
 
     private static BiConsumer<Integer, Object> resultLogConsumer(String methodName) {
-        return (num, result) -> System.out.println(ANY_DOOR_RUN_MARK + methodName + " " + num + " return: " + JsonUtil.toStrNotExc(result));
+        return (num, result) -> System.out.println(ANY_DOOR_RUN_MARK + methodName + " " + num + " return: " + JsonUtil.toContentStrNotExc(result));
     }
 
     private static BiConsumer<Integer, Throwable> excLogConsumer(String methodName) {
@@ -142,7 +142,7 @@ public class AnyDoorService {
                 System.err.println(ANY_DOOR_RUN_MARK + methodName + " exception: " + throwable.getMessage());
                 Optional.ofNullable(throwable.getCause()).map(Throwable::getCause).map(Throwable::getCause).orElse(throwable).printStackTrace();
             } else {
-                System.out.println(ANY_DOOR_RUN_MARK + methodName + " return: " + JsonUtil.toStrNotExc(result));
+                System.out.println(ANY_DOOR_RUN_MARK + methodName + " return: " + JsonUtil.toContentStrNotExc(result));
             }
         };
     }

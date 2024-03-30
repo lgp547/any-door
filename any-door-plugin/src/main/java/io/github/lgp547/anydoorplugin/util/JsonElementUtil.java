@@ -183,13 +183,14 @@ public class JsonElementUtil {
         if (psiElement == null) {
             return false;
         }
-        if (psiElement instanceof LeafPsiElement) {
+        if (psiElement instanceof LeafPsiElement && psiElement.getParent() != null) {
             psiElement = psiElement.getParent();
         }
         PsiElement nextSibling = psiElement.getNextSibling();
         while (nextSibling instanceof PsiWhiteSpace) {
             nextSibling = nextSibling.getNextSibling();
         }
+        // 当前位置后面有冒号的
         boolean isJsonKey = nextSibling != null && nextSibling.getText().equals(":");
         if (isJsonKey) {
             return true;
@@ -197,6 +198,40 @@ public class JsonElementUtil {
         if (nextSibling instanceof PsiErrorElementImpl) {
             return ((PsiErrorElementImpl) nextSibling).getErrorDescription().contains("':' expected");
         }
+        PsiElement psiElementParent = psiElement;
+        while (psiElementParent.getParent() != null) {
+            psiElementParent = psiElementParent.getParent();
+        }
+        if (isJsonKey(psiElementParent.getText(), psiElement.getTextOffset())) {
+            return true;
+        }
         return false;
     }
+
+    public static boolean isJsonKey(String json, int index) {
+        if (json == null || json.isBlank()) {
+            return false;
+        }
+        if (index >= json.length()) {
+            return false;
+        }
+
+        // 当前位置前面有,并且是在:之后的
+        int colonIndex = json.lastIndexOf(':', index); // 查找当前索引之前的最后一个冒号
+        int commaIndex = json.lastIndexOf(',', index); // 查找当前索引之前的最后一个冒号
+        if (colonIndex < commaIndex && commaIndex < index) {
+            return true;
+        }
+        // 当前位置的前一个非空字符是 { 123
+        char preChar = '\0';
+        for (int i = index - 1; i >= 0; i--) {
+            char ch = json.charAt(i);
+            if (!Character.isWhitespace(ch)) {
+                preChar = ch; // 返回找到的非空格字符
+                break;
+            }
+        }
+        return 123 == preChar;
+    }
+
 }

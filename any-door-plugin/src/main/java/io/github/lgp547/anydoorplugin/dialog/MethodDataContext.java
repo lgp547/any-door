@@ -10,6 +10,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameterList;
+import com.intellij.psi.impl.java.stubs.PsiParameterListStub;
+import com.intellij.psi.impl.java.stubs.impl.PsiParameterListStubImpl;
+import com.intellij.psi.impl.source.PsiParameterListImpl;
+import com.intellij.psi.util.PsiUtilCore;
 import io.github.lgp547.anydoorplugin.data.domain.ParamDataItem;
 import io.github.lgp547.anydoorplugin.dialog.event.ComponentEvent;
 import io.github.lgp547.anydoorplugin.dialog.event.DataEvent;
@@ -24,6 +28,7 @@ import io.github.lgp547.anydoorplugin.dialog.event.impl.UpdateDataItemEvent;
 import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
 import io.github.lgp547.anydoorplugin.dialog.utils.IdeClassUtil;
 import io.github.lgp547.anydoorplugin.util.JsonElementUtil;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @description:
@@ -122,6 +127,7 @@ public class MethodDataContext implements Multicaster, Listener {
         return dataItemList;
     }
 
+    @Nullable
     public PsiMethod getMethod() {
         String simpleMethodName = IdeClassUtil.getSimpleMethodName(qualifiedMethodName);
         if (Objects.nonNull(classDataContext.clazz)) {
@@ -138,7 +144,7 @@ public class MethodDataContext implements Multicaster, Listener {
     public PsiParameterList getParamList() {
         PsiMethod method = getMethod();
         if (Objects.isNull(method)) {
-            return null;
+            return new PsiParameterListImpl(new PsiParameterListStubImpl(null));
         }
         return method.getParameterList();
     }

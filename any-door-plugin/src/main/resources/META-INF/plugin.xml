@@ -24,6 +24,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <strong>2.1.3 常规支持版本</strong>
+        <ul>
+            <li>支持IDEA的24.1版本</li>
+            <li>返回值是Optional类型直接打印内容</li>
+            <li>[fix]增加jsonKey判断逻辑</li>
+        </ul>
         <strong>2.1.2 修复版本</strong>
         <ul>
             <li>支持23.3版本</li>

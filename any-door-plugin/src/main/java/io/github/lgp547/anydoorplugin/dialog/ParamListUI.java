@@ -73,6 +73,7 @@ public class ParamListUI extends JPanel implements Listener {
     private final Project project;
 
     private JBPopup myPopup;
+    @Nullable
     private ClassDataContext context;
 
     public ParamListUI(Project project) {
@@ -99,6 +100,9 @@ public class ParamListUI extends JPanel implements Listener {
         toolBar.addToolButton("Delete", AnyDoorIcons.delete_icon, AnyDoorIcons.delete_hover_icon, e -> deleteAction());
 
         toolBar.addToolButton("Refresh", AnyDoorIcons.refresh_icon, AnyDoorIcons.refresh_hover_icon, e -> {
+            if (null == context) {
+                return;
+            }
             context = DataContext.instance(project).getClassDataContextNoCache(context.clazz.getQualifiedName());
 
             tableModel.refreshAll(ViewData.toViewData(context.data));
@@ -184,7 +188,10 @@ public class ParamListUI extends JPanel implements Listener {
             @Override
             protected void doOKAction() {
                 List<ParamDataItem> removeItems = tableModel.getItems().stream().filter(ViewData::isSelected).map(ViewData::getDataItem).collect(Collectors.toList());
-                if (removeItems.size() == 0) {
+                if (removeItems.isEmpty()) {
+                    return;
+                }
+                if (null == context) {
                     return;
                 }
                 DefaultMulticaster.getInstance(project).fireEvent(EventHelper.createGlobalRemoveDataChangeEvent(context.clazz.getQualifiedName(), removeItems.get(0).getQualifiedName(), removeItems));
@@ -303,6 +310,9 @@ public class ParamListUI extends JPanel implements Listener {
     @Override
     public void onEvent(Event event) {
         if (Objects.equals(event.getType(), EventType.DATA_SYNC)) {
+            if (null == context) {
+                return;
+            }
             doReadAndRefresh(context.clazz.getQualifiedName());
         }
     }

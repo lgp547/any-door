@@ -5,6 +5,14 @@
     <vendor email="lgp547279@163.com" url="https://github.com/lgp547">lgp</vendor>
     <idea-version since-build="240.*"/>
     <description><![CDATA[
+        Any method to execute a Java project,Either the 'App' layer or the 'Dao' layer can execution directly.<br>
+        Getting Started:<br>
+        <ul>
+            <li>fill 'Preferences.Other Settings.Setting Any Door' text box (command+,)</li>
+            <li>select method and 'Open AnyDoor' (control/command+shift+D)</li>
+            <li>fill json param before run</li>
+        </ul>
+
         执行 Java 项目的任意方法，无论是 App 层还是 Dao 层方法都可以直接运行<br>
         快速开始：<br>
         <ul>
@@ -14,17 +22,14 @@
         </ul>
         详情说明见 <a href="https://github.com/lgp547/any-door#readme">any-door#readme</a><br>
         QQ讨论群: 421880294<br><br>
-
-        Any method to execute a Spring project,Either the 'App' layer or the 'Dao' layer can execution directly.<br>
-        Getting Started:<br>
-        <ul>
-            <li>fill 'Preferences.Other Settings.Setting Any Door' text box (command+,)</li>
-            <li>select method and 'Open AnyDoor' (control/command+shift+D)</li>
-            <li>fill json param before run</li>
-        </ul>
     ]]></description>
 
     <change-notes><![CDATA[
+        <strong>2.2.0 功能扩展版本</strong>
+        <ul>
+            <li>支持提前执行任意代码（方便设置上下文）</li>
+            <li>支持 Json 带有注释的内容</li>
+        </ul>
         <strong>2.1.4 常规支持版本</strong>
         <ul>
             <li>支持高版本代码，调整默认支持未来所有版本</li>

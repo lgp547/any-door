@@ -213,8 +213,8 @@ public class MyComboBox extends JComboBox<ParamDataItem> implements Listener {
             @NotNull
             Dimension getArrowButtonPreferredSize(@Nullable JComboBox comboBox) {
                 Insets i = comboBox != null ? comboBox.getInsets() : getDefaultComboBoxInsets();
-                int height = (isCompact(comboBox) ? COMPACT_HEIGHT.get() : MINIMUM_HEIGHT.get()) + i.top + i.bottom;
-                return new Dimension(ARROW_BUTTON_WIDTH.get() + i.left, height);
+                int height = (isCompact(comboBox) ? COMPACT_HEIGHT.get() :  (int) JBUI.CurrentTheme.ComboBox.minimumSize().getHeight()) + i.top + i.bottom;
+                return new Dimension(JBUI.CurrentTheme.Component.ARROW_AREA_WIDTH.get() + i.left, height);
             }
 
             private JBInsets getDefaultComboBoxInsets() {

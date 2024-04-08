@@ -1,3 +1,5 @@
+fun properties(key: String) = providers.gradleProperty(key)
+
 plugins {
     id("java")
     id("org.jetbrains.intellij") version "1.12.0"
@@ -22,7 +24,7 @@ dependencies {
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
-    version.set("2022.1")
+    version.set("2024.1")
     type.set("IU") // Target IDE Platform
 //    type.set("IC") // Target IDE Platform
 
@@ -32,13 +34,13 @@ intellij {
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
+        sourceCompatibility = "17"
+        targetCompatibility = "17"
     }
 
     patchPluginXml {
-        sinceBuild.set("203.*")
-        untilBuild.set("241.*")
+        sinceBuild.set(properties("pluginSinceBuild"))
+        untilBuild.set(properties("pluginUntilBuild"))
     }
 
 //    signPlugin {

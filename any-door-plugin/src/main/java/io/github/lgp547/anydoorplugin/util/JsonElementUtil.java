@@ -13,6 +13,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import com.intellij.psi.PsiType;
+import com.intellij.psi.PsiTypes;
 import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.impl.source.tree.PsiErrorElementImpl;
@@ -41,28 +42,28 @@ public class JsonElementUtil {
             return JsonNull.INSTANCE;
         }
         // 新版本使用：PsiTypes.intType()
-        if (type.isAssignableFrom(PsiType.INT)) {
+        if (type.isAssignableFrom(PsiTypes.intType())) {
             return new JsonPrimitive(0);
         }
-        if (type.isAssignableFrom(PsiType.LONG)) {
+        if (type.isAssignableFrom(PsiTypes.longType())) {
             return new JsonPrimitive(0);
         }
-        if (type.isAssignableFrom(PsiType.BOOLEAN)) {
+        if (type.isAssignableFrom(PsiTypes.booleanType())) {
             return new JsonPrimitive(false);
         }
-        if (type.isAssignableFrom(PsiType.BYTE)) {
+        if (type.isAssignableFrom(PsiTypes.byteType())) {
             return new JsonPrimitive("");
         }
-        if (type.isAssignableFrom(PsiType.CHAR)) {
+        if (type.isAssignableFrom(PsiTypes.charType())) {
             return new JsonPrimitive("");
         }
-        if (type.isAssignableFrom(PsiType.DOUBLE)) {
+        if (type.isAssignableFrom(PsiTypes.doubleType())) {
             return new JsonPrimitive(0.00);
         }
-        if (type.isAssignableFrom(PsiType.FLOAT)) {
+        if (type.isAssignableFrom(PsiTypes.floatType())) {
             return new JsonPrimitive(0.0);
         }
-        if (type.isAssignableFrom(PsiType.SHORT)) {
+        if (type.isAssignableFrom(PsiTypes.shortType())) {
             return new JsonPrimitive("");
         }
         if (type instanceof PsiClassType) {

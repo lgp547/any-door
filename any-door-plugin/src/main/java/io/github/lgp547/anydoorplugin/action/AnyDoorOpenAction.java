@@ -1,5 +1,6 @@
 package io.github.lgp547.anydoorplugin.action;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -80,4 +81,8 @@ public class AnyDoorOpenAction extends AnAction {
         return file.findElementAt(position);
     }
 
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
+    }
 }

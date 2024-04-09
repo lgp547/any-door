@@ -3,6 +3,7 @@
     <id>io.github.lgp547.any-door-plugin</id>
     <name>AnyDoor</name>
     <vendor email="lgp547279@163.com" url="https://github.com/lgp547">lgp</vendor>
+    <idea-version since-build="240.*"/>
     <description><![CDATA[
         执行 Java 项目的任意方法，无论是 App 层还是 Dao 层方法都可以直接运行<br>
         快速开始：<br>
@@ -40,38 +41,6 @@
             <li>支持23.3版本</li>
             <li>[fix]jsonKey的判断</li>
             <li>[fix]批量情况接口的参数传递</li>
-        </ul>
-        <strong>2.1.1 代码提示和导航</strong>
-        <ul>
-            <li>增加参数窗口填写Key的时候代码完成提示</li>
-            <li>增加参数窗口Key的导航跳转</li>
-            <li>支持批量参数批量的调用（数组格式）</li>
-            <li>[fix]打开参数窗口遇到文件失效</li>
-            <li>[fix]在黑色主题下窗口背景颜色不正确</li>
-        </ul>
-        <strong>2.0.2</strong>
-        <ul>
-            <li>[fix]修复获取不到bean的情况</li>
-        </ul>
-        <strong>2.0.1</strong>
-        <ul>
-            <li>[fix]修复私有方法丢失依赖</li>
-        </ul>
-        <strong>2.0.0</strong>
-        <ul>
-            <li>团队协助，共享调用参数 <a href="https://github.com/zhouhao91">@zhouhao91</a></li>
-            <li>参数UI页面优化 <a href="https://github.com/zhouhao91">@zhouhao91</a></li>
-            <li>[fix]无提供spring项目的调用</li>
-            <li>[fix]懒加载情况下会有无法实例化类情况</li>
-            <li>[fix]参数传递中文路径</li>
-            <li>[fix]重载方法参数有基本数据类型时报错问题 <a href="https://github.com/auto-generated">@jinghong</a></li>
-        </ul>
-        <strong>1.4.0</strong>
-        <ul>
-            <li>类加载隔离，和运行项目不做耦合，无依赖冲突问题</li>
-            <li>支持没有 Spring 依赖的 Java 项目，插件运行无需使用方提供 Spring 依赖</li>
-            <li>一个类多实例将会随机取一个实例</li>
-            <li>[fix]无参方法无记录上一次调用</li>
         </ul>
     ]]>
     </change-notes>

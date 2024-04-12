@@ -1,5 +1,6 @@
 package io.github.lgp547.anydoorplugin.action;
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
@@ -41,5 +42,10 @@ public class AnyDoorAgainOpenAction extends AnAction {
     public void update(@NotNull final AnActionEvent e) {
         Project project = e.getProject();
         e.getPresentation().setEnabledAndVisible(project != null);
+    }
+
+    @Override
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT;
     }
 }

@@ -23,6 +23,8 @@ public class JsonUtil {
     public static ObjectMapper objectMapper = new ObjectMapper();
 
     static {
+        //注释处理
+        objectMapper.configure(JsonReadFeature.ALLOW_JAVA_COMMENTS.mappedFeature(), true);
         //序列化处理
         objectMapper.configure(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS.mappedFeature(), true);
         objectMapper.configure(JsonReadFeature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER.mappedFeature(), true);

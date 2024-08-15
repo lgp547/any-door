@@ -26,36 +26,36 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         super(bean, method);
     }
 
-    public CompletableFuture<Object> invokeAsync(Map<String, Object> contentMap) {
+    public CompletableFuture<Object> invokeAsync(Runnable startRun, Map<String, Object> contentMap) {
         Object[] args = getArgs(contentMap);
-        return CompletableFuture.supplyAsync(() -> doInvoke(args));
+        return CompletableFuture.supplyAsync(() -> doInvoke(startRun, args));
     }
 
     /**
      * 阻塞调度线程，简化堆栈使用
      */
-    public Object invokeSync(Map<String, Object> contentMap) {
-        return doInvoke(getArgs(contentMap));
+    public Object invokeSync(Runnable startRun, Map<String, Object> contentMap) {
+        return doInvoke(startRun, getArgs(contentMap));
     }
 
     /**
      * 并行，阻塞调度进程
      */
-    public void parallelInvokeSync(List<Map<String, Object>> contentMaps, int num, BiConsumer<Integer, Object> resultLogConsumer) {
+    public void parallelInvokeSync(Runnable startRun, List<Map<String, Object>> contentMaps, int num, BiConsumer<Integer, Object> resultLogConsumer) {
         Object[] curArgs = null;
         for (int i = 0; i < num; i++) {
             if (contentMaps.size() > i) {
                 curArgs = getArgs(contentMaps.get(i));
             }
             final Object[] args = curArgs;
-            resultLogConsumer.accept(i, doInvoke(args));
+            resultLogConsumer.accept(i, doInvoke(startRun, args));
         }
     }
 
     /**
      * 并行，不阻塞调度进程
      */
-    public CompletableFuture<Void> parallelInvokeAsync(List<Map<String, Object>> contentMaps, int num, BiConsumer<Integer, Object> resultLogConsumer) {
+    public CompletableFuture<Void> parallelInvokeAsync(Runnable startRun, List<Map<String, Object>> contentMaps, int num, BiConsumer<Integer, Object> resultLogConsumer) {
         return CompletableFuture.runAsync(() -> {
             Object[] curArgs = null;
             for (int i = 0; i < num; i++) {
@@ -63,7 +63,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
                     curArgs = getArgs(contentMaps.get(i));
                 }
                 final Object[] args = curArgs;
-                resultLogConsumer.accept(i, doInvoke(args));
+                resultLogConsumer.accept(i, doInvoke(startRun, args));
             }
         });
     }
@@ -71,7 +71,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
     /**
      * 并发，不阻塞调度进程
      */
-    public List<CompletableFuture<Object>> concurrentInvokeAsync(List<Map<String, Object>> contentMaps, int num, BiConsumer<Integer, Object> resultLogConsumer, BiConsumer<Integer, Throwable> excLogConsumer) {
+    public List<CompletableFuture<Object>> concurrentInvokeAsync(Runnable startRun, List<Map<String, Object>> contentMaps, int num, BiConsumer<Integer, Object> resultLogConsumer, BiConsumer<Integer, Throwable> excLogConsumer) {
         Object[] curArgs = null;
         List<CompletableFuture<Object>> completableFutures = new ArrayList<>(num);
         for (int i = 0; i < num; i++) {
@@ -80,7 +80,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
             }
             final Object[] args = curArgs;
             final int i1 = i;
-            CompletableFuture<Object> objectCompletableFuture = CompletableFuture.supplyAsync(() -> doInvoke(args)).whenComplete(((o, throwable) -> {
+            CompletableFuture<Object> objectCompletableFuture = CompletableFuture.supplyAsync(() -> doInvoke(startRun, args)).whenComplete(((o, throwable) -> {
                 if (throwable != null) {
                     excLogConsumer.accept(i1, throwable);
                 } else {
@@ -92,7 +92,12 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         return completableFutures;
     }
 
-    public Object doInvoke(Object[] args) {
+    public Object doInvoke(Runnable startRun, Object[] args) {
+        try {
+            startRun.run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Object bean = getBean();
         if (bean instanceof Proxy) {
             InvocationHandler invocationHandler = Proxy.getInvocationHandler(bean);

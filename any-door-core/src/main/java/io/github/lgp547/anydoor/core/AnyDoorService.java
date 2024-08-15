@@ -40,8 +40,7 @@ public class AnyDoorService {
                     bean = AnyDoorAopUtil.getTargetObject(bean);
                 }
             }
-            return doRun(anyDoorDto, method, bean, () -> {
-            });
+            return doRun(anyDoorDto, method, bean, () -> {}, () -> {});
         } catch (Exception e) {
             System.err.println("anyDoorService run exception. param [" + anyDoorDto + "]");
             throw new RuntimeException(e);
@@ -51,7 +50,7 @@ public class AnyDoorService {
     /**
      * {@code  io.github.lgp547.anydoor.attach.AnyDoorAttach#AnyDoorRun(String)}
      */
-    public Object run(String anyDoorDtoStr, Method method, Object bean, Runnable endRun) {
+    public Object run(String anyDoorDtoStr, Method method, Object bean, Runnable startRun, Runnable endRun) {
         if (null == anyDoorDtoStr || anyDoorDtoStr.isEmpty()) {
             System.err.println("anyDoorService run param exception. anyDoorDtoStr is empty");
             return null;
@@ -63,7 +62,7 @@ public class AnyDoorService {
 
         try {
             Thread.currentThread().setContextClassLoader(AnyDoorService.class.getClassLoader());
-            return doRun(JsonUtil.toJavaBean(anyDoorDtoStr, AnyDoorRunDto.class), method, bean, endRun);
+            return doRun(JsonUtil.toJavaBean(anyDoorDtoStr, AnyDoorRunDto.class), method, bean, startRun, endRun);
         } catch (Throwable throwable) {
             System.err.println("anyDoorService run exception. param [" + anyDoorDtoStr + "]");
             Optional.ofNullable(throwable.getCause()).map(Throwable::getCause).map(Throwable::getCause).orElse(throwable).printStackTrace();
@@ -71,13 +70,13 @@ public class AnyDoorService {
         }
     }
 
-    public Object doRun(AnyDoorRunDto anyDoorDto, Method method, Object bean, Runnable endRun) {
+    public Object doRun(AnyDoorRunDto anyDoorDto, Method method, Object bean, Runnable startRun, Runnable endRun) {
         String methodName = method.getName();
         String content = JsonUtil.toStrNotExc(anyDoorDto.getContent());
-        return handleAndRun(anyDoorDto, method, bean, endRun, content, methodName);
+        return handleAndRun(anyDoorDto, method, bean, startRun, endRun, content, methodName);
     }
 
-    private static Object handleAndRun(AnyDoorRunDto anyDoorDto, Method method, Object bean, Runnable endRun, String content, String methodName) {
+    private static Object handleAndRun(AnyDoorRunDto anyDoorDto, Method method, Object bean, Runnable startRun, Runnable endRun, String content, String methodName) {
         AnyDoorHandlerMethod handlerMethod = new AnyDoorHandlerMethod(bean, method);
 
         Integer num = anyDoorDto.getNum();
@@ -99,25 +98,25 @@ public class AnyDoorService {
 
         if (num == 1) {
             if (Objects.equals(anyDoorDto.getSync(), true)) {
-                Object result = handlerMethod.invokeSync(contentMaps.get(0));
+                Object result = handlerMethod.invokeSync(startRun, contentMaps.get(0));
                 System.out.println(ANY_DOOR_RUN_MARK + methodName + " return: " + JsonUtil.toContentStrNotExc(result));
                 endRun.run();
                 return result;
             } else {
-                handlerMethod.invokeAsync(contentMaps.get(0)).whenComplete(futureResultLogConsumer(methodName)).whenComplete((result, throwable) -> endRun.run());
+                handlerMethod.invokeAsync(startRun, contentMaps.get(0)).whenComplete(futureResultLogConsumer(methodName)).whenComplete((result, throwable) -> endRun.run());
                 return null;
             }
         } else {
             if (anyDoorDto.getConcurrent()) {
                 List<CompletableFuture<Object>> completableFutures =
-                    handlerMethod.concurrentInvokeAsync(contentMaps, num, resultLogConsumer(methodName), excLogConsumer(methodName));
+                    handlerMethod.concurrentInvokeAsync(startRun, contentMaps, num, resultLogConsumer(methodName), excLogConsumer(methodName));
                 CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0])).whenComplete((result, throwable) -> endRun.run());
             } else {
                 if (Objects.equals(anyDoorDto.getSync(), true)) {
-                    handlerMethod.parallelInvokeSync(contentMaps, num, resultLogConsumer(methodName));
+                    handlerMethod.parallelInvokeSync(startRun, contentMaps, num, resultLogConsumer(methodName));
                     endRun.run();
                 } else {
-                    CompletableFuture<Void> voidCompletableFuture = handlerMethod.parallelInvokeAsync(contentMaps, num, resultLogConsumer(methodName));
+                    CompletableFuture<Void> voidCompletableFuture = handlerMethod.parallelInvokeAsync(startRun, contentMaps, num, resultLogConsumer(methodName));
                     voidCompletableFuture.whenComplete((result, throwable) -> endRun.run());
                 }
             }

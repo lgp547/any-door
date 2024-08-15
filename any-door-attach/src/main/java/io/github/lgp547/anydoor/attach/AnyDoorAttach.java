@@ -5,12 +5,19 @@ import io.github.lgp547.anydoor.common.util.AnyDoorClassUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorClassloader;
 import io.github.lgp547.anydoor.common.util.AnyDoorFileUtil;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
+import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.util.function.Function;
 
 public class AnyDoorAttach {
 
@@ -30,19 +37,21 @@ public class AnyDoorAttach {
             }
         }
 
-        AnyDoorRun(agentArgs);
+        AnyDoorRun(agentArgs, inst);
     }
 
 
     /**
      * {@code  io.github.lgp547.anydoor.core.AnyDoorService#run(String, Method, Object, Runnable)}
      */
-    public static void AnyDoorRun(String anyDoorDtoStr) {
+    public static void AnyDoorRun(String anyDoorDtoStr, Instrumentation inst) {
         AnyDoorRunDto anyDoorRunDto = AnyDoorRunDto.parseObj(anyDoorDtoStr);
         if (!anyDoorRunDto.verifyPassByAttach()) {
             System.err.println("any_door agentmain error. anyDoorDtoStr[" + anyDoorDtoStr + "]");
             return;
         }
+
+        Runnable startRun = getStartRunnable(inst, anyDoorRunDto);
 
         AnyDoorVmToolUtils.init();
 
@@ -54,9 +63,9 @@ public class AnyDoorAttach {
 
             Class<?> anyDoorServiceClass = anyDoorClassloader.loadClass("io.github.lgp547.anydoor.core.AnyDoorService");
             Object anyDoorService = anyDoorServiceClass.getConstructor().newInstance();
-            Method run = anyDoorServiceClass.getMethod("run", String.class, Method.class, Object.class, Runnable.class);
+            Method run = anyDoorServiceClass.getMethod("run", String.class, Method.class, Object.class, Runnable.class, Runnable.class);
             Runnable endRun = anyDoorClassloader::forceClose;
-            run.invoke(anyDoorService, anyDoorDtoStr, method, instance, endRun);
+            run.invoke(anyDoorService, anyDoorDtoStr, method, instance, startRun, endRun);
         } catch (Exception e) {
             System.err.println("any_door agentmain error. anyDoorDtoStr[" + anyDoorDtoStr + "]");
             e.printStackTrace();
@@ -64,6 +73,73 @@ public class AnyDoorAttach {
     }
 
 
+    private static Runnable getStartRunnable(Instrumentation inst, AnyDoorRunDto anyDoorRunDto) {
+        Runnable runnable = () -> {};
+        try {
+            if (!anyDoorRunDto.getNeedUpdate()) {
+                return runnable;
+            }
 
+            String className = "AnyDoorInjectedClass";
+
+            Class<?> cls = searchClass(inst, className);
+
+            boolean isNullCls = cls == null;
+
+            Function<String, String> javaFilePath = (name) -> anyDoorRunDto.dataBaseJavaPath() + name + ".java";
+            Function<String, String> classFilePath = (name) -> anyDoorRunDto.dataBaseJavaPath() + name + ".class";
+
+            // 编译java文件
+            compilerJavaFile(javaFilePath.apply(className));
+
+            if (isNullCls) {
+                // 将编译后的class文件加载到内存中
+                URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{new File(anyDoorRunDto.dataBaseJavaPath()).toURI().toURL()});
+                cls = Class.forName(className, true, urlClassLoader);
+            }
+
+            byte[] bytes = Files.readAllBytes(new File(classFilePath.apply(className)).toPath());
+            inst.redefineClasses(new ClassDefinition(cls, bytes));
+
+            // 使用反射调用类的方法
+            Object instance = cls.getDeclaredConstructor().newInstance();
+            Method method = cls.getMethod("preRun");
+            runnable = () -> {
+                try {
+                    method.invoke(instance);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            };
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return runnable;
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private static void compilerJavaFile(String javaPath) {
+        new File(javaPath.replace(".java", ".class")).delete();
+
+        // 获取Java编译器
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        // 编译文件
+        int run = compiler.run(null, null, null, javaPath);
+        if (run != 0) {
+            throw new RuntimeException("编译失败");
+        }
+    }
+
+    public static Class<?> searchClass(Instrumentation inst, String className) {
+        Class<?> targetClass = null;
+        for (Class<?> loadedClass : inst.getAllLoadedClasses()) {
+            if (loadedClass.getName().equals(className)) {
+                targetClass = loadedClass;
+                break;
+            }
+        }
+
+        return targetClass;
+    }
 
 }

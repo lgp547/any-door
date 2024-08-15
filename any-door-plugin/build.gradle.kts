@@ -6,19 +6,19 @@ plugins {
 }
 
 group = "io.github.lgp547"
-version = "2.1.4"
+version = "2.1.4-a"
 
 repositories {
     mavenCentral()
     // todo：自行修改成本地仓库地址
-//    mavenLocal {
-//        url = uri("/Users/lgp/.m2/repository")
-//    }
+    mavenLocal {
+        url = uri("/Users/lgp/.m2/repository")
+    }
 }
 
 dependencies {
-    implementation("io.github.lgp547:any-door-core:2.1.4")
-    implementation("io.github.lgp547:any-door-attach:2.1.4")
+    implementation("io.github.lgp547:any-door-core:2.1.4-a")
+    implementation("io.github.lgp547:any-door-attach:2.1.4-a")
 
 }
 

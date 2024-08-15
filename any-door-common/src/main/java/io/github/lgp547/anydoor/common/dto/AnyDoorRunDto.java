@@ -6,6 +6,8 @@ import org.springframework.util.Assert;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -15,6 +17,8 @@ import java.util.stream.Collectors;
  * parameterTypes 参数类型 （若是方法名是唯一的，这个parameterTypes是可选填）
  * isSync         是否同步（默认异步）
  * jarPaths       任意门core-jar包相关路径(用于加载类)
+ * isNeedUpdate   是否需要更新文件（基础路径下的java文件是否变更过）
+ * dataBasePath   ..../.idea/any-door-data
  */
 public class AnyDoorRunDto {
     private String className;
@@ -32,6 +36,10 @@ public class AnyDoorRunDto {
     private Boolean concurrent;
 
     private List<String> jarPaths;
+
+    private Boolean isNeedUpdate;
+
+    private String dataBasePath;
 
     public String getClassName() {
         return className;
@@ -97,6 +105,22 @@ public class AnyDoorRunDto {
         this.jarPaths = jarPaths;
     }
 
+    public Boolean getNeedUpdate() {
+        return isNeedUpdate;
+    }
+
+    public void setNeedUpdate(Boolean needUpdate) {
+        isNeedUpdate = needUpdate;
+    }
+
+    public String getDataBasePath() {
+        return dataBasePath;
+    }
+
+    public void setDataBasePath(String dataBasePath) {
+        this.dataBasePath = dataBasePath;
+    }
+
     public void verify() {
         Assert.notNull(className, "className is required");
         Assert.notNull(methodName, "methodName is required");
@@ -117,12 +141,16 @@ public class AnyDoorRunDto {
                 ", num=" + num +
                 ", concurrent=" + concurrent +
                 ", jarPaths=" + jarPaths +
+                ", isNeedUpdate=" + isNeedUpdate +
+                ", dataBasePath='" + dataBasePath + '\'' +
                 '}';
     }
 
     public static AnyDoorRunDto parseObj(String anyDoorDtoStr) {
         String className = substringBetween(anyDoorDtoStr, "\"className\":\"", "\"");
         String methodName = substringBetween(anyDoorDtoStr, "\"methodName\":\"", "\"");
+        String isNeedUpdate = substringBetween(anyDoorDtoStr, "\"isNeedUpdate\":\"", "\"");
+        String dataBasePath = substringBetween(anyDoorDtoStr, "\"dataBasePath\":\"", "\"");
         List<String> parameterTypes = parseList(anyDoorDtoStr, "parameterTypes");
         List<String> jarPaths = parseList(anyDoorDtoStr, "jarPaths");
 
@@ -131,7 +159,13 @@ public class AnyDoorRunDto {
         anyDoorRunDto.setMethodName(methodName);
         anyDoorRunDto.setParameterTypes(parameterTypes);
         anyDoorRunDto.setJarPaths(jarPaths);
+        anyDoorRunDto.setNeedUpdate(Objects.equals(Optional.ofNullable(isNeedUpdate).map(String::toLowerCase).orElse(""), "true"));
+        anyDoorRunDto.setDataBasePath(dataBasePath);
         return anyDoorRunDto;
+    }
+
+    public String dataBaseJavaPath() {
+        return Optional.ofNullable(dataBasePath).orElse(".") + "/java/";
     }
 
 

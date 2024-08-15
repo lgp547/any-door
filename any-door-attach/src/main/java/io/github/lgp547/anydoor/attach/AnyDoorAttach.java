@@ -17,6 +17,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.function.Function;
 
 public class AnyDoorAttach {
@@ -76,25 +77,26 @@ public class AnyDoorAttach {
     private static Runnable getStartRunnable(Instrumentation inst, AnyDoorRunDto anyDoorRunDto) {
         Runnable runnable = () -> {};
         try {
-            if (!anyDoorRunDto.getNeedUpdate()) {
+            String className = "AnyDoorInjectedClass";
+            String baseJavaPath = anyDoorRunDto.dataBaseJavaPath();
+            Function<String, String> javaFilePath = (name) -> baseJavaPath + name + ".java";
+            Function<String, String> classFilePath = (name) -> baseJavaPath + name + ".class";
+
+            byte[] javaFileBytes = Files.readAllBytes(new File(javaFilePath.apply(className)).toPath());
+            String fileContent = Arrays.toString(javaFileBytes);
+            if (fileContent.contains("AnyDoorIsUpdatePreRun:false")) {
                 return runnable;
             }
 
-            String className = "AnyDoorInjectedClass";
-
             Class<?> cls = searchClass(inst, className);
-
             boolean isNullCls = cls == null;
-
-            Function<String, String> javaFilePath = (name) -> anyDoorRunDto.dataBaseJavaPath() + name + ".java";
-            Function<String, String> classFilePath = (name) -> anyDoorRunDto.dataBaseJavaPath() + name + ".class";
 
             // 编译java文件
             compilerJavaFile(javaFilePath.apply(className));
 
             if (isNullCls) {
                 // 将编译后的class文件加载到内存中
-                URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{new File(anyDoorRunDto.dataBaseJavaPath()).toURI().toURL()});
+                URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{new File(baseJavaPath).toURI().toURL()});
                 cls = Class.forName(className, true, urlClassLoader);
             }
 

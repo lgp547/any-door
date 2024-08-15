@@ -46,7 +46,7 @@ public class AnyDoorPerformed {
 
 
         if (paramTypeNameList.isEmpty()) {
-            String jsonDtoStr = getJsonDtoStr(className, methodName, paramTypeNameList, "{}", !service.enableAsyncExecute, null);
+            String jsonDtoStr = getJsonDtoStr(project, className, methodName, paramTypeNameList, "{}", !service.enableAsyncExecute, null);
             openAnyDoor(project, jsonDtoStr, service, openExcConsumer);
             okAction.run();
         } else {
@@ -68,7 +68,7 @@ public class AnyDoorPerformed {
                     text = JsonUtil.transformedKey(text, AnyDoorActionUtil.getParamTypeNameTransformer(psiMethod.getParameterList()));
                 }
                 text = JsonUtil.compressJson(text);
-                String jsonDtoStr = getJsonDtoStr(className, methodName, paramTypeNameList, text, !service.enableAsyncExecute, paramCacheDto);
+                String jsonDtoStr = getJsonDtoStr(project, className, methodName, paramTypeNameList, text, !service.enableAsyncExecute, paramCacheDto);
                 openAnyDoor(project, jsonDtoStr, service, openExcConsumer);
             });
             dialog.show();
@@ -99,7 +99,7 @@ public class AnyDoorPerformed {
             if (psiClass.isInterface()) {
                 text = JsonUtil.transformedKey(text, AnyDoorActionUtil.getParamTypeNameTransformer(psiMethod.getParameterList()));
             }
-            String jsonDtoStr = getJsonDtoStr(psiClass.getQualifiedName(), psiMethod.getName(), AnyDoorActionUtil.toParamTypeNameList(psiMethod.getParameterList()), text, !service.enableAsyncExecute, paramCacheDto);
+            String jsonDtoStr = getJsonDtoStr(project, psiClass.getQualifiedName(), psiMethod.getName(), AnyDoorActionUtil.toParamTypeNameList(psiMethod.getParameterList()), text, !service.enableAsyncExecute, paramCacheDto);
             openAnyDoor(project, jsonDtoStr, service, (url, e) -> NotifierUtil.notifyError(project, "call " + url + " error [ " + e.getMessage() + " ]"));
         });
         mainUI.show();
@@ -108,7 +108,7 @@ public class AnyDoorPerformed {
     private static void openAnyDoor(Project project, String jsonDtoStr, AnyDoorSettingsState service, BiConsumer<String, Exception> errHandle) {
         if (service.isSelectJavaAttach()) {
             String anyDoorJarPath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_ATTACH_JAR);
-            String paramPath = project.getBasePath() + "/.idea/AnyDoorParam.json";
+            String paramPath = project.getBasePath() + "/.idea/any-door/AnyDoorParam.json";
             VmUtil.attachAsync(String.valueOf(service.pid), anyDoorJarPath, jsonDtoStr, paramPath, errHandle);
         } else {
             HttpUtil.postAsyncByJdk(service.mvcAddress + ":" + service.mvcPort + service.mvcWebPathPrefix + "/any_door/run", jsonDtoStr, errHandle);
@@ -116,7 +116,7 @@ public class AnyDoorPerformed {
     }
 
     @NotNull
-    private static String getJsonDtoStr(String className, String methodName, List<String> paramTypeNameList, String content, boolean isSync, @Nullable ParamCacheDto paramCacheDto) {
+    private static String getJsonDtoStr(Project project, String className, String methodName, List<String> paramTypeNameList, String content, boolean isSync, @Nullable ParamCacheDto paramCacheDto) {
         JsonObject jsonObjectReq = new JsonObject();
         jsonObjectReq.addProperty("content", content);
         jsonObjectReq.addProperty("methodName", methodName);
@@ -132,6 +132,7 @@ public class AnyDoorPerformed {
         String dependenceJarFilePath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_ALL_DEPENDENCE_JAR);
         String anyDoorCommonJarPath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_COMMON_JAR);
         jsonObjectReq.add("jarPaths", JsonUtil.toJsonArray(List.of(anyDoorJarPath, dependenceJarFilePath, anyDoorCommonJarPath)));
+        jsonObjectReq.addProperty("projectBasePath", project.getBasePath());
         return jsonObjectReq.toString();
     }
 

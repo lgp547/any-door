@@ -37,9 +37,7 @@ public class AnyDoorRunDto {
 
     private List<String> jarPaths;
 
-    private Boolean isNeedUpdate;
-
-    private String dataBasePath;
+    private String projectBasePath;
 
     public String getClassName() {
         return className;
@@ -105,20 +103,12 @@ public class AnyDoorRunDto {
         this.jarPaths = jarPaths;
     }
 
-    public Boolean getNeedUpdate() {
-        return isNeedUpdate;
+    public String getProjectBasePath() {
+        return projectBasePath;
     }
 
-    public void setNeedUpdate(Boolean needUpdate) {
-        isNeedUpdate = needUpdate;
-    }
-
-    public String getDataBasePath() {
-        return dataBasePath;
-    }
-
-    public void setDataBasePath(String dataBasePath) {
-        this.dataBasePath = dataBasePath;
+    public void setProjectBasePath(String projectBasePath) {
+        this.projectBasePath = projectBasePath;
     }
 
     public void verify() {
@@ -141,15 +131,13 @@ public class AnyDoorRunDto {
                 ", num=" + num +
                 ", concurrent=" + concurrent +
                 ", jarPaths=" + jarPaths +
-                ", isNeedUpdate=" + isNeedUpdate +
-                ", dataBasePath='" + dataBasePath + '\'' +
+                ", projectBasePath='" + projectBasePath + '\'' +
                 '}';
     }
 
     public static AnyDoorRunDto parseObj(String anyDoorDtoStr) {
         String className = substringBetween(anyDoorDtoStr, "\"className\":\"", "\"");
         String methodName = substringBetween(anyDoorDtoStr, "\"methodName\":\"", "\"");
-        String isNeedUpdate = substringBetween(anyDoorDtoStr, "\"isNeedUpdate\":\"", "\"");
         String dataBasePath = substringBetween(anyDoorDtoStr, "\"dataBasePath\":\"", "\"");
         List<String> parameterTypes = parseList(anyDoorDtoStr, "parameterTypes");
         List<String> jarPaths = parseList(anyDoorDtoStr, "jarPaths");
@@ -159,13 +147,12 @@ public class AnyDoorRunDto {
         anyDoorRunDto.setMethodName(methodName);
         anyDoorRunDto.setParameterTypes(parameterTypes);
         anyDoorRunDto.setJarPaths(jarPaths);
-        anyDoorRunDto.setNeedUpdate(Objects.equals(Optional.ofNullable(isNeedUpdate).map(String::toLowerCase).orElse(""), "true"));
-        anyDoorRunDto.setDataBasePath(dataBasePath);
+        anyDoorRunDto.setProjectBasePath(dataBasePath);
         return anyDoorRunDto;
     }
 
     public String dataBaseJavaPath() {
-        return Optional.ofNullable(dataBasePath).orElse(".") + "/java/";
+        return Optional.ofNullable(projectBasePath).orElse(".") + "/.idea/any-door/java/";
     }
 
 

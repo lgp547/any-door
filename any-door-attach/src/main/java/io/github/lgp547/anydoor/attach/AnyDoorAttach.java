@@ -84,7 +84,7 @@ public class AnyDoorAttach {
 
             byte[] javaFileBytes = Files.readAllBytes(new File(javaFilePath.apply(className)).toPath());
             String fileContent = Arrays.toString(javaFileBytes);
-            if (fileContent.contains("AnyDoorIsUpdatePreRun:false")) {
+            if (!fileContent.contains("AnyDoorIsUpdatePreRun:true")) {
                 return runnable;
             }
 

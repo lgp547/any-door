@@ -10,6 +10,7 @@ public enum EventType {
      * 导入导出
      */
     IMPORT_EXPORT("IMPORT_EXPORT"),
+    PRE_RUN_FUNCTION("PRE_RUN_FUNCTION"),
     DISPLAY_DATA_CHANGE("DISPLAY_DATA_CHANGE"),
     ADD_DATA_ITEM("ADD_DATA_ITEM"),
     ADD_SIMPLE_PARAM_ITEM("ADD_SIMPLE_PARAM_ITEM"),
@@ -25,7 +26,9 @@ public enum EventType {
     GLOBAL_DELETE_DATA_CHANGE("GLOBAL_DELETE_DATA_CHANGE"),
     DATA_SYNC("DATA_SYNC"),
     ;
-    private String name;
+
+    private final String name;
+
     EventType(String name) {
         this.name = name;
     }

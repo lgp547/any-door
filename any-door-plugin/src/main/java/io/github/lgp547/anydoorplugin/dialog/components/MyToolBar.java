@@ -69,6 +69,10 @@ public class MyToolBar extends CustomToolbar {
         this.addToolButton("Last Call Param", AnyDoorIcons.last_call_icon, AnyDoorIcons.last_call_icon, e -> {
             multicaster.fireEvent(new AddDataItemEvent(EventType.ADD_CACHE_PARAM_ITEM, null));
         });
+
+        this.addToolButton("Pre run function", AnyDoorIcons.last_call_icon, AnyDoorIcons.last_call_icon, e -> {
+            multicaster.fireEvent(() -> EventType.PRE_RUN_FUNCTION);
+        });
     }
 
     @Override

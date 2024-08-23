@@ -2,20 +2,12 @@ package io.github.lgp547.anydoorplugin.dialog.components;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.util.Objects;
 
 import javax.swing.*;
 
-import com.intellij.ide.highlighter.JavaFileType;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileFactory;
 import com.intellij.ui.JBIntSpinner;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBPanel;
@@ -28,6 +20,7 @@ import io.github.lgp547.anydoorplugin.dialog.event.EventType;
 import io.github.lgp547.anydoorplugin.dialog.event.impl.ImportExportEvent;
 import io.github.lgp547.anydoorplugin.dialog.event.Listener;
 import io.github.lgp547.anydoorplugin.dialog.utils.EventHelper;
+import io.github.lgp547.anydoorplugin.dialog.utils.JavaFileInfoUtil;
 import io.github.lgp547.anydoorplugin.util.JsonUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -157,23 +150,10 @@ public class MainPanel extends JBPanel<MainPanel> implements Listener {
         if (event.getType() == EventType.IMPORT_EXPORT) {
             createImportExportDialog(((ImportExportEvent) event).getTitle()).show();
         } else if (event.getType() == EventType.PRE_RUN_FUNCTION) {
-            createPreRunFunctionDialog().show();
+            JavaFileInfoUtil.JavaFileInfo JavaFileInfo = JavaFileInfoUtil.readFile2(project.getBasePath() + "/.idea/any-door/java/" + "AnyDoorInjectedClass" + ".java");;
+            new PreRunDialogWrapper(project, JavaFileInfo).show();
         }
     }
-
-    private DialogWrapper createPreRunFunctionDialog() {
-        final PsiFileFactory factory = PsiFileFactory.getInstance(project);
-        final PsiFile psiFile = factory.createFileFromText("AnyDoorInjectedClass", JavaFileType.INSTANCE, "public class AnyDoorInjectedClass {\n" +
-                "    /**\n" +
-                "     * AnyDoorIsUpdatePreRun:false\n" +
-                "     */\n" +
-                "    public void preRun() {\n" +
-                "\n" +
-                "    }\n" +
-                "}\n", System.currentTimeMillis(), true, false);
-        return new MyDialogWrapper(project, psiFile.getVirtualFile());
-    }
-
 
 
     private DialogWrapper createImportExportDialog(String title) {

@@ -30,9 +30,7 @@ import io.github.lgp547.anydoorplugin.util.AnyDoorIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static com.intellij.ide.ui.laf.darcula.DarculaUIUtil.ARROW_BUTTON_WIDTH;
 import static com.intellij.ide.ui.laf.darcula.DarculaUIUtil.COMPACT_HEIGHT;
-import static com.intellij.ide.ui.laf.darcula.DarculaUIUtil.MINIMUM_HEIGHT;
 import static com.intellij.ide.ui.laf.darcula.DarculaUIUtil.isCompact;
 
 /**

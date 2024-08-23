@@ -14,9 +14,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.containers.FixedHashMap;
-import com.intellij.xdebugger.XDebugSession;
-import com.intellij.xdebugger.impl.ui.DebuggerUIUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,8 +29,6 @@ public class AnyDoorOpenAction extends AnAction {
 
     private final static Key<PsiMethod> USER_DATE_ELEMENT_KEY = new Key<>("user.psi.Element");
 
-    public static XDebugSession session = null;
-
     @Override
     public void actionPerformed(@NotNull final AnActionEvent e) {
         final Project project = e.getProject();
@@ -41,10 +36,6 @@ public class AnyDoorOpenAction extends AnAction {
         if (null == project || editor == null) {
             throw new IllegalArgumentException("idea arg error (project or editor is null)");
         }
-
-
-        XDebugSession session = DebuggerUIUtil.getSession(e);
-        AnyDoorOpenAction.session = session;
 
         try {
             PsiMethod psiMethod = null;

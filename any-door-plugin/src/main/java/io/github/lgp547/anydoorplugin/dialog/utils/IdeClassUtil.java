@@ -8,6 +8,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.search.GlobalSearchScope;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @description:
@@ -42,6 +43,7 @@ public class IdeClassUtil {
         return methodName.substring(0, methodName.indexOf("("));
     }
 
+    @Nullable
     public static PsiClass findClass(Project project, String qualifiedClassName) {
         return JavaPsiFacade.getInstance(project).findClass(qualifiedClassName, GlobalSearchScope.allScope(project));
     }

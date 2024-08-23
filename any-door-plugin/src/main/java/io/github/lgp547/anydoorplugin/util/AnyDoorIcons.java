@@ -22,6 +22,7 @@ public class AnyDoorIcons {
 
   public static final Icon example_icon = IconLoader.getIcon("/icon/example.svg", AnyDoorIcons.class);
   public static final Icon last_call_icon = IconLoader.getIcon("/icon/lastCall.svg", AnyDoorIcons.class);
+  public static final Icon pre_run_icon = IconLoader.getIcon("/icon/preRun.svg", AnyDoorIcons.class);
 
   public static final Icon edit_icon = IconLoader.getIcon("/icon/edit.svg", AnyDoorIcons.class);
   public static final Icon edit_hover_icon = IconLoader.getIcon("/icon/editHover.svg", AnyDoorIcons.class);

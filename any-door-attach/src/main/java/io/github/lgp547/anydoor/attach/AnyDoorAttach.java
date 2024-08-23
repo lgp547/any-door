@@ -1,5 +1,6 @@
 package io.github.lgp547.anydoor.attach;
 
+import com.taobao.arthas.common.FileUtils;
 import io.github.lgp547.anydoor.common.dto.AnyDoorRunDto;
 import io.github.lgp547.anydoor.common.util.AnyDoorClassUtil;
 import io.github.lgp547.anydoor.common.util.AnyDoorClassloader;
@@ -16,9 +17,8 @@ import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.function.Function;
 
 public class AnyDoorAttach {
 
@@ -77,13 +77,14 @@ public class AnyDoorAttach {
     private static Runnable getStartRunnable(Instrumentation inst, AnyDoorRunDto anyDoorRunDto) {
         Runnable runnable = () -> {};
         try {
-            String className = "AnyDoorInjectedClass";
-            String baseJavaPath = anyDoorRunDto.dataBaseJavaPath();
-            Function<String, String> javaFilePath = (name) -> baseJavaPath + name + ".java";
-            Function<String, String> classFilePath = (name) -> baseJavaPath + name + ".class";
+            String className = AnyDoorRunDto.AnyDoorInjectedClassName;
+            String baseJavaPath = AnyDoorRunDto.dataBaseJavaPath(anyDoorRunDto.getProjectBasePath());
+            String javaFilePath = baseJavaPath + className + ".java";
+            String classFilePath = baseJavaPath + className + ".class";
 
-            byte[] javaFileBytes = Files.readAllBytes(new File(javaFilePath.apply(className)).toPath());
-            String fileContent = Arrays.toString(javaFileBytes);
+            File javaFile = new File(javaFilePath);
+            byte[] javaFileBytes = Files.readAllBytes(javaFile.toPath());
+            String fileContent = new String(javaFileBytes, StandardCharsets.UTF_8);
             if (!fileContent.contains("AnyDoorIsUpdatePreRun:true")) {
                 return runnable;
             }
@@ -92,7 +93,11 @@ public class AnyDoorAttach {
             boolean isNullCls = cls == null;
 
             // 编译java文件
-            compilerJavaFile(javaFilePath.apply(className));
+            compilerJavaFile(javaFilePath);
+
+            // 替换成false
+            String newContent = fileContent.replace("AnyDoorIsUpdatePreRun:true", "AnyDoorIsUpdatePreRun:false");
+            FileUtils.writeByteArrayToFile(javaFile, newContent.getBytes());
 
             if (isNullCls) {
                 // 将编译后的class文件加载到内存中
@@ -100,7 +105,7 @@ public class AnyDoorAttach {
                 cls = Class.forName(className, true, urlClassLoader);
             }
 
-            byte[] bytes = Files.readAllBytes(new File(classFilePath.apply(className)).toPath());
+            byte[] bytes = Files.readAllBytes(new File(classFilePath).toPath());
             inst.redefineClasses(new ClassDefinition(cls, bytes));
 
             // 使用反射调用类的方法

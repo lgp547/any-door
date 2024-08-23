@@ -151,7 +151,9 @@ public class AnyDoorRunDto {
         return anyDoorRunDto;
     }
 
-    public String dataBaseJavaPath() {
+    public static String AnyDoorInjectedClassName = "AnyDoorInjectedClass";
+
+    public static String dataBaseJavaPath(String projectBasePath) {
         return Optional.ofNullable(projectBasePath).orElse(".") + "/.idea/any-door/java/";
     }
 

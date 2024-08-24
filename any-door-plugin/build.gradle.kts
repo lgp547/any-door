@@ -10,7 +10,7 @@ version = "2.1.4-a"
 
 repositories {
     mavenCentral()
-    // todo：自行修改成本地仓库地址
+    // todo：自行修改成本地maven仓库地址
     mavenLocal {
         url = uri("/Users/lgp/.m2/repository")
     }
@@ -24,9 +24,10 @@ dependencies {
 
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
-    version.set("2024.1")
-    type.set("IU") // Target IDE Platform
-//    type.set("IC") // Target IDE Platform
+    // todo：若没商业版授权，这里改成社区版进行调式
+    version.set("2024.1") // 沙盒 idea 的版本
+    type.set("IU") // 商业版
+//    type.set("IC") // 社区版
 
     plugins.set(listOf("com.intellij.java"))
 }

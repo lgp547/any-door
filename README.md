@@ -124,6 +124,41 @@ Tips：一般情况下会主动填充运行进程的进程id（可在配置页�
 - 一个类多实例将会随机取一个实例
 - [fix]无参方法无记录上一次调用
 
+## 项目说明
+- any-door-common：解决 attach 模块和 core 模块的共同依赖对象，减少重复代码
+- any-door-attach：Java 动态织入入口，插件进程调度到 Java 进程的入口
+  - 重要入口 AnyDoorAttach#agentmain （执行到这个方法，说明成功对 Java 进程侵入了）
+- any-door-core：真正执行反射调用所在模块，以及支持各种扩展功能
+  - 重要入口 AnyDoorService#run （一个是动态织入的入口，一个是非默认的 mvc 入口）
+- any-door-plugin： IDEA 插件 UI 相关实现所在模块
+  - 重要入口 AnyDoorOpenAction#actionPerformed AnyDoorPerformed#invoke
+
+### 如何参与开发
+- 启动 plugin 模块，将会打开一个新的沙盒 IDEA 进行调试
+  - 更改 build.gradle.kts 文件下的 todo 
+  - 模块启动入口在 Gradle 的 Tasks -> intellij -> runlde
+- 对上面说到的重要入口进行打断点，然后再沙盒环境下操作即可
+
+
+### 如何调试 agent 以及进程报错如何调试
+导入attach 和 core 两个模块包到你自己的项目，在上面说明的重要入口打断点即可调试
+```xml
+<dependencies>
+  <dependency>
+    <groupId>io.github.lgp547</groupId>
+    <artifactId>any-door-attach</artifactId>
+    <version>${填写当前插件版本}</version>
+  </dependency>
+  <dependency>
+    <groupId>io.github.lgp547</groupId>
+    <artifactId>any-door-core</artifactId>
+    <version>${填写当前插件版本}</version>
+  </dependency>
+</dependencies>
+```
+
+
+
 ## 感谢
 Tips：若觉得不错，可以点个Star(✨✨)或者[评价](https://plugins.jetbrains.com/plugin/20385-anydoor/reviews/new)下
 

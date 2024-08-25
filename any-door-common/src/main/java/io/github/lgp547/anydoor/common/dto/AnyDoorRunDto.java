@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
  * parameterTypes 参数类型 （若是方法名是唯一的，这个parameterTypes是可选填）
  * isSync         是否同步（默认异步）
  * jarPaths       任意门core-jar包相关路径(用于加载类)
- * isNeedUpdate   是否需要更新文件（基础路径下的java文件是否变更过）
- * dataBasePath   ..../.idea/any-door-data
  */
 public class AnyDoorRunDto {
     private String className;

@@ -83,6 +83,9 @@ public class AnyDoorAttach {
             String classFilePath = baseJavaPath + className + ".class";
 
             File javaFile = new File(javaFilePath);
+            if (!javaFile.exists()) {
+                return runnable;
+            }
             byte[] javaFileBytes = Files.readAllBytes(javaFile.toPath());
             String fileContent = new String(javaFileBytes, StandardCharsets.UTF_8);
             if (!fileContent.contains("AnyDoorIsUpdatePreRun:true")) {

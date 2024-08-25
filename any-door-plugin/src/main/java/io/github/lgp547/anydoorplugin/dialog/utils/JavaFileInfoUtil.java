@@ -61,6 +61,9 @@ public class JavaFileInfoUtil {
     public static JavaFileInfo readFile2(String javaFilePath) {
         try {
             File javaFile = new File(javaFilePath);
+            if (!javaFile.exists()) {
+                return JavaFileInfo.emptyContent(javaFilePath);
+            }
             byte[] javaFileBytes = Files.readAllBytes(javaFile.toPath());
             String fileContent = new String(javaFileBytes, StandardCharsets.UTF_8);
 

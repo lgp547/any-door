@@ -138,7 +138,7 @@ public class AnyDoorRunDto {
     public static AnyDoorRunDto parseObj(String anyDoorDtoStr) {
         String className = substringBetween(anyDoorDtoStr, "\"className\":\"", "\"");
         String methodName = substringBetween(anyDoorDtoStr, "\"methodName\":\"", "\"");
-        String dataBasePath = substringBetween(anyDoorDtoStr, "\"dataBasePath\":\"", "\"");
+        String projectBasePath = substringBetween(anyDoorDtoStr, "\"projectBasePath\":\"", "\"");
         List<String> parameterTypes = parseList(anyDoorDtoStr, "parameterTypes");
         List<String> jarPaths = parseList(anyDoorDtoStr, "jarPaths");
 
@@ -147,7 +147,7 @@ public class AnyDoorRunDto {
         anyDoorRunDto.setMethodName(methodName);
         anyDoorRunDto.setParameterTypes(parameterTypes);
         anyDoorRunDto.setJarPaths(jarPaths);
-        anyDoorRunDto.setProjectBasePath(dataBasePath);
+        anyDoorRunDto.setProjectBasePath(projectBasePath);
         return anyDoorRunDto;
     }
 

@@ -2,7 +2,7 @@ fun properties(key: String) = providers.gradleProperty(key)
 
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.12.0"
+    id("org.jetbrains.intellij") version "1.12.0" /*https://plugins.gradle.org/m2/org/jetbrains/intellij/plugins/gradle-intellij-plugin*/
 }
 
 group = "io.github.lgp547"
@@ -25,11 +25,11 @@ dependencies {
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
     // todo：若没商业版授权，这里改成社区版进行调式
-    version.set("2024.1") // 沙盒 idea 的版本
-    type.set("IU") // 商业版
-//    type.set("IC") // 社区版
+    version.set("2024.3") // 沙盒 idea 的版本
+//    type.set("IU") // 商业版
+    type.set("IC") // 社区版
 
-    plugins.set(listOf("com.intellij.java"))
+    plugins.set(listOf("com.intellij.java", "com.intellij.modules.json"))
 }
 
 tasks {

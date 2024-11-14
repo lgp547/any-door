@@ -6,7 +6,7 @@
     <groupId>io.github.lgp547</groupId>
     <artifactId>any-door</artifactId>
 	<packaging>pom</packaging>
-	<version>2.2.0</version>
+	<version>2.2.1</version>
 	<modules>
 		<module>any-door-core</module>
         <module>any-door-attach</module>

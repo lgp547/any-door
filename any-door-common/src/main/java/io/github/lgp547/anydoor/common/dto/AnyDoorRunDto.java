@@ -1,5 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
 package io.github.lgp547.anydoor.common.dto;
-
 
 import org.springframework.util.Assert;
 
@@ -19,105 +35,106 @@ import java.util.stream.Collectors;
  * jarPaths       任意门core-jar包相关路径(用于加载类)
  */
 public class AnyDoorRunDto {
+    
     private String className;
-
+    
     private String methodName;
-
+    
     private Object content;
-
+    
     private List<String> parameterTypes;
-
+    
     private Boolean isSync;
-
+    
     private Integer num;
-
+    
     private Boolean concurrent;
-
+    
     private List<String> jarPaths;
-
+    
     private String projectBasePath;
-
+    
     public String getClassName() {
         return className;
     }
-
+    
     public void setClassName(String className) {
         this.className = className;
     }
-
+    
     public String getMethodName() {
         return methodName;
     }
-
+    
     public void setMethodName(String methodName) {
         this.methodName = methodName;
     }
-
+    
     public Object getContent() {
         return content;
     }
-
+    
     public void setContent(Object content) {
         this.content = content;
     }
-
+    
     public List<String> getParameterTypes() {
         return parameterTypes;
     }
-
+    
     public void setParameterTypes(List<String> parameterTypes) {
         this.parameterTypes = parameterTypes;
     }
-
+    
     public Boolean getSync() {
         return isSync;
     }
-
+    
     public void setSync(Boolean sync) {
         isSync = sync;
     }
-
+    
     public Integer getNum() {
         return num == null || num < 1 ? 1 : num;
     }
-
+    
     public void setNum(Integer num) {
         this.num = num;
     }
-
+    
     public Boolean getConcurrent() {
         return concurrent;
     }
-
+    
     public void setConcurrent(Boolean concurrent) {
         this.concurrent = concurrent;
     }
-
+    
     public List<String> getJarPaths() {
         return jarPaths;
     }
-
+    
     public void setJarPaths(List<String> jarPaths) {
         this.jarPaths = jarPaths;
     }
-
+    
     public String getProjectBasePath() {
         return projectBasePath;
     }
-
+    
     public void setProjectBasePath(String projectBasePath) {
         this.projectBasePath = projectBasePath;
     }
-
+    
     public void verify() {
         Assert.notNull(className, "className is required");
         Assert.notNull(methodName, "methodName is required");
     }
-
+    
     public boolean verifyPassByAttach() {
         return className != null && methodName != null && jarPaths != null;
     }
-
+    
     @Override
     public String toString() {
         return "AnyDoorRunDto{" +
@@ -132,14 +149,14 @@ public class AnyDoorRunDto {
                 ", projectBasePath='" + projectBasePath + '\'' +
                 '}';
     }
-
+    
     public static AnyDoorRunDto parseObj(String anyDoorDtoStr) {
         String className = substringBetween(anyDoorDtoStr, "\"className\":\"", "\"");
         String methodName = substringBetween(anyDoorDtoStr, "\"methodName\":\"", "\"");
         String projectBasePath = substringBetween(anyDoorDtoStr, "\"projectBasePath\":\"", "\"");
         List<String> parameterTypes = parseList(anyDoorDtoStr, "parameterTypes");
         List<String> jarPaths = parseList(anyDoorDtoStr, "jarPaths");
-
+        
         AnyDoorRunDto anyDoorRunDto = new AnyDoorRunDto();
         anyDoorRunDto.setClassName(className);
         anyDoorRunDto.setMethodName(methodName);
@@ -148,14 +165,13 @@ public class AnyDoorRunDto {
         anyDoorRunDto.setProjectBasePath(projectBasePath);
         return anyDoorRunDto;
     }
-
+    
     public static String AnyDoorInjectedClassName = "AnyDoorInjectedClass";
-
+    
     public static String dataBaseJavaPath(String projectBasePath) {
         return Optional.ofNullable(projectBasePath).orElse(".") + "/.idea/any-door/java/";
     }
-
-
+    
     public static List<String> parseList(String anyDoorDtoStr, String paramName) {
         String s = substringBetween(anyDoorDtoStr, "\"" + paramName + "\":[", "]");
         if (!isEmpty(s)) {
@@ -163,7 +179,7 @@ public class AnyDoorRunDto {
         }
         return new ArrayList<>();
     }
-
+    
     public static String substringBetween(final String str, final String open, final String close) {
         if (str == null || open == null || close == null) {
             return null;
@@ -177,7 +193,7 @@ public class AnyDoorRunDto {
         }
         return null;
     }
-
+    
     public static String removeEnd(final String str, final String remove) {
         if (isEmpty(str) || isEmpty(remove)) {
             return str;
@@ -187,7 +203,7 @@ public class AnyDoorRunDto {
         }
         return str;
     }
-
+    
     public static String removeStart(final String str, final String remove) {
         if (isEmpty(str) || isEmpty(remove)) {
             return str;
@@ -197,10 +213,9 @@ public class AnyDoorRunDto {
         }
         return str;
     }
-
+    
     public static boolean isEmpty(final CharSequence cs) {
         return cs == null || cs.length() == 0;
     }
-
-
+    
 }

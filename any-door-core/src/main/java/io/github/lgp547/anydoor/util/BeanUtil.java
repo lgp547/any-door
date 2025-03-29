@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
 package io.github.lgp547.anydoor.util;
 
 import io.github.lgp547.anydoor.common.util.AnyDoorBeanUtil;
@@ -16,8 +33,9 @@ import java.util.Locale;
 import java.util.Map;
 
 public class BeanUtil {
+    
     public static final SimpleTypeConverter SIMPLE_TYPE_CONVERTER = new SimpleTypeConverter();
-
+    
     public static <T> T toBean(Class<T> clazz, String value) {
         T obj = AnyDoorBeanUtil.instantiate(clazz);
         if (value.startsWith("{") && value.endsWith("}")) {
@@ -28,7 +46,7 @@ public class BeanUtil {
         }
         return obj;
     }
-
+    
     private static <T> void setValue(Class<T> clazz, Object obj, String name, Object value) {
         try {
             Field field = clazz.getDeclaredField(name);
@@ -39,8 +57,7 @@ public class BeanUtil {
         } catch (Exception ignored) {
         }
     }
-
-
+    
     private static Object getArgs(Field field, String value) {
         Object obj = null;
         if (BeanUtil.isSimpleProperty(field.getType())) {
@@ -57,12 +74,12 @@ public class BeanUtil {
         }
         return obj;
     }
-
+    
     public static boolean isSimpleProperty(Class<?> type) {
         Assert.notNull(type, "'type' must not be null");
         return isSimpleValueType(type);
     }
-
+    
     public static boolean isSimpleValueType(Class<?> type) {
         return (Void.class != type && void.class != type &&
                 (ClassUtils.isPrimitiveOrWrapper(type) ||
@@ -76,11 +93,11 @@ public class BeanUtil {
                         Locale.class == type ||
                         Class.class == type));
     }
-
+    
     public static Object simpleTypeConvertIfNecessary(MethodParameter parameter, String value) {
         return SIMPLE_TYPE_CONVERTER.convertIfNecessary(value, parameter.getParameterType(), parameter);
     }
-
+    
     public static <T> T simpleTypeConvertIfNecessary(Object value, Class<T> clazz) {
         return SIMPLE_TYPE_CONVERTER.convertIfNecessary(value, clazz);
     }

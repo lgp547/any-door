@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
 package io.github.lgp547.anydoor.test.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,11 +35,11 @@ import java.util.stream.Collectors;
 
 @RestController
 public class Controller implements ApplicationRunner {
-
+    
     @RequestMapping("/run")
     @Override
     public void run(ApplicationArguments args) {
-
+        
         // 测试是否支持java的注释
         Map<String, Object> map = JsonUtil.toMap("{\n" +
                 "  \"dto\": {\n" +
@@ -31,7 +48,7 @@ public class Controller implements ApplicationRunner {
                 "    \"teset1\": 0\n" +
                 "  }\n" +
                 "}");
-
+        
         Class<?> clazz = Bean.class;
         Class<?> clazz2 = DtoBean.class;
         Class<?> clazz3 = AopBean.class;
@@ -41,14 +58,14 @@ public class Controller implements ApplicationRunner {
         doRun(clazz3, jsonNode);
         doRun(BatchParallelBean.class, jsonNode);
         doRun(BatchConcurrentBean.class, jsonNode);
-
+        
         System.out.println("###################成功结束###################");
     }
-
+    
     private void doRun(Class<?> clazz, JsonNode jsonNode) {
         for (Method method : clazz.getDeclaredMethods()) {
             System.out.println("调用方法 " + clazz.getSimpleName() + " " + method.getName());
-
+            
             AnyDoorRunDto anyDoorDto = new AnyDoorRunDto();
             anyDoorDto.setClassName(clazz.getName());
             anyDoorDto.setMethodName(method.getName());
@@ -66,7 +83,7 @@ public class Controller implements ApplicationRunner {
                 anyDoorDto.setNum(10);
                 anyDoorDto.setConcurrent(true);
             }
-
+            
             AnyDoorService anyDoorService = new AnyDoorService();
             try {
                 anyDoorService.run(anyDoorDto);

@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
 package io.github.lgp547.anydoor.core;
 
 import io.github.lgp547.anydoor.support.HandlerMethod;
@@ -21,23 +38,23 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 public class AnyDoorHandlerMethod extends HandlerMethod {
-
+    
     public AnyDoorHandlerMethod(Object bean, Method method) {
         super(bean, method);
     }
-
+    
     public CompletableFuture<Object> invokeAsync(Runnable startRun, Map<String, Object> contentMap) {
         Object[] args = getArgs(contentMap);
         return CompletableFuture.supplyAsync(() -> doInvoke(startRun, args));
     }
-
+    
     /**
      * 阻塞调度线程，简化堆栈使用
      */
     public Object invokeSync(Runnable startRun, Map<String, Object> contentMap) {
         return doInvoke(startRun, getArgs(contentMap));
     }
-
+    
     /**
      * 并行，阻塞调度进程
      */
@@ -51,7 +68,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
             resultLogConsumer.accept(i, doInvoke(startRun, args));
         }
     }
-
+    
     /**
      * 并行，不阻塞调度进程
      */
@@ -67,11 +84,12 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
             }
         });
     }
-
+    
     /**
      * 并发，不阻塞调度进程
      */
-    public List<CompletableFuture<Object>> concurrentInvokeAsync(Runnable startRun, List<Map<String, Object>> contentMaps, int num, BiConsumer<Integer, Object> resultLogConsumer, BiConsumer<Integer, Throwable> excLogConsumer) {
+    public List<CompletableFuture<Object>> concurrentInvokeAsync(Runnable startRun, List<Map<String, Object>> contentMaps, int num, BiConsumer<Integer, Object> resultLogConsumer,
+                                                                 BiConsumer<Integer, Throwable> excLogConsumer) {
         Object[] curArgs = null;
         List<CompletableFuture<Object>> completableFutures = new ArrayList<>(num);
         for (int i = 0; i < num; i++) {
@@ -91,7 +109,7 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         }
         return completableFutures;
     }
-
+    
     public Object doInvoke(Runnable startRun, Object[] args) {
         try {
             startRun.run();
@@ -115,13 +133,13 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
             throw new RuntimeException(e);
         }
     }
-
+    
     protected Object[] getArgs(Map<String, Object> contentMap) {
         MethodParameter[] parameters = getMethodParameters();
         if (parameters == null || parameters.length == 0) {
             return new Object[0];
         }
-
+        
         Object[] args = new Object[parameters.length];
         for (int i = 0; i < parameters.length; i++) {
             MethodParameter parameter = parameters[i];
@@ -137,12 +155,12 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
                 args[i] = null;
                 continue;
             }
-
+            
             args[i] = getArgs(parameter, value);
         }
         return args;
     }
-
+    
     /**
      * simpleTypeConvert
      * json序列化
@@ -165,5 +183,5 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         }
         return obj;
     }
-
+    
 }

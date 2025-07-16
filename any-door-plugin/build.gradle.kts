@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "io.github.lgp547"
-version = "2.2.1"
+version = "2.2.2"
 
 repositories {
     mavenCentral()
@@ -17,8 +17,8 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.lgp547:any-door-core:2.2.1")
-    implementation("io.github.lgp547:any-door-attach:2.2.1")
+    implementation("io.github.lgp547:any-door-core:2.2.2")
+    implementation("io.github.lgp547:any-door-attach:2.2.2")
 
 }
 

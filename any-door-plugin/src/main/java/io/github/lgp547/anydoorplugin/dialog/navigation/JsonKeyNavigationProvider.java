@@ -48,7 +48,7 @@ public class JsonKeyNavigationProvider implements DirectNavigationProvider {
             if (parameter.getType() instanceof PsiClassType) {
                 PsiClass psiClass = ((PsiClassType) parameter.getType()).resolve();
                 if (psiClass != null) {
-                    for (PsiField field : psiClass.getFields()) {
+                    for (PsiField field : psiClass.getAllFields()) {
                         if (Objects.equals(field.getName(), text)) {
                             return field;
                         }

@@ -98,7 +98,7 @@ public class JsonElementUtil {
                         return JsonNull.INSTANCE;
                     }
                     JsonObject jsonObject1 = new JsonObject();
-                    Arrays.stream(psiClass.getFields()).forEach(field -> {
+                    Arrays.stream(psiClass.getAllFields()).forEach(field -> {
                         if (!StringUtils.contains(field.getText(), " static ") && num < 5) {
                             jsonObject1.add(field.getName(), toJson(field.getType(), num + 1));
                         }

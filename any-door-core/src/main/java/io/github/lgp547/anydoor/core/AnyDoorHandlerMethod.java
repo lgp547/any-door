@@ -181,6 +181,9 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         if (obj == null) {
             obj = LambdaUtil.runNotExc(() -> BeanUtil.toBean(parameter.getParameterType(), value));
         }
+        if (obj == null) {
+            System.out.println("any-door run param [" + parameter.getParameterType().getName() + "] is null");
+        }
         return obj;
     }
     

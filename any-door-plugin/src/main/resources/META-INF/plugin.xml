@@ -70,8 +70,8 @@
 <!--                             instance=""/>-->
 
         <!-- 窗体 (IDEA 界面右侧) -->
-        <toolWindow id="Any-Door" secondary="false" anchor="right" icon="io.github.lgp547.anydoorplugin.util.AnyDoorIcons.default_icon"
-                    factoryClass="io.github.lgp547.anydoorplugin.action.ParamListMenuToolWindow"/>
+<!--        <toolWindow id="Any-Door" secondary="false" anchor="right" icon="io.github.lgp547.anydoorplugin.util.AnyDoorIcons.default_icon"-->
+<!--                    factoryClass="io.github.lgp547.anydoorplugin.action.ParamListMenuToolWindow"/>-->
 
         <!-- notice -->
         <applicationService serviceImplementation="io.github.lgp547.anydoorplugin.util.NotifierUtil"/>

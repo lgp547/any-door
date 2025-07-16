@@ -35,9 +35,9 @@ public class MainPanel extends JBPanel<MainPanel> implements Listener {
     private Project project;
     private final MyToolBar toolBar;
     private final MyEditor editor;
-    private final MyComboBox comboBox;
+//    private final MyComboBox comboBox;
     private final MethodDataContext context;
-    private final JButton saveParamButton;
+//    private final JButton saveParamButton;
     private final JBIntSpinner runNum;
     private final JBCheckBox isConcurrent;
 
@@ -50,13 +50,13 @@ public class MainPanel extends JBPanel<MainPanel> implements Listener {
 
         toolBar = new MyToolBar(project, context);
         editor = new MyEditor(context, context.cacheContent, context.getParamList(), project);
-        comboBox = new MyComboBox(project, context);
-        saveParamButton = new JButton("Save");
+//        comboBox = new MyComboBox(project, context);
+//        saveParamButton = new JButton("Save");
         runNum = new JBIntSpinner(1, 1, Integer.MAX_VALUE);
         isConcurrent = new JBCheckBox("", true);
 
         this.context.addListener(this);
-        this.context.addListener(comboBox);
+//        this.context.addListener(comboBox);
         this.context.addListener(editor);
 
         context.fireEvent(EventHelper.createDisplayDataChangeEvent(context.listDisplayData(), context.getSelectedItem()));
@@ -66,29 +66,29 @@ public class MainPanel extends JBPanel<MainPanel> implements Listener {
     }
 
     private void initComponent() {
-        saveParamButton.addActionListener(e -> {
-            if (Objects.isNull(context.getClazz())) {
-                throw new RuntimeException("Current Class Not Exist");
-            }
-
-            JSONEditor editor = this.getEditor();
-            String text = JsonUtil.compressJson(editor.getText());
-
-            ParamDataItem selectedDataItem = context.getSelectedItem();
-            selectedDataItem.setParam(text);
-
-            if (StringUtils.isBlank(selectedDataItem.getName())) {
-                new SaveDialog(project, (dialog) -> {
-                    String name = dialog.getName().trim();
-                    selectedDataItem.setName(name);
-                    context.flush();
-                    NotifierUtil.notifyInfo(project, "Save " + selectedDataItem.getName() + " success");
-                }).show();
-            } else {
-                context.flush();
-                NotifierUtil.notifyInfo(project, "Save " + selectedDataItem.getName() + " success");
-            }
-        });
+//        saveParamButton.addActionListener(e -> {
+//            if (Objects.isNull(context.getClazz())) {
+//                throw new RuntimeException("Current Class Not Exist");
+//            }
+//
+//            JSONEditor editor = this.getEditor();
+//            String text = JsonUtil.compressJson(editor.getText());
+//
+//            ParamDataItem selectedDataItem = context.getSelectedItem();
+//            selectedDataItem.setParam(text);
+//
+//            if (StringUtils.isBlank(selectedDataItem.getName())) {
+//                new SaveDialog(project, (dialog) -> {
+//                    String name = dialog.getName().trim();
+//                    selectedDataItem.setName(name);
+//                    context.flush();
+//                    NotifierUtil.notifyInfo(project, "Save " + selectedDataItem.getName() + " success");
+//                }).show();
+//            } else {
+//                context.flush();
+//                NotifierUtil.notifyInfo(project, "Save " + selectedDataItem.getName() + " success");
+//            }
+//        });
 
         JFormattedTextField textField = ((JSpinner.DefaultEditor) runNum.getEditor()).getTextField();
         textField.setColumns(7); // 设置输入框的宽度为10个字符
@@ -120,16 +120,16 @@ public class MainPanel extends JBPanel<MainPanel> implements Listener {
         panel.add(runNum);
         add(panel, gbc);
 
-        gbc.fill = GridBagConstraints.LINE_START;
-        gbc.anchor = GridBagConstraints.EAST;
-        gbc.weightx = 0;
-        gbc.weighty = 0;
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        JPanel panel1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        panel1.add(comboBox);
-        panel1.add(saveParamButton);
-        add(panel1, gbc);
+//        gbc.fill = GridBagConstraints.LINE_START;
+//        gbc.anchor = GridBagConstraints.EAST;
+//        gbc.weightx = 0;
+//        gbc.weighty = 0;
+//        gbc.gridx = 0;
+//        gbc.gridy = 1;
+//        JPanel panel1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+//        panel1.add(comboBox);
+//        panel1.add(saveParamButton);
+//        add(panel1, gbc);
 
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1;

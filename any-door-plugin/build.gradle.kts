@@ -9,6 +9,7 @@ group = "io.github.lgp547"
 version = "2.2.2"
 
 repositories {
+    mavenLocal()
     mavenCentral()
     // todo：自行修改成本地maven仓库地址
     mavenLocal {

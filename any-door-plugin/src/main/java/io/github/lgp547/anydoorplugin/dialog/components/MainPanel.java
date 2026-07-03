@@ -49,7 +49,7 @@ public class MainPanel extends JBPanel<MainPanel> implements Listener {
         this.context = context;
 
         toolBar = new MyToolBar(project, context);
-        editor = new MyEditor(context, context.cacheContent, context.getParamList(), project);
+        editor = new MyEditor(context, context.getSelectedItem().getParam(), context.getParamList(), project);
 //        comboBox = new MyComboBox(project, context);
 //        saveParamButton = new JButton("Save");
         runNum = new JBIntSpinner(1, 1, Integer.MAX_VALUE);

@@ -9,6 +9,7 @@ group = "io.github.lgp547"
 version = "2.2.2"
 
 repositories {
+    mavenLocal()
     mavenCentral()
     // todo：自行修改成本地maven仓库地址
     mavenLocal {
@@ -19,6 +20,7 @@ repositories {
 dependencies {
     implementation("io.github.lgp547:any-door-core:2.2.2")
     implementation("io.github.lgp547:any-door-attach:2.2.2")
+    testImplementation("junit:junit:4.13.2")
 
 }
 

@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
@@ -129,24 +130,28 @@ public class MethodDataContext implements Multicaster, Listener {
 
     @Nullable
     public PsiMethod getMethod() {
-        String simpleMethodName = IdeClassUtil.getSimpleMethodName(qualifiedMethodName);
-        if (Objects.nonNull(classDataContext.clazz)) {
-            PsiMethod[] methods = classDataContext.clazz.findMethodsByName(simpleMethodName, false);
-            for (PsiMethod method : methods) {
-                if (Objects.equals(qualifiedMethodName, IdeClassUtil.getMethodQualifiedName(method))) {
-                    return method;
+        return ReadAction.compute(() -> {
+            String simpleMethodName = IdeClassUtil.getSimpleMethodName(qualifiedMethodName);
+            if (Objects.nonNull(classDataContext.clazz)) {
+                PsiMethod[] methods = classDataContext.clazz.findMethodsByName(simpleMethodName, false);
+                for (PsiMethod method : methods) {
+                    if (Objects.equals(qualifiedMethodName, IdeClassUtil.getMethodQualifiedName(method))) {
+                        return method;
+                    }
                 }
             }
-        }
-        return null;
+            return null;
+        });
     }
 
     public PsiParameterList getParamList() {
-        PsiMethod method = getMethod();
-        if (Objects.isNull(method)) {
-            return new PsiParameterListImpl(new PsiParameterListStubImpl(null));
-        }
-        return method.getParameterList();
+        return ReadAction.compute(() -> {
+            PsiMethod method = getMethod();
+            if (Objects.isNull(method)) {
+                return new PsiParameterListImpl(new PsiParameterListStubImpl(null));
+            }
+            return method.getParameterList();
+        });
     }
 
     @Override
@@ -177,21 +182,9 @@ public class MethodDataContext implements Multicaster, Listener {
             updateItemName(dataItem);
             flush();
         } else if (Objects.equals(event.getType(), EventType.ADD_SIMPLE_PARAM_ITEM)) {
-            findItem(null)
-                    .ifPresentOrElse(
-                            item -> {
-                                item.setParam(JsonElementUtil.getSimpleText(getParamList()));
-                                selectItem(item);
-                            },
-                            this::resetEmptyItem);
+            resetSimpleParamItem();
         } else if (Objects.equals(event.getType(), EventType.ADD_ALL_PARAM_ITEM)) {
-            findItem(null)
-                    .ifPresentOrElse(
-                            item -> {
-                                item.setParam(JsonElementUtil.getJsonText(getParamList()));
-                                selectItem(item);
-                            },
-                            this::resetEmptyItemFillParam);
+            resetAllParamItem();
         } else if (Objects.equals(event.getType(), EventType.ADD_CACHE_PARAM_ITEM)) {
             resetLastCacheParam();
         }
@@ -204,13 +197,29 @@ public class MethodDataContext implements Multicaster, Listener {
     }
 
     private void resetEmptyItemFillParam() {
-        resetEmptyItem();
-        freeItem.setParam(JsonElementUtil.getJsonText(getParamList()));
+        resetAllParamItem();
     }
 
     private void resetEmptyItem() {
-        freeItem = new ParamDataItem("", qualifiedMethodName, JsonElementUtil.getSimpleText(getParamList()));
+        resetAllParamItem();
+    }
+
+    private void resetSimpleParamItem() {
+        freeItem = new ParamDataItem("", qualifiedMethodName, getSimpleParamText());
         selectItem(freeItem);
+    }
+
+    private void resetAllParamItem() {
+        freeItem = new ParamDataItem("", qualifiedMethodName, getAllParamText());
+        selectItem(freeItem);
+    }
+
+    private String getSimpleParamText() {
+        return ReadAction.compute(() -> JsonElementUtil.getSimpleText(getParamList()));
+    }
+
+    private String getAllParamText() {
+        return ReadAction.compute(() -> JsonElementUtil.getJsonText(getParamList()));
     }
 
     private void resetLastCacheParam() {

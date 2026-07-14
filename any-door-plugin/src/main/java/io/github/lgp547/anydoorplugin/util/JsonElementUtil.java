@@ -10,6 +10,7 @@ import com.google.gson.JsonPrimitive;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiModifier;
 import com.intellij.psi.PsiParameter;
 import com.intellij.psi.PsiParameterList;
 import com.intellij.psi.PsiType;
@@ -18,7 +19,6 @@ import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.impl.source.tree.PsiErrorElementImpl;
 import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
 import java.net.URL;
@@ -99,7 +99,7 @@ public class JsonElementUtil {
                     }
                     JsonObject jsonObject1 = new JsonObject();
                     Arrays.stream(psiClass.getAllFields()).forEach(field -> {
-                        if (!StringUtils.contains(field.getText(), " static ") && num < 5) {
+                        if (!field.hasModifierProperty(PsiModifier.STATIC) && num < 5) {
                             jsonObject1.add(field.getName(), toJson(field.getType(), num + 1));
                         }
                     });

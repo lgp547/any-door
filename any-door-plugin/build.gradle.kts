@@ -20,6 +20,7 @@ repositories {
 dependencies {
     implementation("io.github.lgp547:any-door-core:2.2.2")
     implementation("io.github.lgp547:any-door-attach:2.2.2")
+    testImplementation("junit:junit:4.13.2")
 
 }
 

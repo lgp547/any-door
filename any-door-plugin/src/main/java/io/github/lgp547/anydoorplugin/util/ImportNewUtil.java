@@ -8,28 +8,28 @@ import com.intellij.openapi.roots.ModuleRootModificationUtil;
 import com.intellij.openapi.roots.libraries.Library;
 import com.intellij.openapi.roots.libraries.LibraryTable;
 import io.github.lgp547.anydoorplugin.AnyDoorInfo;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
-import java.util.jar.JarOutputStream;
 
 public class ImportNewUtil {
 
     public static String getPluginBasePath() {
-        return PathManager.getPluginsPath() + File.separator + "any-door-plugin" + File.separator + "lib";
+        return getPluginPath() + File.separator + "lib";
+    }
+
+    public static String getPluginAgentPath(String fileName) {
+        return getPluginPath() + File.separator + "agent" + File.separator + fileName;
+    }
+
+    private static String getPluginPath() {
+        return PathManager.getPluginsPath() + File.separator + "any-door-plugin";
     }
 
 //    public static String getPluginLibPath(String libraryName, String libraryVersion) {
@@ -79,82 +79,6 @@ public class ImportNewUtil {
 //            }
 //        }
 //    }
-
-    public static void checkAndGenJar(@NotNull Project project, String anyDoorAllDependenceJar) {
-        try {
-            String dependenceJarFilePath = getPluginLibPath(anyDoorAllDependenceJar);
-            if (new File(dependenceJarFilePath).exists()) {
-                return;
-            }
-            File[] dependenceJars = new File(getPluginBasePath()).listFiles(curFile ->
-                    !StringUtils.startsWithAny(curFile.getName(), AnyDoorInfo.ANY_DOOR_NAME, "arthas") && StringUtils.endsWith(curFile.getName(), ".jar"));
-            if (dependenceJars != null && dependenceJars.length != 0) {
-                genAllDependenceFile(dependenceJars, dependenceJarFilePath);
-                NotifierUtil.notifyInfo(project, String.format("%s dependence gen %s", dependenceJars.length, dependenceJarFilePath));
-            } else {
-                NotifierUtil.notifyError(project, "dependence jar is empty.Please check the path:" + dependenceJarFilePath);
-            }
-        } catch (Exception e) {
-            NotifierUtil.notifyError(project, anyDoorAllDependenceJar + " does not exist. errMsg:" + e.getMessage());
-        }
-    }
-
-    private static void genAllDependenceFile(File[] dependenceJars, String dependenceJarFilePath) throws IOException {
-        FileOutputStream out = new FileOutputStream(dependenceJarFilePath);
-        JarOutputStream jos = new JarOutputStream(out);
-
-        Path tempDirectory = Files.createTempDirectory(AnyDoorInfo.ANY_DOOR_NAME);
-        for (File jarFile : dependenceJars) {
-            FileInputStream fis = new FileInputStream(jarFile);
-            JarInputStream jis = new JarInputStream(fis);
-
-            byte[] buffer = new byte[1024];
-            int bytesRead = 0;
-            JarEntry entry = null;
-            while ((entry = jis.getNextJarEntry()) != null) {
-                if (entry.isDirectory()) {
-                    continue;
-                }
-                File tempFile = new File(tempDirectory + "/" + entry.getName());
-                if (!tempFile.exists()) {
-                    tempFile.getParentFile().mkdirs();
-                }
-
-                FileOutputStream tempFileOut = new FileOutputStream(tempFile.getPath());
-                while ((bytesRead = jis.read(buffer)) != -1) {
-                    tempFileOut.write(buffer, 0, bytesRead);
-                }
-                tempFileOut.close();
-
-                jis.closeEntry();
-            }
-
-            jis.close();
-            fis.close();
-        }
-
-
-        copyJarFile(tempDirectory.toString(), jos, tempDirectory.toFile().listFiles());
-        jos.close();
-        out.close();
-        FileUtils.deleteDirectory(tempDirectory.toFile());
-    }
-
-    private static void copyJarFile(String basePath, JarOutputStream jos, File[] files) throws IOException {
-        if (null == files) {
-            return;
-        }
-        for (File file : files) {
-            if (file.isDirectory()) {
-                copyJarFile(basePath, jos, file.listFiles());
-                continue;
-            }
-            String jarEntryName = file.getAbsolutePath().substring(basePath.length() + 1);
-            jarEntryName = StringUtils.replace(jarEntryName, "\\", "/");
-            jos.putNextEntry(new JarEntry(jarEntryName));
-            Files.copy(file.toPath(), jos);
-        }
-    }
 
     public static void fillAnyDoorJar(Project project, String moduleName) {
         try {

@@ -138,7 +138,7 @@ public class AnyDoorPerformed {
         jsonObjectReq.add("parameterTypes", JsonUtil.toJsonArray(paramTypeNameList));
 
         String anyDoorJarPath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_JAR);
-        String dependenceJarFilePath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_ALL_DEPENDENCE_JAR);
+        String dependenceJarFilePath = ImportNewUtil.getPluginAgentPath(AnyDoorInfo.ANY_DOOR_ALL_DEPENDENCE_JAR);
         String anyDoorCommonJarPath = ImportNewUtil.getPluginLibPath(AnyDoorInfo.ANY_DOOR_COMMON_JAR);
         jsonObjectReq.add("jarPaths", JsonUtil.toJsonArray(List.of(anyDoorJarPath, dependenceJarFilePath, anyDoorCommonJarPath)));
         jsonObjectReq.addProperty("projectBasePath", project.getBasePath());

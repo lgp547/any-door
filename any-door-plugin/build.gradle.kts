@@ -1,4 +1,12 @@
+import org.gradle.api.file.DuplicatesStrategy
+import org.gradle.jvm.tasks.Jar
+import org.jetbrains.intellij.tasks.PrepareSandboxTask
+import java.util.zip.ZipFile
+
 fun properties(key: String) = providers.gradleProperty(key)
+
+val anyDoorAllDependenceJarName = "any-door-all-dependence.jar"
+val excludedAnyDoorBundlePrefixes = listOf("any-door", "arthas")
 
 plugins {
     id("java")
@@ -24,6 +32,64 @@ dependencies {
 
 }
 
+val buildAnyDoorAllDependenceJar by tasks.registering(Jar::class) {
+    group = "build"
+    description = "Builds the isolated dependency bundle loaded into the target JVM"
+    archiveFileName.set(anyDoorAllDependenceJarName)
+    destinationDirectory.set(layout.buildDirectory.dir("generated/any-door-agent"))
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
+
+    from({
+        configurations.runtimeClasspath.get()
+            .filter { dependency ->
+                dependency.isFile && excludedAnyDoorBundlePrefixes.none(dependency.name::startsWith)
+            }
+            .map(::zipTree)
+    })
+
+    exclude(
+        "META-INF/MANIFEST.MF",
+        "META-INF/INDEX.LIST",
+        "META-INF/*.SF",
+        "META-INF/*.RSA",
+        "META-INF/*.DSA",
+        "module-info.class",
+        "META-INF/versions/*/module-info.class",
+    )
+}
+
+val verifyAnyDoorAllDependenceJar by tasks.registering {
+    group = "verification"
+    description = "Verifies the target-JVM dependency bundle contents"
+    dependsOn(buildAnyDoorAllDependenceJar)
+    inputs.file(buildAnyDoorAllDependenceJar.flatMap { it.archiveFile })
+
+    doLast {
+        val bundle = buildAnyDoorAllDependenceJar.get().archiveFile.get().asFile
+        val requiredEntries = listOf(
+            "com/fasterxml/jackson/databind/ObjectMapper.class",
+            "org/springframework/context/ApplicationContext.class",
+        )
+        val forbiddenEntries = listOf(
+            "io/github/lgp547/anydoor/core/AnyDoorService.class",
+            "io/github/lgp547/anydoor/attach/AnyDoorAttach.class",
+            "arthas/VmTool.class",
+        )
+
+        check(bundle.isFile) { "Missing target-JVM dependency bundle: $bundle" }
+        ZipFile(bundle).use { archive ->
+            requiredEntries.forEach { entry ->
+                check(archive.getEntry(entry) != null) { "Missing required bundle entry: $entry" }
+            }
+            forbiddenEntries.forEach { entry ->
+                check(archive.getEntry(entry) == null) { "Forbidden bundle entry: $entry" }
+            }
+        }
+    }
+}
+
 // Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
 intellij {
     // todo：若没商业版授权，这里改成社区版进行调式
@@ -47,6 +113,10 @@ tasks {
         untilBuild.set(properties("pluginUntilBuild"))
     }
 
+    named("check") {
+        dependsOn(verifyAnyDoorAllDependenceJar)
+    }
+
 //    signPlugin {
 //        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
 //        privateKey.set(System.getenv("PRIVATE_KEY"))
@@ -56,4 +126,10 @@ tasks {
 //    publishPlugin {
 //        token.set(System.getenv("PUBLISH_TOKEN"))
 //    }
+}
+
+tasks.withType<PrepareSandboxTask>().configureEach {
+    dependsOn(buildAnyDoorAllDependenceJar)
+    intoChild(pluginName.map { "$it/agent" })
+        .from(buildAnyDoorAllDependenceJar.flatMap { it.archiveFile })
 }

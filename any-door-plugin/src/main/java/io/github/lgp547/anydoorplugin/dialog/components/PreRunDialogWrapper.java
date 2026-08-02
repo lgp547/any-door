@@ -4,9 +4,9 @@ import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.psi.JavaCodeFragment;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.impl.source.PsiCodeFragmentImpl;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.util.ui.JBDimension;
 import com.intellij.xdebugger.XExpression;
@@ -60,10 +60,10 @@ public class PreRunDialogWrapper extends DialogWrapper {
 
         // 导入类
         PsiFile file = PsiDocumentManager.getInstance(project).getPsiFile(component.getDocument());
-        if (file instanceof PsiCodeFragmentImpl fileImpl) {
+        if (file instanceof JavaCodeFragment codeFragment) {
             for (String importStr : javaFileInfo.getImportStrs()) {
                 // todo: 若存在*结束的？
-                fileImpl.addImportsFromString(importStr);
+                codeFragment.addImportsFromString(importStr);
             }
         }
 
@@ -78,8 +78,8 @@ public class PreRunDialogWrapper extends DialogWrapper {
 
     private void saveChangesToFile() {
         PsiFile file = PsiDocumentManager.getInstance(project).getPsiFile(component.getDocument());
-        if (file instanceof PsiCodeFragmentImpl fileImpl) {
-            String importsToString = fileImpl.importsToString();
+        if (file instanceof JavaCodeFragment codeFragment) {
+            String importsToString = codeFragment.importsToString();
             List<String> imports = Arrays.stream(importsToString.split(",")).collect(Collectors.toList());
             doUpdateFile(JavaFileInfoUtil.toAnyDoorInjectedClassStr(imports, component.getDocument().getText()));
         }

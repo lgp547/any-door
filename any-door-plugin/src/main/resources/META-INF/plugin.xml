@@ -3,7 +3,7 @@
     <id>io.github.lgp547.any-door-plugin</id>
     <name>AnyDoor</name>
     <vendor email="lgp547279@163.com" url="https://github.com/lgp547">lgp</vendor>
-    <idea-version since-build="240.*"/>
+    <idea-version since-build="242.*"/>
     <description><![CDATA[
         Any method to execute a Java project,Either the 'App' layer or the 'Dao' layer can execution directly.<br>
         Getting Started:<br>

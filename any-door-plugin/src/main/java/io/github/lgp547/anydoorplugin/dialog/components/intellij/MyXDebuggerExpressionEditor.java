@@ -69,21 +69,11 @@ public class MyXDebuggerExpressionEditor extends XDebuggerEditorBase {
       }
 
         @Override
-        public Object getData(@NotNull String dataId) {
-          if (LangDataKeys.CONTEXT_LANGUAGES.is(dataId)) {
-            return new Language[]{myExpression.getLanguage()};
-          }
-          else if (PlatformCoreDataKeys.BGT_DATA_PROVIDER.is(dataId)) {
-            return (DataProvider)slowId -> getSlowData(slowId);
-          }
-          return super.getData(dataId);
-        }
-
-        private @Nullable Object getSlowData(@NotNull String dataId) {
-          if (CommonDataKeys.PSI_FILE.is(dataId)) {
-            return PsiDocumentManager.getInstance(getProject()).getPsiFile(getDocument());
-          }
-          return null;
+        public void uiDataSnapshot(@NotNull DataSink sink) {
+          super.uiDataSnapshot(sink);
+          sink.set(LangDataKeys.CONTEXT_LANGUAGES, new Language[]{myExpression.getLanguage()});
+          sink.lazy(CommonDataKeys.PSI_FILE,
+              () -> PsiDocumentManager.getInstance(getProject()).getPsiFile(getDocument()));
         }
       };
     if (editorFont) {

@@ -56,7 +56,7 @@ public class HandlerMethod {
         Assert.notNull(bean, "Bean is required");
         Assert.notNull(method, "Method is required");
         this.bean = bean;
-        this.beanType = ClassUtils.getUserClass(bean);
+        this.beanType = bean instanceof Class ? (Class<?>) bean : ClassUtils.getUserClass(bean);
         this.method = method;
         this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
         ReflectionUtils.makeAccessible(this.bridgedMethod);

@@ -13,12 +13,10 @@ import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.util.PsiTreeUtil;
+import io.github.lgp547.anydoorplugin.dialog.utils.IdeClassUtil;
 import io.github.lgp547.anydoorplugin.util.NotifierUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 /**
  * 响应 Open AnyDoor 入口
@@ -44,7 +42,7 @@ public class AnyDoorOpenAction extends AnAction {
             }
             if (psiMethod == null) {
                 PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
-                psiMethod = PsiTreeUtil.getParentOfType(getElement(editor, file), PsiMethod.class);
+                psiMethod = IdeClassUtil.findMethod(getElement(editor, file));
                 if (psiMethod == null) {
                     throw new IllegalArgumentException("idea arg error (method is null)");
                 }
@@ -62,7 +60,7 @@ public class AnyDoorOpenAction extends AnAction {
         Project project = e.getProject();
         Editor editor = e.getData(CommonDataKeys.EDITOR);
         PsiFile file = e.getData(CommonDataKeys.PSI_FILE);
-        PsiMethod method = PsiTreeUtil.getParentOfType(getElement(editor, file), PsiMethod.class);
+        PsiMethod method = IdeClassUtil.findMethod(getElement(editor, file));
         boolean enabled = project != null && editor != null && method != null;
         if (enabled && e.getDataContext() instanceof UserDataHolder) {
             ((UserDataHolder) e.getDataContext()).putUserData(USER_DATE_ELEMENT_KEY, method);

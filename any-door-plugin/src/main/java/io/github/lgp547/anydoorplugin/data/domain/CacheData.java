@@ -1,7 +1,7 @@
 package io.github.lgp547.anydoorplugin.data.domain;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.lgp547.anydoor.util.JsonUtil;
+import io.github.lgp547.anydoorplugin.util.JsonUtil;
 
 /**
  * @description:
@@ -44,7 +44,7 @@ public class CacheData<T extends DataItem> {
     public Data<T> cloneData() {
         try {
             String json = JsonUtil.objectMapper.writeValueAsString(this.data);
-            return JsonUtil.toJavaBean(json, Data.class);
+            return JsonUtil.objectMapper.readValue(json, Data.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

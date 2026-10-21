@@ -10,7 +10,6 @@ import io.github.lgp547.anydoorplugin.dialog.MainUI;
 import io.github.lgp547.anydoorplugin.dialog.old.TextAreaDialog;
 import io.github.lgp547.anydoorplugin.dto.ParamCacheDto;
 import io.github.lgp547.anydoorplugin.settings.AnyDoorSettingsState;
-import io.github.lgp547.anydoorplugin.util.AnyDoorActionUtil;
 import io.github.lgp547.anydoorplugin.util.HttpUtil;
 import io.github.lgp547.anydoorplugin.util.ImportNewUtil;
 import io.github.lgp547.anydoorplugin.util.JsonUtil;
@@ -22,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * 打开任意门，核心执行
@@ -29,8 +29,10 @@ import java.util.function.BiConsumer;
 public class AnyDoorPerformed {
 
     public void invoke(Project project, PsiMethod psiMethod, Runnable okAction) {
-        MethodInvocationSnapshot method = MethodInvocationSnapshot.capture(psiMethod);
-
+        MethodInvocationSnapshot method = captureMethod(project, () -> MethodInvocationSnapshot.capture(psiMethod));
+        if (method == null) {
+            return;
+        }
 
         Optional<AnyDoorSettingsState> anyDoorSettingsStateOpt = AnyDoorSettingsState.getAnyDoorSettingsStateNotExc(project);
         if (anyDoorSettingsStateOpt.isEmpty()) {
@@ -46,7 +48,7 @@ public class AnyDoorPerformed {
             openAnyDoor(project, jsonDtoStr, service, openExcConsumer);
             okAction.run();
         } else {
-            String cacheKey = AnyDoorActionUtil.genCacheKey(method.className(), method.methodName(), method.parameterTypeNames());
+            String cacheKey = method.cacheKey();
             if (useNewUI(service, project, method, cacheKey, okAction)) {
                 return;
             }
@@ -59,8 +61,8 @@ public class AnyDoorPerformed {
                 String text = dialog.getText();
                 ParamCacheDto paramCacheDto = new ParamCacheDto(dialog.getRunNum(), dialog.getIsConcurrent(), text);
                 service.putCache(cacheKey, paramCacheDto);
-                // Change to args for the interface type
-                if (method.interfaceType()) {
+                // 接口与 Kotlin 使用位置参数，避免依赖运行项目的参数名编译选项。
+                if (method.positionalParameters()) {
                     text = JsonUtil.transformedKey(text, method.parameterNameTransformer());
                 }
                 text = JsonUtil.compressJson(text);
@@ -88,14 +90,28 @@ public class AnyDoorPerformed {
     }
 
     public void doUseNewUI(AnyDoorSettingsState service, Project project, PsiClass psiClass, PsiMethod psiMethod, String cacheKey, Runnable okAction, @Nullable Long selectedId) {
-        MethodInvocationSnapshot method = MethodInvocationSnapshot.capture(psiClass, psiMethod);
+        MethodInvocationSnapshot method = captureMethod(project, () -> MethodInvocationSnapshot.capture(psiClass, psiMethod));
+        if (method == null) {
+            return;
+        }
         doUseNewUI(service, project, method, cacheKey, okAction, selectedId);
+    }
+
+    /** 三个界面入口共用能力拒绝处理；其他快照异常仍交给各入口原有的错误路径。 */
+    @Nullable
+    private static MethodInvocationSnapshot captureMethod(Project project, Supplier<MethodInvocationSnapshot> capture) {
+        try {
+            return capture.get();
+        } catch (UnsupportedSuspendMethodException exception) {
+            NotifierUtil.notifyInfo(project, exception.getMessage());
+            return null;
+        }
     }
 
     private void doUseNewUI(AnyDoorSettingsState service, Project project, MethodInvocationSnapshot method, String cacheKey, Runnable okAction, @Nullable Long selectedId) {
         ParamCacheDto cache = service.getCache(cacheKey);
         DataContext instance = DataContext.instance(project);
-        MainUI mainUI = new MainUI(method.methodName(), project, instance.getExecuteDataContext(method.className(), method.qualifiedMethodName(), selectedId, cache.content()));
+        MainUI mainUI = new MainUI(method.methodName(), project, instance.getExecuteDataContext(method.sourceClassName(), method.qualifiedMethodName(), selectedId, cache.content()));
         mainUI.setOkAction((text) -> {
             okAction.run();
             if (mainUI.isChangePid()) {
@@ -105,7 +121,7 @@ public class AnyDoorPerformed {
             ParamCacheDto paramCacheDto = new ParamCacheDto(mainUI.getRunNum(), mainUI.getIsConcurrent(), text);
             service.putCache(cacheKey, paramCacheDto);
 
-            if (method.interfaceType()) {
+            if (method.positionalParameters()) {
                 text = JsonUtil.transformedKey(text, method.parameterNameTransformer());
             }
             String jsonDtoStr = getJsonDtoStr(project, method.className(), method.methodName(), method.parameterTypeNames(), text, !service.enableAsyncExecute, paramCacheDto);

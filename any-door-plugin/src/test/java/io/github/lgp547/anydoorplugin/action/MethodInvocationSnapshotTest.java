@@ -1,6 +1,7 @@
 package io.github.lgp547.anydoorplugin.action;
 
 import com.intellij.mock.MockApplication;
+import com.intellij.lang.java.JavaLanguage;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.util.ThrowableComputable;
@@ -44,7 +45,7 @@ public class MethodInvocationSnapshotTest extends TestCase {
 
     public void testCaptureCopiesInterfaceMethodMetadata() {
         PsiParameter name = parameter("name", new TestPsiType("java.lang.String"));
-        PsiParameter ids = parameter("ids", new TestPsiType("java.util.List<java.lang.Integer>"));
+        PsiParameter ids = parameter("ids", new TestPsiType("java.util.List"));
         PsiParameterList parameters = parameterList(name, ids);
         PsiClass psiClass = psiClass("demo.SampleService", true);
         PsiMethod psiMethod = psiMethod("execute", psiClass, parameters);
@@ -55,7 +56,7 @@ public class MethodInvocationSnapshotTest extends TestCase {
         assertEquals("demo.SampleService", snapshot.className());
         assertEquals("execute", snapshot.methodName());
         assertEquals(
-                "demo.SampleService#execute(java.lang.String,java.util.List<java.lang.Integer>)",
+                "demo.SampleService#execute(java.lang.String,java.util.List)",
                 snapshot.qualifiedMethodName()
         );
         assertEquals(
@@ -66,7 +67,7 @@ public class MethodInvocationSnapshotTest extends TestCase {
                 Map.of("name", "args0", "ids", "args1"),
                 snapshot.parameterNameTransformer()
         );
-        assertTrue(snapshot.interfaceType());
+        assertTrue(snapshot.positionalParameters());
     }
 
     public void testCaptureMarksClassMethodAsNonInterface() {
@@ -79,7 +80,7 @@ public class MethodInvocationSnapshotTest extends TestCase {
         MethodInvocationSnapshot snapshot = MethodInvocationSnapshot.capture(psiMethod);
 
         assertTrue(application.wasReadActionInvoked());
-        assertFalse(snapshot.interfaceType());
+        assertFalse(snapshot.positionalParameters());
         assertEquals(List.of("int"), snapshot.parameterTypeNames());
         assertEquals(Map.of("count", "args0"), snapshot.parameterNameTransformer());
     }
@@ -87,6 +88,7 @@ public class MethodInvocationSnapshotTest extends TestCase {
     private static PsiClass psiClass(String qualifiedName, boolean interfaceType) {
         return proxy(PsiClass.class, (proxy, method, args) -> switch (method.getName()) {
             case "getQualifiedName" -> qualifiedName;
+            case "getContainingClass" -> null;
             case "isInterface" -> interfaceType;
             case "toString" -> qualifiedName;
             case "hashCode" -> System.identityHashCode(proxy);
@@ -105,6 +107,8 @@ public class MethodInvocationSnapshotTest extends TestCase {
             case "getContainingClass" -> containingClass;
             case "getParent" -> containingClass;
             case "getParameterList" -> parameters;
+            case "getNavigationElement" -> proxy;
+            case "getLanguage" -> JavaLanguage.INSTANCE;
             case "toString" -> name;
             case "hashCode" -> System.identityHashCode(proxy);
             case "equals" -> proxy == args[0];

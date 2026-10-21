@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.module.kotlin.KotlinModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.github.lgp547.anydoor.util.jackson.AnyDoorTimeDeserializer;
 
@@ -54,6 +55,7 @@ public class JsonUtil {
         JavaTimeModule javaTimeModule = new JavaTimeModule();
         javaTimeModule.addDeserializer(LocalDateTime.class, new AnyDoorTimeDeserializer());
         objectMapper.registerModule(javaTimeModule);
+        objectMapper.registerModule(new KotlinModule());
     }
     
     public static <T> T toJavaBean(String content, Type valueType) {

@@ -47,9 +47,10 @@ public class AnyDoorService {
             Class<?> clazz = Class.forName(anyDoorDto.getClassName());
             Method method = AnyDoorClassUtil.getMethod(clazz, anyDoorDto.getMethodName(), anyDoorDto.getParameterTypes());
             
-            boolean containsBean = AnyDoorSpringUtil.containsBean(clazz);
             Object bean;
-            if (!containsBean) {
+            if (Modifier.isStatic(method.getModifiers())) {
+                bean = clazz;
+            } else if (!AnyDoorSpringUtil.containsBean(clazz)) {
                 bean = AnyDoorBeanUtil.instantiate(clazz);
             } else {
                 bean = AnyDoorSpringUtil.getBean(clazz);

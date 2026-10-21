@@ -73,6 +73,24 @@ Tips：一般情况下会主动填充运行进程的进程id（可在配置页�
 - 配置页面可打印Idea插件的路径
 - 保留通过Http进行调用
 
+### Kotlin 方法
+
+启用 IDEA 的 Kotlin 插件后，可在 `.kt` 方法上使用相同的 Open AnyDoor 入口。参数编辑、JSON 模板、Key 补全与源码导航、历史参数和再次调用沿用 Java 流程。
+
+- 支持普通类、Spring Bean、私有方法、重载、顶层函数、`object` 和 companion object 方法。
+- 通过 IDEA 的 Kotlin Run/Debug 配置启动本地 JVM 应用时，自动记录目标 PID；外部启动的进程仍可在参数窗口中指定 PID。
+- 支持 `Int` / `Int?`、数组、集合和 data class JSON 参数；调用使用 JVM 的真实类型、嵌套类名和 `@JvmName`。
+- 支持现有同步、异步和批量调度。这里的异步是后台执行普通方法，不是 Kotlin 协程执行。
+- 不自动使用 Kotlin 默认参数，也不调用编译器生成的 `$default` 方法。缺失参数沿用现有协议传入 `null`，由参数可空性决定是否接受；需要某个默认值时请显式填写该值。
+- `suspend` 方法会在发出请求前提示不支持，不能直接填写 `Continuation` 调用。
+
+例如 `fun greet(request: Request, count: Int)` 的参数仍填写为：
+
+```json
+{"request": {"name": "AnyDoor"}, "count": 2}
+```
+
+插件保留这些源码参数名用于编辑和缓存，发送时转换为 `args0`、`args1`。通过 HTTP 直接调用 Kotlin 方法时也应使用 `argsN` 位置键。
 
 
 ## 地址
@@ -138,9 +156,10 @@ Tips：一般情况下会主动填充运行进程的进程id（可在配置页�
   - 重要入口 AnyDoorOpenAction#actionPerformed AnyDoorPerformed#invoke
 
 ### 如何参与开发
-- 启动 plugin 模块，将会打开一个新的沙盒 IDEA 进行调试
-  - 更改 build.gradle.kts 文件下的 todo 
-  - 模块启动入口在 Gradle 的 Tasks -> intellij -> runlde
+- 使用 JDK 8 或更高版本构建运行端：`mvn -P'!ossrh,!release' install`。
+- 插件构建使用 JDK 21、Gradle 8.10.2 和 IntelliJ Platform Gradle Plugin 2.2.1，沙盒保持 IDEA Community 2024.3。运行端的字节码目标仍为 Java 8。
+- 在 `any-door-plugin` 目录执行 `./gradlew test buildPlugin`，或通过 `./gradlew runIde` 打开沙盒进行调试。
+- 本地 Maven 仓库可通过 `-Dmaven.repo.local=/path/to/repository` 指定。插件将目标 JVM 的 Kotlin 运行依赖打入独立的 `agent/any-door-all-dependence.jar`，IDE 侧使用平台自带的 Kotlin。
 - 对上面说到的重要入口进行打断点，然后再沙盒环境下操作即可
 
 

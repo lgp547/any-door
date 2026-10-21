@@ -17,12 +17,12 @@
  
 package io.github.lgp547.anydoor.common.util;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class AnyDoorClassUtil {
     
@@ -40,6 +40,14 @@ public class AnyDoorClassUtil {
     }
     
     public static Class<?> forName(String className) {
+        if (className.endsWith("[]")) {
+            int dimensions = 0;
+            while (className.endsWith("[]")) {
+                dimensions++;
+                className = className.substring(0, className.length() - 2);
+            }
+            return Array.newInstance(forName(className), new int[dimensions]).getClass();
+        }
         Class<?> clazz = PRIMITIVE_TYPE_MAP.get(className);
         if (clazz != null) {
             return clazz;
@@ -47,6 +55,16 @@ public class AnyDoorClassUtil {
         try {
             return Class.forName(className);
         } catch (Exception e) {
+            String candidate = className;
+            int separator = candidate.lastIndexOf('.');
+            while (separator > 0) {
+                candidate = candidate.substring(0, separator) + '$' + candidate.substring(separator + 1);
+                try {
+                    return Class.forName(candidate);
+                } catch (ClassNotFoundException ignored) {
+                    separator = candidate.lastIndexOf('.', separator - 1);
+                }
+            }
             System.err.println("not found class. className:" + className);
             throw new IllegalArgumentException(e);
         }
@@ -65,9 +83,12 @@ public class AnyDoorClassUtil {
         } else if (methods.size() == 1) {
             method = methods.get(0);
         } else {
-            Optional<Class<?>[]> classes = Optional.ofNullable(parameterTypes).map(item -> item.stream().map(AnyDoorClassUtil::forName).toArray(Class[]::new));
+            if (parameterTypes == null) {
+                throw new IllegalArgumentException("parameterTypes is required for overloaded method. clazz:" + clazz.getName() + " methodName:" + methodName);
+            }
             try {
-                method = clazz.getDeclaredMethod(methodName, classes.orElse(null));
+                Class<?>[] parameterClasses = parameterTypes.stream().map(AnyDoorClassUtil::forName).toArray(Class[]::new);
+                method = clazz.getDeclaredMethod(methodName, parameterClasses);
             } catch (NoSuchMethodException e) {
                 String s = "not found method. clazz:" + clazz.getName() + " methodName:" + methodName + " parameterTypes:" + parameterTypes;
                 System.err.println(s);

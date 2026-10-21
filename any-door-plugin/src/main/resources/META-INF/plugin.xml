@@ -3,9 +3,9 @@
     <id>io.github.lgp547.any-door-plugin</id>
     <name>AnyDoor</name>
     <vendor email="lgp547279@163.com" url="https://github.com/lgp547">lgp</vendor>
-    <idea-version since-build="242.*"/>
+    <idea-version since-build="242"/>
     <description><![CDATA[
-        Any method to execute a Java project,Either the 'App' layer or the 'Dao' layer can execution directly.<br>
+        Execute Java and Kotlin JVM methods directly, from the App layer to the Dao layer.<br>
         Getting Started:<br>
         <ul>
             <li>fill 'Preferences.Other Settings.Setting Any Door' text box (command+,)</li>
@@ -13,7 +13,7 @@
             <li>fill json param before run</li>
         </ul>
 
-        执行 Java 项目的任意方法，无论是 App 层还是 Dao 层方法都可以直接运行<br>
+        执行 Java 和 Kotlin JVM 方法，无论是 App 层还是 Dao 层方法都可以直接运行<br>
         快速开始：<br>
         <ul>
             <li>启动项目</li>
@@ -55,6 +55,11 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
     <depends>com.intellij.modules.json</depends>
+    <depends optional="true" config-file="any-door-kotlin.xml">org.jetbrains.kotlin</depends>
+
+    <extensions defaultExtensionNs="org.jetbrains.kotlin">
+        <supportsKotlinPluginMode supportsK2="true" supportsK1="true"/>
+    </extensions>
 
     <extensions defaultExtensionNs="com.intellij">
 

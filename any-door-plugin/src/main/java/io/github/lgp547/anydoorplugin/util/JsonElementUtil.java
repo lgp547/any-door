@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.intellij.psi.PsiArrayType;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiElement;
@@ -40,6 +41,11 @@ public class JsonElementUtil {
     public static JsonElement toJson(PsiType type, Integer num) {
         if (num > 5) {
             return JsonNull.INSTANCE;
+        }
+        if (type instanceof PsiArrayType arrayType) {
+            JsonArray values = new JsonArray();
+            values.add(toJson(arrayType.getComponentType(), num + 1));
+            return values;
         }
         // 新版本使用：PsiTypes.intType()
         if (type.isAssignableFrom(PsiTypes.intType())) {

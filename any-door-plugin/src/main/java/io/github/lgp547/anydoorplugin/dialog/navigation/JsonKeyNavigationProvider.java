@@ -42,7 +42,7 @@ public class JsonKeyNavigationProvider implements DirectNavigationProvider {
         for (int i = 0; i < psiParameterList.getParametersCount(); i++) {
             PsiParameter parameter = Objects.requireNonNull(psiParameterList.getParameter(i));
             if (Objects.equals(parameter.getName(), text)) {
-                return parameter;
+                return parameter.getNavigationElement();
             }
             // 若是负责类，尝试导航到参数类里面
             if (parameter.getType() instanceof PsiClassType) {
@@ -50,7 +50,7 @@ public class JsonKeyNavigationProvider implements DirectNavigationProvider {
                 if (psiClass != null) {
                     for (PsiField field : psiClass.getAllFields()) {
                         if (Objects.equals(field.getName(), text)) {
-                            return field;
+                            return field.getNavigationElement();
                         }
                     }
                 }

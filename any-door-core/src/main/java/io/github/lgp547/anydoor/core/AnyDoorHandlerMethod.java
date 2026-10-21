@@ -26,6 +26,7 @@ import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -141,15 +142,19 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
         }
         
         Object[] args = new Object[parameters.length];
+        boolean kotlinMethod = isKotlinMethod(getBridgedMethod());
         for (int i = 0; i < parameters.length; i++) {
             MethodParameter parameter = parameters[i];
             parameter.initParameterNameDiscovery(new DefaultParameterNameDiscoverer());
             String value;
-            if (contentMap.containsKey(parameter.getParameterName())) {
+            String indexName = "args" + i;
+            String parameterName = parameter.getParameterName();
+            if (kotlinMethod && contentMap.containsKey(indexName)) {
+                value = Optional.ofNullable(contentMap.get(indexName)).map(JsonUtil::toStrNotExc).orElse(null);
+            } else if (!kotlinMethod && parameterName != null && contentMap.containsKey(parameterName)) {
                 value = Optional.ofNullable(contentMap.get(parameter.getParameterName())).map(JsonUtil::toStrNotExc).orElse(null);
             } else {
-                // 对于是接口的话，通过顺序来填充参数，不再通过name来映射
-                value = Optional.ofNullable(contentMap.get("args" + i)).map(JsonUtil::toStrNotExc).orElse(null);
+                value = Optional.ofNullable(contentMap.get(indexName)).map(JsonUtil::toStrNotExc).orElse(null);
             }
             if (null == value) {
                 args[i] = null;
@@ -159,6 +164,15 @@ public class AnyDoorHandlerMethod extends HandlerMethod {
             args[i] = getArgs(parameter, value);
         }
         return args;
+    }
+
+    private boolean isKotlinMethod(Method method) {
+        for (Annotation annotation : method.getDeclaringClass().getDeclaredAnnotations()) {
+            if ("kotlin.Metadata".equals(annotation.annotationType().getName())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

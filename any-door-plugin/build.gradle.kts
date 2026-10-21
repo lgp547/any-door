@@ -1,16 +1,19 @@
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.jvm.tasks.Jar
-import org.jetbrains.intellij.tasks.PrepareSandboxTask
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
+import org.jetbrains.intellij.platform.gradle.tasks.PrepareSandboxTask
 import java.util.zip.ZipFile
 
 fun properties(key: String) = providers.gradleProperty(key)
 
 val anyDoorAllDependenceJarName = "any-door-all-dependence.jar"
 val excludedAnyDoorBundlePrefixes = listOf("any-door", "arthas")
+// 与 IDEA 2024.3 保持一致，避免测试和表单编译工具漂移到其他构建。
+val platformBuild = "243.21565.193"
 
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.12.0" /*https://plugins.gradle.org/m2/org/jetbrains/intellij/plugins/gradle-intellij-plugin*/
+    id("org.jetbrains.intellij.platform") version "2.2.1"
 }
 
 group = "io.github.lgp547"
@@ -19,17 +22,30 @@ version = "2.3.2"
 repositories {
     mavenLocal()
     mavenCentral()
-    // todo：自行修改成本地maven仓库地址
-    mavenLocal {
-        url = uri("/Users/lgp/.m2/repository")
+    intellijPlatform {
+        defaultRepositories()
     }
 }
 
-dependencies {
-    implementation("io.github.lgp547:any-door-core:2.3.2")
-    implementation("io.github.lgp547:any-door-attach:2.3.2")
-    testImplementation("junit:junit:4.13.2")
+// 目标 JVM 使用独立 Kotlin 运行库；IDE 使用平台提供的 Kotlin，避免插件类加载冲突。
+val agentRuntime by configurations.creating
 
+dependencies {
+    listOf("any-door-core", "any-door-attach").forEach { artifact ->
+        implementation("io.github.lgp547:$artifact:2.3.2") {
+            exclude(group = "org.jetbrains.kotlin")
+            exclude(group = "com.fasterxml.jackson.module", module = "jackson-module-kotlin")
+        }
+        agentRuntime("io.github.lgp547:$artifact:2.3.2")
+    }
+    testImplementation("junit:junit:4.13.2")
+    intellijPlatform {
+        intellijIdeaCommunity("2024.3", useInstaller = false)
+        bundledPlugins("com.intellij.java", "com.intellij.modules.json", "org.jetbrains.kotlin")
+        javaCompiler(platformBuild)
+        testFramework(TestFrameworkType.Platform, platformBuild)
+        testFramework(TestFrameworkType.Plugin.Java, platformBuild)
+    }
 }
 
 val buildAnyDoorAllDependenceJar by tasks.registering(Jar::class) {
@@ -42,7 +58,7 @@ val buildAnyDoorAllDependenceJar by tasks.registering(Jar::class) {
     isReproducibleFileOrder = true
 
     from({
-        configurations.runtimeClasspath.get()
+        agentRuntime
             .filter { dependency ->
                 dependency.isFile && excludedAnyDoorBundlePrefixes.none(dependency.name::startsWith)
             }
@@ -71,6 +87,9 @@ val verifyAnyDoorAllDependenceJar by tasks.registering {
         val requiredEntries = listOf(
             "com/fasterxml/jackson/databind/ObjectMapper.class",
             "org/springframework/context/ApplicationContext.class",
+            "com/fasterxml/jackson/module/kotlin/KotlinModule.class",
+            "kotlin/Metadata.class",
+            "kotlin/reflect/jvm/ReflectJvmMapping.class",
         )
         val forbiddenEntries = listOf(
             "io/github/lgp547/anydoor/core/AnyDoorService.class",
@@ -90,42 +109,33 @@ val verifyAnyDoorAllDependenceJar by tasks.registering {
     }
 }
 
-// Configure Gradle IntelliJ Plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
-intellij {
-    // todo：若没商业版授权，这里改成社区版进行调式
-    version.set("2024.3") // 沙盒 idea 的版本
-//    type.set("IU") // 商业版
-    type.set("IC") // 社区版
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+}
 
-    plugins.set(listOf("com.intellij.java", "com.intellij.modules.json"))
+intellijPlatform {
+    pluginConfiguration {
+        ideaVersion {
+            sinceBuild.set(properties("pluginSinceBuild"))
+            untilBuild.set(provider { null })
+        }
+    }
 }
 
 tasks {
-    // Set the JVM compatibility versions
-    withType<JavaCompile> {
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
-        options.encoding = "UTF-8"
+    test {
+        systemProperty("java.awt.headless", "true")
     }
 
-    patchPluginXml {
-        sinceBuild.set(properties("pluginSinceBuild"))
-        untilBuild.set(properties("pluginUntilBuild"))
+    // Set the JVM compatibility versions
+    withType<JavaCompile> {
+        options.encoding = "UTF-8"
     }
 
     named("check") {
         dependsOn(verifyAnyDoorAllDependenceJar)
     }
 
-//    signPlugin {
-//        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
-//        privateKey.set(System.getenv("PRIVATE_KEY"))
-//        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
-//    }
-//
-//    publishPlugin {
-//        token.set(System.getenv("PUBLISH_TOKEN"))
-//    }
 }
 
 tasks.withType<PrepareSandboxTask>().configureEach {

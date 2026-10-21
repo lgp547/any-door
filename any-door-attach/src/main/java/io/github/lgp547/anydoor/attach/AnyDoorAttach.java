@@ -72,16 +72,20 @@ public class AnyDoorAttach {
         
         AnyDoorVmToolUtils.init();
         
-        try (AnyDoorClassloader anyDoorClassloader = new AnyDoorClassloader(anyDoorRunDto.getJarPaths())) {
+        try {
             Class<?> clazz = AnyDoorClassUtil.forName(anyDoorRunDto.getClassName());
-            Method method = AnyDoorClassUtil.getMethod(clazz, anyDoorRunDto.getMethodName(), anyDoorRunDto.getParameterTypes());
-            Object instance = AnyDoorVmToolUtils.getInstance(clazz, !Modifier.isPublic(method.getModifiers()));
-            
-            Class<?> anyDoorServiceClass = anyDoorClassloader.loadClass("io.github.lgp547.anydoor.core.AnyDoorService");
-            Object anyDoorService = anyDoorServiceClass.getConstructor().newInstance();
-            Method run = anyDoorServiceClass.getMethod("run", String.class, Method.class, Object.class, Runnable.class, Runnable.class);
-            Runnable endRun = anyDoorClassloader::forceClose;
-            run.invoke(anyDoorService, anyDoorDtoStr, method, instance, startRun, endRun);
+            try (AnyDoorClassloader anyDoorClassloader = new AnyDoorClassloader(anyDoorRunDto.getJarPaths(), clazz.getClassLoader())) {
+                Method method = AnyDoorClassUtil.getMethod(clazz, anyDoorRunDto.getMethodName(), anyDoorRunDto.getParameterTypes());
+                Object instance = Modifier.isStatic(method.getModifiers())
+                        ? clazz
+                        : AnyDoorVmToolUtils.getInstance(clazz, !Modifier.isPublic(method.getModifiers()));
+
+                Class<?> anyDoorServiceClass = anyDoorClassloader.loadClass("io.github.lgp547.anydoor.core.AnyDoorService");
+                Object anyDoorService = anyDoorServiceClass.getConstructor().newInstance();
+                Method run = anyDoorServiceClass.getMethod("run", String.class, Method.class, Object.class, Runnable.class, Runnable.class);
+                Runnable endRun = anyDoorClassloader::forceClose;
+                run.invoke(anyDoorService, anyDoorDtoStr, method, instance, startRun, endRun);
+            }
         } catch (Exception e) {
             System.err.println("any_door agentmain error. anyDoorDtoStr[" + anyDoorDtoStr + "]");
             e.printStackTrace();

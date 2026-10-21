@@ -83,11 +83,7 @@ public class AnyDoorVmToolUtils {
     
     public static Object getInstance(Class<?> clazz, boolean isGetTargetObject) {
         Object instance = getInstance(clazz);
-        if (isGetTargetObject) {
-            return AnyDoorAopUtil.getTargetObject(instance);
-        } else {
-            return instance;
-        }
+        return InvocationInstanceResolver.resolve(instance, isGetTargetObject);
     }
     
     /**
@@ -107,6 +103,45 @@ public class AnyDoorVmToolUtils {
             return AnyDoorBeanUtil.instantiate(clazz);
         } else {
             return instances[0];
+        }
+    }
+}
+
+/**
+ * 在目标 JVM 没有 Spring 时，保留普通实例并跳过 Spring AOP 解包。
+ *
+ * @author luoweiyu
+ * @date 2026-10-20
+ */
+final class InvocationInstanceResolver {
+
+    private InvocationInstanceResolver() {
+    }
+
+    static Object resolve(Object instance, boolean unwrapSpringProxy) {
+        if (!unwrapSpringProxy) {
+            return instance;
+        }
+        if (instance == null) {
+            throw new IllegalArgumentException("Candidate must not be null");
+        }
+        if (!isSpringAopAvailable()) {
+            return instance;
+        }
+        return AnyDoorAopUtil.getTargetObject(instance);
+    }
+
+    private static boolean isSpringAopAvailable() {
+        ClassLoader classLoader = InvocationInstanceResolver.class.getClassLoader();
+        try {
+            Class.forName("org.springframework.util.Assert", false, classLoader);
+            Class.forName("org.springframework.util.ClassUtils", false, classLoader);
+            Class.forName("org.springframework.aop.SpringProxy", false, classLoader);
+            Class.forName("org.springframework.aop.TargetClassAware", false, classLoader);
+            Class.forName("org.springframework.aop.framework.Advised", false, classLoader);
+            return true;
+        } catch (ClassNotFoundException ex) {
+            return false;
         }
     }
 }

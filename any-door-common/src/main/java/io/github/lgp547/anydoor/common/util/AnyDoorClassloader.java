@@ -27,9 +27,24 @@ import java.util.List;
 public class AnyDoorClassloader extends URLClassLoader {
     
     private boolean end = false;
+
+    /** 目标类加载器，用于共享 Kotlin 元数据和默认构造器标记的 Class 身份。 */
+    private final ClassLoader targetClassLoader;
     
     public AnyDoorClassloader(List<String> urls) throws Exception {
+        this(urls, null);
+    }
+
+    /**
+     * 创建隔离加载器，并让 Kotlin 元数据和默认构造器标记与目标类共享 Class 身份。
+     *
+     * @param urls 隔离运行端所需的 jar 路径
+     * @param targetClassLoader 目标类的加载器
+     * @throws Exception URLClassLoader 初始化失败时抛出
+     */
+    public AnyDoorClassloader(List<String> urls, ClassLoader targetClassLoader) throws Exception {
         super(getUrls(urls), ClassLoader.getSystemClassLoader().getParent());
+        this.targetClassLoader = targetClassLoader;
     }
     
     public static URL[] getUrls(List<String> filePaths) throws MalformedURLException {
@@ -50,6 +65,16 @@ public class AnyDoorClassloader extends URLClassLoader {
         final Class<?> loadedClass = findLoadedClass(name);
         if (loadedClass != null) {
             return loadedClass;
+        }
+
+        // Kotlin 元数据注解与默认构造器标记需和目标类共享 Class 身份。
+        if (targetClassLoader != null && ("kotlin.Metadata".equals(name)
+                || "kotlin.jvm.internal.DefaultConstructorMarker".equals(name))) {
+            try {
+                return targetClassLoader.loadClass(name);
+            } catch (ClassNotFoundException ignored) {
+                // 目标加载器缺少该 Kotlin 类时，继续从隔离运行端的 URL 中查找。
+            }
         }
         
         // 优先处理jdk自带的类，避免抛出ClassNotFoundException
